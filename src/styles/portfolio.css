@@ -9,7 +9,7 @@ html, body { margin: 0; padding: 0; }
 body {
   background: var(--paper);
   background-image:
-    radial-gradient(circle at 20% 0%, rgba(200,133,46,0.04) 0, transparent 40%),
+    radial-gradient(circle at 20% 0%, rgba(184,115,51,0.04) 0, transparent 40%),
     radial-gradient(circle at 80% 60%, rgba(45,57,96,0.03) 0, transparent 50%);
   background-attachment: fixed;
   min-height: 100vh;

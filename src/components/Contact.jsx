@@ -25,7 +25,7 @@ export default function Contact() {
                 <span className="right">repos <span className="ar">↗</span></span>
               </a>
               <a href="https://www.linkedin.com/in/christopher-rivero-47b03b97/" target="_blank" rel="noreferrer">
-                <span className="left"><span className="lab">LinkedIn</span>linkedin.com/in/christopher-rivero</span>
+                <span className="left"><span className="lab">LinkedIn</span>linkedin.com/in/christopher-rivero-47b03b97</span>
                 <span className="right">background <span className="ar">↗</span></span>
               </a>
             </div>
