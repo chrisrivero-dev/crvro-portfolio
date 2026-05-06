@@ -223,7 +223,7 @@ export const PROJECTS = [
         image: '/images/sidecar-draft-response.png',
         ratio: '9 / 16',
         fit: 'contain',
-        position: 'center top',
+        position: 'center center',
         zoom: 1,
       },
       {
