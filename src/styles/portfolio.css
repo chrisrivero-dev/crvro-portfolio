@@ -187,6 +187,25 @@ button { font: inherit; cursor: pointer; }
   .hero .meta-row { gap: 12px; margin-bottom: 32px; }
 }
 
+/* ─── Hero headline entrance ─────────────────────────────── */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero h1 {
+  animation: hero-rise 0.7s var(--ease-out) 0.05s both;
+}
+
+.hero h1 em {
+  animation: hero-rise 0.8s var(--ease-out) 0.35s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero h1,
+  .hero h1 em { animation: none; }
+}
+
 /* ─────────────────────────────────────────────────────────
    SECTION HEADER (shared across work/about/skills/contact)
    ───────────────────────────────────────────────────────── */
