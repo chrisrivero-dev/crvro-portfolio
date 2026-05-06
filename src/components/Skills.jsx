@@ -1,12 +1,12 @@
 import React from "react";
 
 const SKILLS = [
-  { head: "languages", items: ["Python", "TypeScript", "SQL", "Bash", "Lua"] },
-  { head: "data & infra", items: ["Postgres", "DuckDB", "Redis", "Docker", "Linux", "Raspberry Pi"] },
-  { head: "AI & tools", items: ["Claude API", "OpenAI API", "Ollama / on-device", "RAG pipelines", "n8n"] },
-  { head: "GIS & CAD", items: ["QGIS", "PostGIS", "AutoCAD", "Civil 3D", "Shapefile / GeoPackage"] },
-  { head: "automation", items: ["Telegram bots", "GitHub Actions", "cron / systemd", "Playwright"] },
-  { head: "ops & analytics", items: ["Grafana", "Metabase", "Loki", "Structured logging"] },
+  { head: "languages", items: ["Python", "JavaScript", "SQL", "Bash", "HTML / CSS"] },
+  { head: "data & infra", items: ["SQLite", "Postgres", "JSON / JSONL", "Git / GitHub", "Railway", "REST APIs"] },
+  { head: "AI & support systems", items: ["OpenAI API", "OpenClaw", "KB-grounded drafting", "RAG-style retrieval", "Prompt guardrails", "Canned response workflows"] },
+  { head: "GIS & CAD", items: ["ArcGIS Pro", "QGIS", "PostGIS", "AutoCAD", "MicroStation", "Civil 3D", "Shapefile / GeoPackage"] },
+  { head: "automation", items: ["Telegram Bot API", "GitHub Actions", "cron / scheduled jobs", "Python scripts", "Excel automation", "pandas / openpyxl"] },
+  { head: "ops & testing", items: ["Structured logging", "CLI tools", "curl / API testing", "Railway deploy logs", "Local test scripts", "Lightweight dashboards"] },
 ];
 
 export default function Skills() {
