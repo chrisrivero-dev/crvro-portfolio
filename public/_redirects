@@ -1,0 +1,3 @@
+/* SPA fallback for Netlify (and any host that honors _redirects).
+   Every non-asset path serves index.html so client-side routing works. */
+/*    /index.html   200

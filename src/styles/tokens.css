@@ -1,0 +1,200 @@
+/* ============================================================
+   Christopher Rivero Portfolio — Design Tokens
+   Warm minimalist editorial · paper + ink + curated accents
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  /* ─── Color: paper / ink ─────────────────────────────── */
+  --paper:       #F2EBDD;   /* primary surface — warmer, more retro */
+  --paper-2:     #ECE4D2;   /* sunken */
+  --paper-3:     #E2D9C3;   /* tag fill */
+  --ink:         #1A1714;   /* primary text */
+  --graphite:    #423B33;   /* secondary text */
+  --pencil:      #8A7E70;   /* tertiary, dividers */
+  --rule:        #D4C9B0;   /* hairlines */
+  --rule-strong: #B8AB8E;
+
+  /* ─── Color: project accents (used as thumbnail fills) ─ */
+  --amber:       #C8852E;   /* primary accent — slightly more burnt */
+  --amber-deep:  #A66C20;
+  --terracotta:  #B85A3A;   /* help-nearby (community/warm) */
+  --olive:       #6B6B3E;   /* sidecar (calm/AI) */
+  --indigo:      #2D3960;   /* prediction-market (data) */
+  --plum:        #5B2A3A;   /* openclaw (local/private) */
+
+  /* ─── Color: foreground/background tokens ───────────── */
+  --fg-1:        var(--ink);
+  --fg-2:        var(--graphite);
+  --fg-3:        var(--pencil);
+  --fg-accent:   var(--amber);
+  --fg-on-accent: var(--paper);
+  --bg-1:        var(--paper);
+  --bg-2:        var(--paper-2);
+  --bg-3:        var(--paper-3);
+  --border-1:    var(--rule);
+  --border-2:    var(--rule-strong);
+  --border-strong: var(--ink);
+
+  /* ─── Semantic ──────────────────────────────────────── */
+  --success: #4A6B3F;
+  --warn:    #A37018;
+  --error:   #8B2E2E;
+
+  /* ─── Type families ─────────────────────────────────── */
+  --font-display: "Inter Tight", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif:   "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ─── Sizes ─────────────────────────────────────────── */
+  --fs-10: 10px; --fs-11: 11px; --fs-12: 12px; --fs-13: 13px;
+  --fs-14: 14px; --fs-15: 15px; --fs-16: 16px; --fs-17: 17px;
+  --fs-20: 20px; --fs-24: 24px; --fs-32: 32px; --fs-40: 40px;
+  --fs-56: 56px; --fs-72: 72px; --fs-96: 96px;
+
+  /* ─── Spacing (8px) ─────────────────────────────────── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+  --sp-9: 96px; --sp-10: 128px;
+
+  /* ─── Radii ─────────────────────────────────────────── */
+  --r-0: 0; --r-1: 2px; --r-2: 4px; --r-3: 8px; --r-pill: 999px;
+
+  /* ─── Shadows ───────────────────────────────────────── */
+  --shadow-popover: 0 4px 16px rgba(26,23,20,0.08), 0 1px 2px rgba(26,23,20,0.06);
+
+  /* ─── Motion ────────────────────────────────────────── */
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* ─── Layout widths ─────────────────────────────────── */
+  --w-prose: 680px;
+  --w-content: 1080px;
+  --w-canvas: 1240px;
+}
+
+/* ─── Element-level styles ─────────────────────────────── */
+
+html, body {
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums oldstyle-nums;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display headings: editorial serif for big statements */
+h1, .h1 {
+  font-family: var(--font-serif);
+  font-size: var(--fs-72);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--fg-1);
+  margin: 0;
+  text-wrap: balance;
+}
+h1 em, .h1 em { font-style: italic; font-weight: 500; color: var(--graphite); }
+
+h2, .h2 {
+  font-family: var(--font-serif);
+  font-size: var(--fs-40);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--fg-1);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-24);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--fg-1);
+  margin: 0;
+}
+
+h4, .h4 {
+  font-family: var(--font-display);
+  font-size: var(--fs-20);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--fg-1);
+  margin: 0;
+}
+
+p, .body {
+  font-family: var(--font-body);
+  font-size: var(--fs-17);
+  line-height: 1.65;
+  color: var(--fg-1);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.body-sm { font-size: var(--fs-15); line-height: 1.55; color: var(--fg-2); }
+
+/* Mono labels — small uppercase, the editorial index marker */
+.label, .eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.index-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  letter-spacing: 0.10em;
+  color: var(--fg-3);
+}
+
+code, .code, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-3);
+  padding: 1px 6px;
+  border-radius: var(--r-1);
+  color: var(--fg-1);
+}
+
+a {
+  color: var(--fg-1);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 2px;
+  transition: color var(--dur-base) var(--ease-out);
+}
+a:hover { color: var(--amber); }
+
+hr, .rule {
+  border: 0;
+  height: 1px;
+  background: var(--border-1);
+  margin: var(--sp-6) 0;
+}
+
+::selection { background: var(--amber); color: var(--paper); }
+
+/* Index dot — used in numbered project lists */
+.dot-bullet {
+  display: inline-block;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--amber);
+  vertical-align: middle;
+  margin: 0 var(--sp-2);
+}
