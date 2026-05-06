@@ -222,7 +222,9 @@ export const PROJECTS = [
           'Sidecar places the draft into the Freshdesk reply box so the agent can review, edit, send, or discard.',
         image: '/images/sidecar-draft-response.png',
         ratio: '9 / 16',
-        fit: 'contain',
+        fit: 'cover',
+        position: 'center top',
+        zoom: 1.05,
       },
       {
         label: 'Confidence and risk review',
