@@ -575,9 +575,26 @@
     flex-wrap: wrap;
   }
 }
-.case-figure .frame img {
+/* ── screenshot image + hover zoom / pan ─────────────────── */
+.frame-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: translate(var(--pan-x, 0px), var(--pan-y, 0px))
+    scale(var(--frame-scale, var(--img-zoom, 1)));
+  transition: transform 500ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* cursor on any real-image frame */
+  .case-figure .frame:has(.frame-img) {
+    cursor: zoom-in;
+  }
+  /* CSS-only zoom for frames without JS pan */
+  .case-figure .frame:not(.frame--pan):hover .frame-img {
+    transform: translate(0px, 0px)
+      scale(calc(var(--img-zoom, 1) * var(--img-hover-scale, 1.08)));
+  }
+  /* pan frames: JS drives the transform; CSS just provides the cursor */
 }

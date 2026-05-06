@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import ProjectMark from './ProjectMark.jsx';
 
 /**
@@ -14,19 +14,60 @@ function ImageBlock({
   fit = 'cover',
   position = 'center center',
   zoom = 1,
+  hoverScale = 1.08,
+  panOnHover = false,
 }) {
+  const frameRef = useRef(null);
+  const imgRef = useRef(null);
+  const hasPan = panOnHover && !!image;
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!hasPan || !frameRef.current || !imgRef.current) return;
+      const img = imgRef.current;
+      const rect = frameRef.current.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width;
+      const ny = (e.clientY - rect.top) / rect.height;
+      const S = zoom * hoverScale;
+      const maxTx = (rect.width * (S - 1)) / 2;
+      const maxTy = (rect.height * (S - 1)) / 2;
+      img.style.transition = 'none';
+      img.style.setProperty('--frame-scale', String(S));
+      img.style.setProperty('--pan-x', `${(nx - 0.5) * maxTx * 0.5}px`);
+      img.style.setProperty('--pan-y', `${(ny - 0.5) * maxTy * 0.5}px`);
+    },
+    [hasPan, zoom, hoverScale]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    if (!hasPan || !imgRef.current) return;
+    const img = imgRef.current;
+    img.style.transition = '';
+    img.style.removeProperty('--frame-scale');
+    img.style.setProperty('--pan-x', '0px');
+    img.style.setProperty('--pan-y', '0px');
+  }, [hasPan]);
+
   return (
     <figure className="case-figure">
-      <div className="frame" style={{ aspectRatio: ratio }}>
+      <div
+        className={hasPan ? 'frame frame--pan' : 'frame'}
+        ref={frameRef}
+        style={{ aspectRatio: ratio }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         {image ? (
           <img
+            ref={imgRef}
+            className="frame-img"
             src={image}
             alt={label || caption || 'Project screenshot'}
             style={{
               objectFit: fit,
               objectPosition: position,
-              transform: `scale(${zoom})`,
-              transformOrigin: position,
+              '--img-zoom': zoom,
+              '--img-hover-scale': hoverScale,
             }}
           />
         ) : (
@@ -177,6 +218,8 @@ export default function CaseStudy({ project: p }) {
             fit={p.screenshots[0].fit || 'cover'}
             position={p.screenshots[0].position || 'center center'}
             zoom={p.screenshots[0].zoom || 1}
+            hoverScale={p.screenshots[0].hoverScale}
+            panOnHover={p.screenshots[0].panOnHover}
           />
         </div>
       )}
@@ -221,6 +264,11 @@ export default function CaseStudy({ project: p }) {
                 caption={s.caption}
                 image={s.image}
                 ratio={s.ratio || '4 / 3'}
+                fit={s.fit || 'cover'}
+                position={s.position || 'center center'}
+                zoom={s.zoom || 1}
+                hoverScale={s.hoverScale}
+                panOnHover={s.panOnHover}
               />
             ))}
           </div>
@@ -254,6 +302,11 @@ export default function CaseStudy({ project: p }) {
                 caption={s.caption}
                 image={s.image}
                 ratio={s.ratio || '4 / 3'}
+                fit={s.fit || 'cover'}
+                position={s.position || 'center center'}
+                zoom={s.zoom || 1}
+                hoverScale={s.hoverScale}
+                panOnHover={s.panOnHover}
               />
             ))}
           </div>

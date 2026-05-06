@@ -5,3 +5,6 @@ dist
 .env.local
 *.log
 .vite
+
+# Claude local workspace
+.claude/
