@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function Hero() {
   return (
@@ -15,14 +15,20 @@ export default function Hero() {
               A builder of <em>small, useful systems.</em>
             </h1>
             <p className="lede">
-              Automation, AI support systems, and small data workflows.
-              Software that lives in a cron job, a Telegram bot, or a quiet
-              Python script that saves someone four hours a week.
+              Automation, AI support systems, and small data workflows. Software
+              that lives in a cron job, a Telegram bot, or a quiet python script
+              that saves hours, reduces mistakes, and makes repetitive work feel
+              manageable.
             </p>
             <div className="meta-row">
-              <span><span className="lab">Focus —</span>Automation · AI support · GIS / CAD</span>
+              <span>
+                <span className="lab">Focus —</span>Automation · AI support ·
+                GIS / CAD
+              </span>
               <span className="dot">·</span>
-              <span><span className="lab">Status —</span>Open to new work</span>
+              <span>
+                <span className="lab">Status —</span>Open to new work
+              </span>
             </div>
             <a href="#work" className="scroll-cue">
               <span>01 — see the work</span>
