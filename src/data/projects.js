@@ -19,7 +19,7 @@ export const PROJECTS = [
     tags: ['react · next.js · css'],
     accent: 'var(--terracotta)',
     shape: 'circle',
-    role: 'Solo build — design and frontend',
+    role: 'Collaborative build — frontend, product flow, and implementation',
     status: 'Working prototype · not currently deployed',
     repo: null,
     demo: null,
@@ -321,34 +321,59 @@ export const PROJECTS = [
       },
       {
         group: 'Ops',
-        items: ['Terminal scripts', 'Telegram notifications', 'Git-based iteration'],
+        items: [
+          'Terminal scripts',
+          'Telegram notifications',
+          'Git-based iteration',
+        ],
       },
     ],
     screenshots: [
       {
-        label: 'Scan loop output',
+        label: 'SCAN LOOP OUTPUT',
         caption:
-          'Terminal view of a scan cycle — candidate markets evaluated, filters applied, rejections logged.',
+          'Terminal view of a reviewed scan cycle showing family gates, rejection behavior, diagnostics, and zero trades placed.',
+        image: '/images/predmkt-terminal-scan.png',
+        settings: {
+          ratio: '16 / 9',
+          fit: 'contain',
+          position: 'center top',
+          zoom: 1,
+        },
       },
       {
-        label: 'Candidate and rejection log',
+        label: 'REJECTION SUMMARY',
         caption:
-          'Every scan cycle records candidates, rejection reasons, and any accepted decisions with their inputs.',
+          'Telegram diagnostic summary showing how scanned markets moved through the pipeline, including pre-filter counts, rejection reasons, and would-place versus placed counts.',
+        image: '/images/predmkt-telegram-rejection-summary.jpg',
+        settings: {
+          ratio: '9 / 16',
+          fit: 'contain',
+          position: 'center center',
+          zoom: 1,
+        },
       },
       {
-        label: 'Safety gates and cooldowns',
+        label: 'DAILY SUMMARY',
         caption:
-          'Unknown families are blocked by default; known bad buckets are excluded; cooldowns prevent repeat bad entries.',
+          'Telegram status summary showing scanned markets, candidates, top rejection reasons, open positions, exposure, and account status for quick mobile review.',
+        image: '/images/predmkt-telegram-daily-summary.jpg',
+        settings: {
+          ratio: '9 / 16',
+          fit: 'contain',
+          position: 'center center',
+          zoom: 1,
+        },
       },
       {
-        label: 'Post-trade review',
+        label: 'EDGE VALIDATION NOTES',
         caption:
-          'Accepted trades are reviewed after settlement to compare expected edge against realized outcomes.',
+          'Post-trade review comparing expected edge against realized outcomes before any increase in risk.',
       },
       {
-        label: 'Family performance summary',
+        label: 'FAMILY PERFORMANCE SNAPSHOT',
         caption:
-          'Diagnostic breakdown by market family — useful for tightening gates, not proof of future returns.',
+          'Diagnostic breakdown by market family used to tighten gates; not proof of future returns.',
       },
     ],
     learned: [
