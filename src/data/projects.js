@@ -334,36 +334,30 @@ export const PROJECTS = [
         caption:
           'Terminal view of a reviewed scan cycle showing family gates, rejection behavior, diagnostics, and zero trades placed.',
         image: '/images/predmkt-terminal-scan.png',
-        settings: {
-          ratio: '16 / 9',
-          fit: 'contain',
-          position: 'center top',
-          zoom: 1,
-        },
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
       },
       {
         label: 'REJECTION SUMMARY',
         caption:
           'Telegram diagnostic summary showing how scanned markets moved through the pipeline, including pre-filter counts, rejection reasons, and would-place versus placed counts.',
         image: '/images/predmkt-telegram-rejection-summary.jpg',
-        settings: {
-          ratio: '9 / 16',
-          fit: 'contain',
-          position: 'center center',
-          zoom: 1,
-        },
+        ratio: '3 / 4',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
       },
       {
         label: 'DAILY SUMMARY',
         caption:
           'Telegram status summary showing scanned markets, candidates, top rejection reasons, open positions, exposure, and account status for quick mobile review.',
         image: '/images/predmkt-telegram-daily-summary.jpg',
-        settings: {
-          ratio: '9 / 16',
-          fit: 'contain',
-          position: 'center center',
-          zoom: 1,
-        },
+        ratio: '3 / 4',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
       },
       {
         label: 'EDGE VALIDATION NOTES',
