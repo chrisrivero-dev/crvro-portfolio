@@ -360,14 +360,24 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label: 'EDGE VALIDATION NOTES',
+        label: 'EDGE VALIDATION TABLE',
         caption:
-          'Post-trade review comparing expected edge against realized outcomes before any increase in risk.',
+          'Terminal output comparing expected edge against realized outcomes before increasing risk.',
+        image: '/images/predmkt-edge-validation-table.png',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
       },
       {
-        label: 'FAMILY PERFORMANCE SNAPSHOT',
+        label: 'FAMILY PERFORMANCE DIAGNOSTICS',
         caption:
-          'Diagnostic breakdown by market family used to tighten gates; not proof of future returns.',
+          'Market-family breakdown showing sample size, win rate, average result, fees, and diagnostic flags used to tighten gates.',
+        image: '/images/predmkt-family-performance-diagnostics.png',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
       },
     ],
     learned: [
