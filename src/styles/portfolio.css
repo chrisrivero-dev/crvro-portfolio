@@ -81,7 +81,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--graphite);
 }
 .site-nav a.active { color: var(--ink); }
-.site-nav a.active .num { color: var(--amber); }
+.site-nav a.active .num { color: var(--accent-gold); }
 .site-nav a:hover { color: var(--amber); }
 .site-nav a:hover .num { color: var(--amber); }
 
@@ -165,14 +165,15 @@ button { font: inherit; cursor: pointer; }
   margin-bottom: 56px;
 }
 .hero .meta-row .lab { color: var(--graphite); margin-right: 8px; }
-.hero .meta-row .dot { color: var(--graphite); }
+.hero .meta-row .dot { color: var(--accent-gold); }
 
 .scroll-cue {
   display: inline-flex; align-items: center; gap: 16px;
-  background: none; padding: 0;
+  background: none; padding: 0 0 3px;
   font-family: var(--font-mono); font-size: 12px; font-weight: 500;
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--ink);
+  border-bottom: 1px solid var(--accent-gold);
 }
 .scroll-cue .ar {
   font-family: var(--font-serif); font-size: 16px;
@@ -325,7 +326,7 @@ section.contact .grid {
 .project-row .idx {
   font-family: var(--font-mono);
   font-size: 13px; font-weight: 500; letter-spacing: 0.08em;
-  color: var(--graphite);
+  color: var(--accent-gold);
   align-self: start;
   padding-top: 6px;
 }

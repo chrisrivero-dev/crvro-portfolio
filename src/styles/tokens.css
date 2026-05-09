@@ -19,6 +19,7 @@
   /* ─── Color: UI accent ──────────────────────────────── */
   --amber:       #6f7c85;   /* muted slate-blue — restrained accent */
   --amber-deep:  #58676f;
+  --accent-gold: #9a7a3f;   /* muted brass — tiny warm counterpoint to cool gray */
   --terracotta:  #B85A3A;   /* help-nearby (community/warm) */
   --olive:       #6B6B3E;   /* sidecar (calm/AI) */
   --indigo:      #2D3960;   /* prediction-market (data) */
@@ -188,13 +189,13 @@ hr, .rule {
   margin: var(--sp-6) 0;
 }
 
-::selection { background: var(--amber); color: var(--paper); }
+::selection { background: var(--accent-gold); color: var(--paper); }
 
 /* Index dot — used in numbered project lists */
 .dot-bullet {
   display: inline-block;
   width: 5px; height: 5px; border-radius: 50%;
-  background: var(--amber);
+  background: var(--accent-gold);
   vertical-align: middle;
   margin: 0 var(--sp-2);
 }
