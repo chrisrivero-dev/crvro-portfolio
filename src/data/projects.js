@@ -209,10 +209,10 @@ export const PROJECTS = [
         fit: 'contain',
       },
       {
-        label: 'Knowledge base search',
+        label: 'Telegram KB Admin Bot',
         caption:
-          'Approved support articles can be searched by issue, keyword, or product before drafting a response.',
-        image: '/images/sidecar-kb-search.png',
+          'Telegram-assisted KB drafting workflow: support knowledge can be proposed, reviewed, and approved through a lightweight admin bot before being added to the knowledge base.',
+        image: '/images/sidecar-telegram-kb-admin-bot.png',
         ratio: '9 / 16',
         fit: 'contain',
       },
