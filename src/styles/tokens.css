@@ -1,24 +1,24 @@
 /* ============================================================
    Christopher Rivero Portfolio — Design Tokens
-   Warm minimalist editorial · paper + ink + curated accents
+   Cool minimal professional · stone + charcoal + muted slate
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
 :root {
-  /* ─── Color: paper / ink ─────────────────────────────── */
-  --paper:       #F2EBDD;   /* primary surface — warmer, more retro */
-  --paper-2:     #ECE4D2;   /* sunken */
-  --paper-3:     #E2D9C3;   /* tag fill */
-  --ink:         #1A1714;   /* primary text */
-  --graphite:    #423B33;   /* secondary text */
-  --pencil:      #8A7E70;   /* tertiary, dividers */
-  --rule:        #D4C9B0;   /* hairlines */
-  --rule-strong: #B8AB8E;
+  /* ─── Color: surface / ink ──────────────────────────── */
+  --paper:       #f5f5f2;   /* primary surface — cool off-white */
+  --paper-2:     #ebebeb;   /* sunken */
+  --paper-3:     #e7e7e2;   /* tag fill / muted surface */
+  --ink:         #202124;   /* primary text — charcoal */
+  --graphite:    #4f565c;   /* secondary text */
+  --pencil:      #767b80;   /* tertiary, dividers */
+  --rule:        #cfcfca;   /* hairlines */
+  --rule-strong: #b6b8b2;
 
-  /* ─── Color: project accents (used as thumbnail fills) ─ */
-  --amber:       #B87333;   /* copper — antique map / technical builder */
-  --amber-deep:  #9B6028;
+  /* ─── Color: UI accent ──────────────────────────────── */
+  --amber:       #6f7c85;   /* muted slate-blue — restrained accent */
+  --amber-deep:  #58676f;
   --terracotta:  #B85A3A;   /* help-nearby (community/warm) */
   --olive:       #6B6B3E;   /* sidecar (calm/AI) */
   --indigo:      #2D3960;   /* prediction-market (data) */
@@ -63,7 +63,7 @@
   --r-0: 0; --r-1: 2px; --r-2: 4px; --r-3: 8px; --r-pill: 999px;
 
   /* ─── Shadows ───────────────────────────────────────── */
-  --shadow-popover: 0 4px 16px rgba(26,23,20,0.08), 0 1px 2px rgba(26,23,20,0.06);
+  --shadow-popover: 0 4px 16px rgba(32,33,36,0.08), 0 1px 2px rgba(32,33,36,0.06);
 
   /* ─── Motion ────────────────────────────────────────── */
   --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
