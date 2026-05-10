@@ -1,6 +1,62 @@
 import React, { useRef, useCallback } from 'react';
 import ProjectMark from './ProjectMark.jsx';
 
+function ToolRouterMockup() {
+  return (
+    <div className="mockup mockup-json">
+      <div className="mockup-bar">
+        <span className="mockup-dots"><i /><i /><i /></span>
+        <span className="mockup-fname">tool_router · output</span>
+      </div>
+      <pre className="mockup-pre">
+        <span className="mp">{`{\n`}</span>
+        <span className="mk">{`  "input"`}</span><span className="mp">{`:    `}</span><span className="mv">{`"Remind me Tuesday to review the invoice"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`  "intent"`}</span><span className="mp">{`:   `}</span><span className="mv">{`"create_reminder"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`  "tool"`}</span><span className="mp">{`:     `}</span><span className="mv">{`"calendar.reminder.create"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`  "arguments"`}</span><span className="mp">{`: {\n`}</span>
+        <span className="mk">{`    "title"`}</span><span className="mp">{`:    `}</span><span className="mv">{`"Review the invoice"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`    "date"`}</span><span className="mp">{`:     `}</span><span className="mv">{`"Tuesday"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`    "time"`}</span><span className="mp">{`:     `}</span><span className="mv">{`"09:00"`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`    "timezone"`}</span><span className="mp">{`: `}</span><span className="mv">{`"America/Los_Angeles"`}</span><span className="mp">{`\n  },\n`}</span>
+        <span className="mk">{`  "requires_confirmation"`}</span><span className="mp">{`: `}</span><span className="mb">{`true`}</span><span className="mp">{`,\n`}</span>
+        <span className="mk">{`  "status"`}</span><span className="mp">{`:  `}</span><span className="ms">{`"proposed"`}</span><span className="mp">{`\n}`}</span>
+      </pre>
+    </div>
+  );
+}
+
+function AuditLogMockup() {
+  return (
+    <div className="mockup mockup-log">
+      <div className="mockup-bar">
+        <span className="mockup-dots"><i /><i /><i /></span>
+        <span className="mockup-fname">audit.log</span>
+      </div>
+      <div className="mockup-log-body">
+        <div className="log-entry">
+          <div className="log-head"><span className="log-ts">[09:00:12]</span><span className="log-ev">command_received</span></div>
+          <div className="log-kv">source=telegram</div>
+          <div className="log-kv">intent=create_reminder</div>
+        </div>
+        <div className="log-entry">
+          <div className="log-head"><span className="log-ts">[09:00:14]</span><span className="log-ev">action_proposed</span></div>
+          <div className="log-kv">tool=calendar.reminder.create</div>
+          <div className="log-kv">status=awaiting_confirmation</div>
+        </div>
+        <div className="log-entry">
+          <div className="log-head"><span className="log-ts">[09:00:21]</span><span className="log-ev">user_confirmed</span></div>
+          <div className="log-kv">confirmation_id=rem_0427</div>
+        </div>
+        <div className="log-entry">
+          <div className="log-head"><span className="log-ts">[09:00:22]</span><span className="log-ev log-ok">action_executed</span></div>
+          <div className="log-kv">result=success</div>
+          <div className="log-kv">logged=true</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Reusable image block.
  * If an image path exists, it renders the image.
@@ -10,6 +66,8 @@ function ImageBlock({
   label,
   caption,
   image,
+  images,
+  mockup,
   ratio = '16 / 9',
   fit = 'cover',
   position = 'center center',
@@ -70,6 +128,27 @@ function ImageBlock({
               '--img-hover-scale': hoverScale,
             }}
           />
+        ) : images && images.length > 0 ? (
+          <>
+            <div className="tg-slideshow" aria-label={label}>
+              {images.map((src, i) => (
+                <div key={i} className="tg-slide">
+                  <img src={src} alt={`${label} — frame ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+            <span className="placeholder-label">{label}</span>
+          </>
+        ) : mockup === 'tool-router' ? (
+          <>
+            <ToolRouterMockup />
+            <span className="placeholder-label">{label}</span>
+          </>
+        ) : mockup === 'audit-log' ? (
+          <>
+            <AuditLogMockup />
+            <span className="placeholder-label">{label}</span>
+          </>
         ) : (
           <>
             <span className="placeholder-mark" aria-hidden="true">
@@ -214,6 +293,7 @@ export default function CaseStudy({ project: p }) {
             label={p.screenshots[0].label}
             caption={p.screenshots[0].caption}
             image={p.screenshots[0].image}
+            images={p.screenshots[0].images}
             ratio={p.screenshots[0].ratio || '16 / 9'}
             fit={p.screenshots[0].fit || 'cover'}
             position={p.screenshots[0].position || 'center center'}
@@ -263,6 +343,8 @@ export default function CaseStudy({ project: p }) {
                 label={s.label}
                 caption={s.caption}
                 image={s.image}
+                images={s.images}
+                mockup={s.mockup}
                 ratio={s.ratio || '4 / 3'}
                 fit={s.fit || 'cover'}
                 position={s.position || 'center center'}
@@ -301,6 +383,8 @@ export default function CaseStudy({ project: p }) {
                 label={s.label}
                 caption={s.caption}
                 image={s.image}
+                images={s.images}
+                mockup={s.mockup}
                 ratio={s.ratio || '4 / 3'}
                 fit={s.fit || 'cover'}
                 position={s.position || 'center center'}
