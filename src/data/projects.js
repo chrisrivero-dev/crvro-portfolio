@@ -330,13 +330,13 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label: 'SCAN LOOP OUTPUT',
+        label: 'Kalshi trade intelligence dashboard with portfolio metrics, PnL charts, drawdown analysis, market-family performance, and trade timeline visualization.',
         caption:
-          'Terminal view of a reviewed scan cycle showing family gates, rejection behavior, diagnostics, and zero trades placed.',
-        image: '/images/predmkt-terminal-scan.png',
+          'Live trade intelligence dashboard showing portfolio metrics, PnL tracking, market-family performance, drawdown analysis, and trade timeline instrumentation across active trading sessions.',
+        image: '/images/kalshi-trade-intelligence-dashboard.png',
         ratio: '16 / 9',
         fit: 'contain',
-        position: 'center top',
+        position: 'center center',
         zoom: 1,
       },
       {
