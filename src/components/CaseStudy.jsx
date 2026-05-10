@@ -117,10 +117,15 @@ function ImageBlock({
       >
         {image ? (
           <img
-            ref={imgRef}
+            ref={(el) => {
+              imgRef.current = el;
+              if (el?.complete) el.classList.add('img-loaded');
+            }}
             className="frame-img"
             src={image}
             alt={label || caption || 'Project screenshot'}
+            loading="lazy"
+            onLoad={(e) => e.currentTarget.classList.add('img-loaded')}
             style={{
               objectFit: fit,
               objectPosition: position,
@@ -288,7 +293,7 @@ export default function CaseStudy({ project: p }) {
 
       {/* ── lead screenshot ─────────────────────────────── */}
       {p.screenshots && p.screenshots[0] && (
-        <div className="container-wide case-figure-wrap">
+        <div className="container-wide case-figure-wrap" data-parallax="0.035">
           <ImageBlock
             label={p.screenshots[0].label}
             caption={p.screenshots[0].caption}
@@ -335,7 +340,7 @@ export default function CaseStudy({ project: p }) {
 
       {/* ── secondary screenshots ───────────────────────── */}
       {p.screenshots && p.screenshots.length > 1 && (
-        <div className="container-wide case-figure-wrap">
+        <div className="container-wide case-figure-wrap" data-parallax="0.025">
           <div className="figure-grid">
             {p.screenshots.slice(1, 3).map((s, i) => (
               <ImageBlock
@@ -375,7 +380,7 @@ export default function CaseStudy({ project: p }) {
 
       {/* ── remaining screenshots ───────────────────────── */}
       {p.screenshots && p.screenshots.length > 3 && (
-        <div className="container-wide case-figure-wrap">
+        <div className="container-wide case-figure-wrap" data-parallax="0.025">
           <div className="figure-grid">
             {p.screenshots.slice(3).map((s, i) => (
               <ImageBlock

@@ -13,15 +13,15 @@ export default function Skills() {
   return (
     <section className="skills" id="skills" data-screen-label="04 Skills">
       <div className="container-wide">
-        <div className="section-head">
+        <div className="section-head reveal">
           <div className="index">§ 03 — Skills &amp; tools</div>
           <div className="h">Stacks I reach for <em>when I'm building something real.</em></div>
         </div>
         <div className="grid">
           <div></div>
-          <div className="col-grid">
+          <div className="col-grid" data-stagger>
             {SKILLS.map((s) => (
-              <div key={s.head} className="col">
+              <div key={s.head} className="col reveal">
                 <h4>{s.head}</h4>
                 <ul>{s.items.map((it) => <li key={it}>{it}</li>)}</ul>
               </div>

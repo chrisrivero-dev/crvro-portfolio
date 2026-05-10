@@ -424,6 +424,12 @@
 .case-figure-wrap {
   margin: 0 auto 80px;
 }
+
+/* Parallax wrapper — JS sets --py via scroll handler */
+[data-parallax] {
+  transform: translateY(var(--py, 0px));
+  will-change: transform;
+}
 .case-figure {
   margin: 0;
   display: flex;
@@ -447,6 +453,14 @@
   align-items: center;
   justify-content: center;
   color: var(--graphite);
+  transition: box-shadow 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.case-figure .frame:hover {
+  box-shadow: 0 6px 28px rgba(32,33,36,0.11), 0 1px 4px rgba(32,33,36,0.06);
+  transform: translateY(-2px);
+}
+[data-theme="dark"] .case-figure .frame:hover {
+  box-shadow: 0 6px 28px rgba(0,0,0,0.32), 0 1px 4px rgba(0,0,0,0.18);
 }
 .case-figure .placeholder-mark {
   display: flex;
@@ -690,9 +704,13 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
   transform: translate(var(--pan-x, 0px), var(--pan-y, 0px))
     scale(var(--frame-scale, var(--img-zoom, 1)));
-  transition: transform 500ms ease-out;
+  transition: transform 480ms var(--ease-out), opacity 0.45s ease;
+}
+.frame-img.img-loaded {
+  opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {

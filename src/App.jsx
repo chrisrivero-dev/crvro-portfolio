@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
 import Projects from "./components/Projects.jsx";
@@ -8,6 +8,25 @@ import Contact from "./components/Contact.jsx";
 import Footer from "./components/Footer.jsx";
 import CaseStudy from "./components/CaseStudy.jsx";
 import { PROJECTS } from "./data/projects.js";
+
+function useTheme() {
+  const [theme, setTheme] = useState(
+    () => document.documentElement.getAttribute("data-theme") || "light"
+  );
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => {
+      const next = prev === "dark" ? "light" : "dark";
+      document.documentElement.classList.add("theme-transitioning");
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+      setTimeout(() => document.documentElement.classList.remove("theme-transitioning"), 400);
+      return next;
+    });
+  }, []);
+
+  return [theme, toggleTheme];
+}
 
 function usePathRoute() {
   const [path, setPath] = useState(() => window.location.pathname || "/");
@@ -67,13 +86,14 @@ export default function App() {
   const path = usePathRoute();
   const route = parseRoute(path);
   const [activeId, setActiveId] = useState("work");
+  const [theme, toggleTheme] = useTheme();
 
   // Scroll to top whenever a route change happens (case ↔ home)
   useEffect(() => {
     if (route.kind === "case") window.scrollTo({ top: 0, behavior: "instant" });
   }, [route.kind, route.kind === "case" ? route.project.slug : null]);
 
-  // Scrollspy + reveal — only attach when home is mounted
+  // Scrollspy + staggered reveal — home page
   useEffect(() => {
     if (route.kind !== "home") return;
     const ids = ["work", "about", "skills", "contact"];
@@ -84,25 +104,65 @@ export default function App() {
     );
     sections.forEach((s) => obs.observe(s));
 
+    // Staggered reveal: elements inside [data-stagger] fire together with delays
+    const firedGroups = new Set();
     const revealObs = new IntersectionObserver(
-      (entries) =>
+      (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            revealObs.unobserve(e.target);
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          const group = el.closest("[data-stagger]");
+          if (group) {
+            if (firedGroups.has(group)) return;
+            firedGroups.add(group);
+            Array.from(group.querySelectorAll(".reveal")).forEach((child, i) => {
+              child.style.setProperty("--reveal-delay", `${i * 55}ms`);
+              child.classList.add("visible");
+              revealObs.unobserve(child);
+            });
+          } else {
+            el.classList.add("visible");
+            revealObs.unobserve(el);
           }
-        }),
-      { threshold: 0.08 }
+        });
+      },
+      { threshold: 0.06 }
     );
     document.querySelectorAll(".reveal").forEach((el) => revealObs.observe(el));
 
     return () => { obs.disconnect(); revealObs.disconnect(); };
   }, [route.kind]);
 
+  // Subtle parallax — runs on all pages, lightweight rAF-based
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let rafId;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        document.querySelectorAll("[data-parallax]").forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const centerOffset = (rect.top + rect.height / 2) - window.innerHeight / 2;
+          const factor = parseFloat(el.dataset.parallax) || 0.04;
+          const raw = centerOffset * factor;
+          // Clamp to ±36px so off-screen elements don't have jarring pre-offset
+          const py = Math.max(-36, Math.min(36, raw));
+          el.style.setProperty("--py", `${py}px`);
+        });
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   if (route.kind === "case") {
     return (
       <>
-        <Header activeId={null} />
+        <Header activeId={null} theme={theme} onToggleTheme={toggleTheme} />
         <CaseStudy project={route.project} />
         <Footer />
       </>
@@ -111,7 +171,7 @@ export default function App() {
 
   return (
     <>
-      <Header activeId={activeId} />
+      <Header activeId={activeId} theme={theme} onToggleTheme={toggleTheme} />
       <main>
         <Hero />
         <Projects />

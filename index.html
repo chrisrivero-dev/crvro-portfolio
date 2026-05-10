@@ -11,6 +11,17 @@
     <meta property="og:type" content="website" />
   </head>
   <body>
+    <script>
+      (function () {
+        var stored = localStorage.getItem('theme');
+        var theme = stored
+          ? stored
+          : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

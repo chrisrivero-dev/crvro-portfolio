@@ -8,7 +8,7 @@ const links = [
   { id: "contact", n: "04", label: "contact" },
 ];
 
-export default function Header({ activeId }) {
+export default function Header({ activeId, theme, onToggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -26,9 +26,6 @@ export default function Header({ activeId }) {
           <span className="top">crvro.com · Portfolio</span>
           <span className="name">Christopher Rivero</span>
         </a>
-        <button className="menu-btn" aria-label={open ? "close menu" : "open menu"} onClick={() => setOpen((o) => !o)}>
-          <Icon name={open ? "close" : "menu"} size={22} />
-        </button>
         <nav className={"site-nav" + (open ? " open" : "")}>
           {links.map((l) => (
             <a key={l.id} href={"#" + l.id} className={activeId === l.id ? "active" : ""} onClick={() => setOpen(false)}>
@@ -36,6 +33,18 @@ export default function Header({ activeId }) {
             </a>
           ))}
         </nav>
+        <div className="header-controls">
+          <button
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <Icon name={theme === "dark" ? "sun" : "moon"} size={15} stroke={1.5} />
+          </button>
+          <button className="menu-btn" aria-label={open ? "close menu" : "open menu"} onClick={() => setOpen((o) => !o)}>
+            <Icon name={open ? "close" : "menu"} size={22} />
+          </button>
+        </div>
       </div>
     </header>
   );

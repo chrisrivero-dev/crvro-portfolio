@@ -6,14 +6,14 @@ export default function Projects() {
   return (
     <section className="work" id="work" data-screen-label="02 Work">
       <div className="container-wide">
-        <div className="section-head">
+        <div className="section-head reveal">
           <div className="index">§ 01 — Selected Work</div>
           <div className="h">Four things I built <em>because I wanted them to exist.</em></div>
         </div>
-        <ul className="project-list">
+        <ul className="project-list" data-stagger>
           {PROJECTS.map((p) => (
             <li key={p.id} style={{ listStyle: "none" }}>
-              <a className="project-row" href={"/projects/" + p.slug} data-screen-label={"Project " + p.slug}>
+              <a className="project-row reveal" href={"/projects/" + p.slug} data-screen-label={"Project " + p.slug}>
                 <span className="idx">{p.n}</span>
                 <span className="mark-cell"><ProjectMark shape={p.shape} color={p.accent} /></span>
                 <span className="info">

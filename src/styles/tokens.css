@@ -67,13 +67,64 @@
   --shadow-popover: 0 4px 16px rgba(32,33,36,0.08), 0 1px 2px rgba(32,33,36,0.06);
 
   /* ─── Motion ────────────────────────────────────────── */
-  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms;
-  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 120ms; --dur-base: 200ms; --dur-slow: 320ms; --dur-reveal: 720ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ─── Layout widths ─────────────────────────────────── */
   --w-prose: 680px;
   --w-content: 1080px;
   --w-canvas: 1240px;
+}
+
+/* ─── Dark mode tokens ──────────────────────────────────── */
+[data-theme="dark"] {
+  --paper:       #1a1917;   /* warm off-black — not cold */
+  --paper-2:     #221f1c;
+  --paper-3:     #2b2824;
+  --ink:         #e4dfd6;   /* warm off-white */
+  --graphite:    #9c9890;
+  --pencil:      #6a6660;
+  --rule:        #2f2c28;
+  --rule-strong: #3d3935;
+
+  --amber:       #8faab8;   /* slightly brighter in dark */
+  --amber-deep:  #7b9aaa;
+  --accent-gold: #c09455;   /* warmer brass on dark */
+
+  --fg-1:        var(--ink);
+  --fg-2:        var(--graphite);
+  --fg-3:        var(--pencil);
+  --fg-accent:   var(--amber);
+  --bg-1:        var(--paper);
+  --bg-2:        var(--paper-2);
+  --bg-3:        var(--paper-3);
+  --border-1:    var(--rule);
+  --border-2:    var(--rule-strong);
+  --border-strong: var(--ink);
+
+  --shadow-popover: 0 4px 24px rgba(0,0,0,0.28), 0 1px 3px rgba(0,0,0,0.18);
+}
+
+/* Smooth theme transitions — only active during the switch */
+html.theme-transitioning,
+html.theme-transitioning body,
+html.theme-transitioning .site-header,
+html.theme-transitioning .site-footer,
+html.theme-transitioning .project-row,
+html.theme-transitioning .section-head,
+html.theme-transitioning code,
+html.theme-transitioning kbd,
+html.theme-transitioning .architecture,
+html.theme-transitioning .cta-card,
+html.theme-transitioning .case-figure .frame,
+html.theme-transitioning .mockup {
+  transition:
+    background-color 0.35s ease,
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease !important;
 }
 
 /* ─── Element-level styles ─────────────────────────────── */
