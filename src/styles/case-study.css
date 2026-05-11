@@ -512,6 +512,12 @@
   }
 }
 
+/* Supporting image — portrait mobile screenshots shown at phone width */
+.figure-single--narrow {
+  max-width: 380px;
+  margin: 0 auto;
+}
+
 /* ── Mockup cards (tool-router · audit-log) ─────────── */
 .mockup {
   width: 86%;

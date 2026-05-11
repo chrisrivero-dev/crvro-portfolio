@@ -339,28 +339,68 @@ export default function CaseStudy({ project: p }) {
       </Section>
 
       {/* ── secondary screenshots ───────────────────────── */}
-      {p.screenshots && p.screenshots.length > 1 && (
-        <div className="container-wide case-figure-wrap" data-parallax="0.025">
-          <div className="figure-grid">
-            {p.screenshots.slice(1, 3).map((s, i) => (
-              <ImageBlock
-                key={i}
-                label={s.label}
-                caption={s.caption}
-                image={s.image}
-                images={s.images}
-                mockup={s.mockup}
-                ratio={s.ratio || '4 / 3'}
-                fit={s.fit || 'cover'}
-                position={s.position || 'center center'}
-                zoom={s.zoom || 1}
-                hoverScale={s.hoverScale}
-                panOnHover={s.panOnHover}
-              />
-            ))}
+      {p.screenshots && p.screenshots.length > 1 && (() => {
+        const pair = p.screenshots.slice(1, 3);
+        if (pair.some((s) => s.fullWidth)) {
+          return pair.map((s, i) => (
+            <div key={i} className="container-wide case-figure-wrap" data-parallax="0.025">
+              {s.fullWidth ? (
+                <ImageBlock
+                  label={s.label}
+                  caption={s.caption}
+                  image={s.image}
+                  images={s.images}
+                  mockup={s.mockup}
+                  ratio={s.ratio || '16 / 9'}
+                  fit={s.fit || 'contain'}
+                  position={s.position || 'center center'}
+                  zoom={s.zoom || 1}
+                  hoverScale={s.hoverScale}
+                  panOnHover={s.panOnHover}
+                />
+              ) : (
+                <div className="figure-single--narrow">
+                  <ImageBlock
+                    label={s.label}
+                    caption={s.caption}
+                    image={s.image}
+                    images={s.images}
+                    mockup={s.mockup}
+                    ratio={s.ratio || '3 / 4'}
+                    fit={s.fit || 'contain'}
+                    position={s.position || 'center top'}
+                    zoom={s.zoom || 1}
+                    hoverScale={s.hoverScale}
+                    panOnHover={s.panOnHover}
+                  />
+                </div>
+              )}
+            </div>
+          ));
+        }
+        return (
+          <div className="container-wide case-figure-wrap" data-parallax="0.025">
+            <div className="figure-grid">
+              {pair.map((s, i) => (
+                <ImageBlock
+                  key={i}
+                  label={s.label}
+                  caption={s.caption}
+                  image={s.image}
+                  images={s.images}
+                  mockup={s.mockup}
+                  ratio={s.ratio || '4 / 3'}
+                  fit={s.fit || 'cover'}
+                  position={s.position || 'center center'}
+                  zoom={s.zoom || 1}
+                  hoverScale={s.hoverScale}
+                  panOnHover={s.panOnHover}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── tech stack ─────────────────────────────────── */}
       <Section index="05" label="Tech stack" title="Tools I reached for.">
