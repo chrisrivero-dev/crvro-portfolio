@@ -340,14 +340,15 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label: 'REJECTION SUMMARY',
+        label: 'Trade intelligence dashboard showing successful edge alerts, realized PnL, return percentages, edge scoring, and market-family attribution across historical trades.',
         caption:
-          'Telegram diagnostic summary showing how scanned markets moved through the pipeline, including pre-filter counts, rejection reasons, and would-place versus placed counts.',
-        image: '/images/predmkt-telegram-rejection-summary.jpg',
-        ratio: '3 / 4',
+          'Local trade intelligence dashboard tracking successful edge alerts, realized PnL, return percentages, market-family attribution, and edge validation patterns to help separate durable signals from noisy trades.',
+        image: '/images/successful-edge-alerts-dashboard.png',
+        ratio: '16 / 9',
         fit: 'contain',
-        position: 'center top',
+        position: 'center center',
         zoom: 1,
+        fullWidth: true,
       },
       {
         label: 'DAILY SUMMARY',
