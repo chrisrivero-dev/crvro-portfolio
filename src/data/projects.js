@@ -20,9 +20,9 @@ export const PROJECTS = [
     accent: 'var(--terracotta)',
     shape: 'circle',
     role: 'Collaborative build — frontend, product flow, and implementation',
-    status: 'Working prototype · not currently deployed',
+    status: 'Live prototype',
     repo: null,
-    demo: null,
+    demo: 'https://helpnearby.co/',
     overview: [
       'Help Nearby is a lightweight resource finder for local aid services. A user can search by ZIP code, choose a category like housing, food, safety, or finance, and view practical resource details such as eligibility, how to apply, and what to bring.',
       'The current version focuses on a simple browser-based experience with no login, bilingual UI support, and clear next steps for people who need help quickly.',
@@ -330,7 +330,8 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label: 'Kalshi trade intelligence dashboard with portfolio metrics, PnL charts, drawdown analysis, market-family performance, and trade timeline visualization.',
+        label:
+          'Kalshi trade intelligence dashboard with portfolio metrics, PnL charts, drawdown analysis, market-family performance, and trade timeline visualization.',
         caption:
           'Live trade intelligence dashboard showing portfolio metrics, PnL tracking, market-family performance, drawdown analysis, and trade timeline instrumentation across active trading sessions.',
         image: '/images/kalshi-trade-intelligence-dashboard.png',
@@ -340,7 +341,8 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label: 'Trade intelligence dashboard showing successful edge alerts, realized PnL, return percentages, edge scoring, and market-family attribution across historical trades.',
+        label:
+          'Trade intelligence dashboard showing successful edge alerts, realized PnL, return percentages, edge scoring, and market-family attribution across historical trades.',
         caption:
           'Local trade intelligence dashboard tracking successful edge alerts, realized PnL, return percentages, market-family attribution, and edge validation patterns to help separate durable signals from noisy trades.',
         image: '/images/successful-edge-alerts-dashboard.png',
@@ -418,12 +420,12 @@ export const PROJECTS = [
     demo: null,
     overview: [
       "OpenClaw is the assistant I actually use for small personal workflows. It runs from my own environment, listens through a private Telegram bot, and turns short messages like \u201Cremind me Tuesday morning,\u201D \u201Cfile this receipt,\u201D or \u201Csummarize today's notes\u201D into controlled tool actions.",
-      "The important part is not that every piece is offline. The important part is that execution and data handling stay under my control. OpenClaw can use local inference through Ollama or selective cloud inference when a workflow needs it, but the system is designed so the model does not get unrestricted access to my files, calendars, or services.",
+      'The important part is not that every piece is offline. The important part is that execution and data handling stay under my control. OpenClaw can use local inference through Ollama or selective cloud inference when a workflow needs it, but the system is designed so the model does not get unrestricted access to my files, calendars, or services.',
       'Inference suggests the action. Typed tools do the work. Anything with side effects goes through a dry-run and confirmation step before it runs.',
     ],
     problem: [
-      "Cloud assistants are convenient and uncomfortable in equal measure. The convenience is real: a phone-friendly interface to your own data is a force multiplier. The discomfort is also real: the more useful the assistant becomes, the more context it usually needs.",
-      "I wanted a version that felt useful without handing over the whole control loop. The goal was not to build a broad \u201Cdo anything\u201D AI assistant. The goal was to build a narrow orchestration layer with well-defined tools, confirmation gates, and an audit trail.",
+      'Cloud assistants are convenient and uncomfortable in equal measure. The convenience is real: a phone-friendly interface to your own data is a force multiplier. The discomfort is also real: the more useful the assistant becomes, the more context it usually needs.',
+      'I wanted a version that felt useful without handing over the whole control loop. The goal was not to build a broad \u201Cdo anything\u201D AI assistant. The goal was to build a narrow orchestration layer with well-defined tools, confirmation gates, and an audit trail.',
       'The bet was simple: a narrow assistant with crisp tools beats a broad assistant with vague execution.',
     ],
     built: [
@@ -509,7 +511,7 @@ export const PROJECTS = [
       'Confirmation is not friction. It is the safety layer that makes side-effecting automation feel trustworthy.',
       'Inference and execution should be separate. The model can suggest the action, but typed tools should own the actual state change.',
       'Local models are useful for routing and short generation, but the system should not depend on pretending they can reason through everything. The architecture works because the tools are constrained.',
-      "Owning the data round-trip changes how you use the tool. I write to OpenClaw more like a notebook or command line than a chat product.",
+      'Owning the data round-trip changes how you use the tool. I write to OpenClaw more like a notebook or command line than a chat product.',
       'The audit log matters. Once every command, proposed action, approval, and result is recorded, debugging becomes possible.',
     ],
     next: [
