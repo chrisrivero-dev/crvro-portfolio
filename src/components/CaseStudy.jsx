@@ -419,28 +419,65 @@ export default function CaseStudy({ project: p }) {
       </Section>
 
       {/* ── remaining screenshots ───────────────────────── */}
-      {p.screenshots && p.screenshots.length > 3 && (
-        <div className="container-wide case-figure-wrap" data-parallax="0.025">
-          <div className="figure-grid">
-            {p.screenshots.slice(3).map((s, i) => (
-              <ImageBlock
-                key={i}
-                label={s.label}
-                caption={s.caption}
-                image={s.image}
-                images={s.images}
-                mockup={s.mockup}
-                ratio={s.ratio || '4 / 3'}
-                fit={s.fit || 'cover'}
-                position={s.position || 'center center'}
-                zoom={s.zoom || 1}
-                hoverScale={s.hoverScale}
-                panOnHover={s.panOnHover}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {p.screenshots && p.screenshots.length > 3 && (() => {
+        const rest = p.screenshots.slice(3);
+        const groups = [];
+        let currentGrid = [];
+        for (const s of rest) {
+          if (s.fullWidth) {
+            if (currentGrid.length > 0) { groups.push({ type: 'grid', items: currentGrid }); currentGrid = []; }
+            groups.push({ type: 'full', item: s });
+          } else {
+            currentGrid.push(s);
+          }
+        }
+        if (currentGrid.length > 0) groups.push({ type: 'grid', items: currentGrid });
+
+        return groups.map((group, i) => {
+          if (group.type === 'full') {
+            const s = group.item;
+            return (
+              <div key={i} className="container-wide case-figure-wrap" data-parallax="0.025">
+                <ImageBlock
+                  label={s.label}
+                  caption={s.caption}
+                  image={s.image}
+                  images={s.images}
+                  mockup={s.mockup}
+                  ratio={s.ratio || '16 / 9'}
+                  fit={s.fit || 'contain'}
+                  position={s.position || 'center center'}
+                  zoom={s.zoom || 1}
+                  hoverScale={s.hoverScale}
+                  panOnHover={s.panOnHover}
+                />
+              </div>
+            );
+          }
+          return (
+            <div key={i} className="container-wide case-figure-wrap" data-parallax="0.025">
+              <div className="figure-grid">
+                {group.items.map((s, j) => (
+                  <ImageBlock
+                    key={j}
+                    label={s.label}
+                    caption={s.caption}
+                    image={s.image}
+                    images={s.images}
+                    mockup={s.mockup}
+                    ratio={s.ratio || '4 / 3'}
+                    fit={s.fit || 'cover'}
+                    position={s.position || 'center center'}
+                    zoom={s.zoom || 1}
+                    hoverScale={s.hoverScale}
+                    panOnHover={s.panOnHover}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        });
+      })()}
 
       {/* ── what I learned ─────────────────────────────── */}
       <Section
