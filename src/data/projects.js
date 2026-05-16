@@ -363,10 +363,10 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label: 'EDGE VALIDATION TABLE',
+        label: 'Kalshi dashboard showing edge candidate gates, expired candidates, and data quality logging gaps.',
         caption:
-          'Terminal output comparing expected edge against realized outcomes before increasing risk.',
-        image: '/images/predmkt-edge-validation-table.png',
+          'Dashboard view showing candidate gating, blocked trade conditions, and data-quality gaps used to separate valid edge signals from incomplete or noisy records.',
+        image: '/images/kalshi-edge-gates-dashboard.png',
         ratio: '16 / 9',
         fit: 'contain',
         position: 'center top',
