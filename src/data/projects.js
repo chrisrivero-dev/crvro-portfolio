@@ -291,12 +291,12 @@ export const PROJECTS = [
       'Trade and order logging so accepted decisions can be reviewed after settlement.',
       'Candidate and rejection diagnostics so no-trade cycles are still useful data, not silent gaps.',
       'Post-trade analysis that compares expected edge against realized outcomes by family, spread bucket, EV bucket, and price range.',
-      'Telegram and log hooks for visibility into scan behavior and blocked trades.',
+      'Telegram notifications and diagnostic logging for visibility into scan behavior, blocked trades, and rejection patterns.',
     ],
     features: [
       'Market-family filtering with allow/block logic',
       'Spread, EV, liquidity, and price-band checks per candidate',
-      'Cheap-snipe logic for specific families where appropriate',
+      'Family-specific entry rules for low-cost opportunities',
       'Cooldowns and safety gates to avoid repeated bad entries',
       'Candidate logging, rejection reasons, and order/trade records',
       'Post-trade review by family, spread bucket, EV bucket, and price range',
@@ -330,8 +330,7 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label:
-          'Kalshi trade intelligence dashboard with portfolio metrics, PnL charts, drawdown analysis, market-family performance, and trade timeline visualization.',
+        label: 'Kalshi trade intelligence dashboard',
         caption:
           'Live trade intelligence dashboard showing portfolio metrics, PnL tracking, market-family performance, drawdown analysis, and trade timeline instrumentation across active trading sessions.',
         image: '/images/kalshi-trade-intelligence-dashboard.png',
@@ -341,8 +340,7 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label:
-          'Trade intelligence dashboard showing successful edge alerts, realized PnL, return percentages, edge scoring, and market-family attribution across historical trades.',
+        label: 'Successful edge alerts dashboard',
         caption:
           'Local trade intelligence dashboard tracking successful edge alerts, realized PnL, return percentages, market-family attribution, and edge validation patterns to help separate durable signals from noisy trades.',
         image: '/images/successful-edge-alerts-dashboard.png',
@@ -363,7 +361,7 @@ export const PROJECTS = [
         zoom: 1,
       },
       {
-        label: 'Kalshi dashboard showing edge candidate gates, expired candidates, and data quality logging gaps.',
+        label: 'Kalshi edge candidate gates and data quality dashboard',
         caption:
           'Dashboard view showing candidate gating, blocked trade conditions, and data-quality gaps used to separate valid edge signals from incomplete or noisy records.',
         image: '/images/kalshi-edge-gates-dashboard.png',
@@ -374,7 +372,7 @@ export const PROJECTS = [
         fullWidth: true,
       },
       {
-        label: 'Kalshi market flow research dashboard showing OBI flow candidates, strategy-source attribution, and trader research notes.',
+        label: 'Kalshi market flow research dashboard',
         caption:
           'Market flow research dashboard showing OBI flow candidates, strategy-source attribution, and trader research notes used to review whether order-book signals are producing durable edge.',
         image: '/images/kalshi-market-flow-research-dashboard.png',
