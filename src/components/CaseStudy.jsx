@@ -228,6 +228,7 @@ export default function CaseStudy({ project: p }) {
               <div className="meta-grid">
                 <MetaRow label="Role" value={p.role} />
                 <MetaRow label="Status" value={p.status} />
+                {p.outcome && <MetaRow label="Outcome" value={p.outcome} />}
 
                 {p.repo && (
                   <MetaRow

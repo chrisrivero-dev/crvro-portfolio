@@ -21,6 +21,7 @@ export const PROJECTS = [
     shape: 'circle',
     role: 'Collaborative build — frontend, product flow, and implementation',
     status: 'Live prototype',
+    outcome: 'Working live prototype with ZIP/category search, bilingual UI support, and practical resource detail flows.',
     repo: null,
     demo: 'https://helpnearby.co/',
     overview: [
@@ -129,6 +130,7 @@ export const PROJECTS = [
     shape: 'half',
     role: 'Solo build — design, backend, frontend, KB workflow',
     status: 'Active project · deployed on Railway',
+    outcome: 'Functional support-assistant prototype that grounds draft replies in a local knowledge base and keeps human review in the loop.',
     repo: null,
     demo: null,
     overview: [
@@ -273,6 +275,7 @@ export const PROJECTS = [
     shape: 'arc',
     role: 'Solo build — data engineering, automation, research',
     status: 'Personal research project',
+    outcome: 'Local research dashboard and logging system for comparing expected edge against realized outcomes before scaling risk.',
     disclaimer:
       'Predmkt Bot is a personal research and automation project. It is for educational and data-engineering purposes only. Nothing in this case study is financial advice or a recommendation to trade any market.',
     repo: null,
@@ -416,6 +419,7 @@ export const PROJECTS = [
     shape: 'stack',
     role: 'Solo build — automation, tool orchestration, local-first systems',
     status: 'Personal tool · used regularly',
+    outcome: 'Local-first automation assistant with Telegram-triggered workflows, dry-run previews, and confirmation gates across files, calendars, and notes.',
     repo: null,
     demo: null,
     overview: [
