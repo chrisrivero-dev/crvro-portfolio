@@ -411,7 +411,7 @@ export const PROJECTS = [
     kind: 'Local AI',
     year: '2025 — present',
     desc: 'A local-first command system. Telegram-triggered, controlled tool execution with dry-run and confirmation gates across files, calendars, and notes.',
-    tags: ['python · ollama · telegram'],
+    tags: ['python · llm api · telegram'],
     accent: 'var(--plum)',
     shape: 'stack',
     role: 'Solo build — automation, tool orchestration, local-first systems',
