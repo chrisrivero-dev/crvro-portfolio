@@ -72,10 +72,11 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label: 'HELP RESULTS VIEW',
+        label: 'HOMEPAGE DASHBOARD',
         caption:
-          'ZIP search, category filters, expanded resource details, and checklist guidance in one user-facing view.',
-        image: '/images/help-results-view.png',
+          'Homepage dashboard showing ZIP-based search, urgent local updates, emergency alerts, nearby resources, and a map-based get-there panel in one user-facing flow.',
+        image: '/images/help-nearby-home-dashboard.png',
+        alt: 'Help Nearby homepage dashboard with ZIP search, urgent updates, emergency alerts, nearby help resources, and map navigation panel.',
         ratio: '16 / 9',
         fit: 'contain',
         position: 'center center',
