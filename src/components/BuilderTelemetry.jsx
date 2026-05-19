@@ -1,11 +1,5 @@
 import React from "react";
-
-const SIGNALS = [
-  { state: "ACTIVE", name: "Sidecar", note: "build" },
-  { state: "RESEARCH", name: "Predmkt", note: "edge validation" },
-  { state: "LIVE", name: "Help Nearby", note: "prototype" },
-  { state: "ITERATING", name: "OpenClaw", note: "local-first" },
-];
+import BuilderLog from "./BuilderLog.jsx";
 
 const INVESTIGATING = [
   "support AI reliability",
@@ -18,18 +12,7 @@ export default function BuilderTelemetry() {
   return (
     <section className="telemetry" aria-label="Builder telemetry" data-screen-label="01b Telemetry">
       <div className="container-wide">
-        <div className="tele-strip reveal">
-          <span className="tele-strip-label">Status signals</span>
-          <ul className="tele-strip-list">
-            {SIGNALS.map((s) => (
-              <li key={s.name} className="tele-signal">
-                <span className={`tele-state state-${s.state.toLowerCase()}`}>[{s.state}]</span>
-                <span className="tele-name">{s.name}</span>
-                <span className="tele-note">— {s.note}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <BuilderLog />
 
         <div className="tele-grid" data-stagger>
           <div className="tele-block reveal">

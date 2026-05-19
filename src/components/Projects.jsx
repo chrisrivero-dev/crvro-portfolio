@@ -8,7 +8,7 @@ export default function Projects() {
       <div className="container-wide">
         <div className="section-head reveal">
           <div className="index">§ 01 — Selected Work</div>
-          <div className="h">Four things I built <em>because I wanted them to exist.</em></div>
+          <div className="h">A few systems I built, <em>turning ideas into working tools.</em></div>
         </div>
         <ul className="project-list" data-stagger>
           {PROJECTS.map((p) => (
@@ -21,6 +21,7 @@ export default function Projects() {
                   <p className="desc">{p.desc}</p>
                 </span>
                 <span className="meta-cell">
+                  {p.statusBadge && <span className="proj-status">{p.statusBadge}</span>}
                   <span className="kind">{p.kind}</span>
                   <span className="yr">{p.year}</span>
                   <span className="tags">{p.tags[0]}</span>
