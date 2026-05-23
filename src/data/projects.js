@@ -413,7 +413,7 @@ export const PROJECTS = [
     id: 'openclaw',
     slug: 'openclaw',
     n: '04',
-    title: 'OpenClaw',
+    title: 'OpenClaw / Hermes',
     titleEm: '— local-first automation assistant for controlled workflows.',
     kind: 'Local AI',
     year: '2025 — present',
@@ -428,8 +428,8 @@ export const PROJECTS = [
     repo: null,
     demo: null,
     overview: [
-      "OpenClaw is the assistant I actually use for small personal workflows. It runs from my own environment, listens through a private Telegram bot, and turns short messages like \u201Cremind me Tuesday morning,\u201D \u201Cfile this receipt,\u201D or \u201Csummarize today's notes\u201D into controlled tool actions.",
-      'The important part is not that every piece is offline. The important part is that execution and data handling stay under my control. OpenClaw can use local inference through Ollama or selective cloud inference when a workflow needs it, but the system is designed so the model does not get unrestricted access to my files, calendars, or services.',
+      "OpenClaw is a local-first automation assistant for small recurring workflows. It runs on top of Hermes \u2014 a local gateway/control environment that sits between a private Telegram bot, model calls, and a typed set of execution tools. Short messages like \u201Cremind me Tuesday morning,\u201D \u201Cfile this receipt,\u201D or \u201Csummarize today's notes\u201D become controlled, audited tool actions.",
+      'Hermes is the control plane: it brokers Telegram input, routes LLM/API inference selectively when a workflow needs it, and enforces that every side-effecting action goes through typed tool schemas, dry-run preview, and confirmation. Not every piece is offline \u2014 the goal is that execution and data handling stay under local control, and that the model never gets unrestricted access to files, calendars, or services.',
       'Inference suggests the action. Typed tools do the work. Anything with side effects goes through a dry-run and confirmation step before it runs.',
     ],
     problem: [
@@ -438,9 +438,10 @@ export const PROJECTS = [
       'The bet was simple: a narrow assistant with crisp tools beats a broad assistant with vague execution.',
     ],
     built: [
-      'A private Telegram front-end for sending quick commands from my phone.',
+      'A private Telegram front-end as the mobile command interface.',
+      'A local Hermes gateway that brokers Telegram input, inference calls, and tool execution from a single controlled environment.',
       'A routing layer that classifies intent, extracts tool arguments, and decides which workflow should run.',
-      'Selective inference support: local models through Ollama for lightweight routing and short generation, with cloud inference available for workflows that need stronger reasoning.',
+      'Selective LLM/API inference — cloud models for stronger reasoning, with optional local model support for lightweight routing or short generation.',
       'A Python tool layer for actions like calendar creation, note appending, file movement, receipt processing, and daily summaries.',
       'Typed tool schemas so bad or incomplete arguments get rejected before execution.',
       'A dry-run mode that shows the planned action before anything changes.',
@@ -449,8 +450,9 @@ export const PROJECTS = [
     ],
     features: [
       'Telegram-triggered, mobile-first workflow control',
+      'Hermes local gateway brokering input, inference, and tool execution',
       'Local-first execution and data handling',
-      'Selective local or cloud inference depending on the workflow',
+      'Selective LLM/API inference with optional local model support',
       'Tool-based architecture — the model routes, typed tools execute',
       'Dry-run preview before side effects',
       'One-tap confirmation for actions that change files, calendars, or stored notes',
@@ -462,10 +464,10 @@ export const PROJECTS = [
       {
         group: 'AI / routing',
         items: [
-          'Ollama',
-          'Local model routing where useful',
-          'Selective OpenAI API usage where stronger reasoning is needed',
+          'Hermes local gateway',
+          'OpenAI API / LLM API routing',
           'Custom router prompts',
+          'Optional local model support',
         ],
       },
       {
@@ -519,8 +521,8 @@ export const PROJECTS = [
       'A narrow tool surface is the secret. Ten well-defined tools beat one vague general-purpose assistant.',
       'Confirmation is not friction. It is the safety layer that makes side-effecting automation feel trustworthy.',
       'Inference and execution should be separate. The model can suggest the action, but typed tools should own the actual state change.',
-      'Local models are useful for routing and short generation, but the system should not depend on pretending they can reason through everything. The architecture works because the tools are constrained.',
-      'Owning the data round-trip changes how you use the tool. I write to OpenClaw more like a notebook or command line than a chat product.',
+      'Local models are useful for routing and short generation, but the architecture should not depend on pretending they can reason through everything. The system works because the tools are constrained and a gateway sits in front of them.',
+      'Owning the data round-trip changes how the tool feels in daily use — closer to a notebook or command line than a chat product.',
       'The audit log matters. Once every command, proposed action, approval, and result is recorded, debugging becomes possible.',
     ],
     next: [
