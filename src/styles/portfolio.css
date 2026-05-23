@@ -318,10 +318,7 @@ button { font: inherit; cursor: pointer; }
 
 /* Place the trace above content where they overlap is harmless,
    but keep typography readable on smaller viewports. */
-@media (max-width: 1000px) {
-  .hero-trace { width: clamp(320px, 50vw, 420px); bottom: -16px; opacity: 0.85; }
-}
-@media (max-width: 720px) {
+@media (max-width: 1024px) {
   .hero-trace { display: none; }
 }
 
