@@ -244,6 +244,91 @@ button { font: inherit; cursor: pointer; }
   .hero .marker { animation: none; }
 }
 
+/* ─── Hero system trace ──────────────────────────────────── */
+.hero { position: relative; }
+.hero .container-wide { position: relative; }
+
+.hero-trace {
+  position: absolute;
+  right: 0;
+  bottom: -24px;
+  width: clamp(360px, 38vw, 520px);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(var(--tx, 0), var(--ty, 0));
+  transition: transform 600ms var(--ease-out);
+  opacity: 0;
+  animation: trace-fade-in 1.4s var(--ease-out) 0.9s forwards;
+}
+.hero-trace svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+.trace-path {
+  stroke: var(--pencil);
+  stroke-width: 1;
+  opacity: 0.42;
+  stroke-dasharray: 2 4;
+}
+
+.trace-node-dot {
+  fill: var(--graphite);
+  opacity: 0.55;
+}
+.trace-node-ring {
+  fill: none;
+  stroke: var(--pencil);
+  stroke-width: 0.8;
+  opacity: 0.3;
+}
+.trace-label {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--graphite);
+  opacity: 0.55;
+}
+
+.trace-signal-dot {
+  fill: var(--accent-gold);
+  filter: drop-shadow(0 0 3px rgba(154, 122, 63, 0.55));
+  animation: trace-pulse 2.4s ease-in-out infinite;
+}
+.trace-signal-halo {
+  fill: var(--accent-gold);
+  opacity: 0.12;
+  animation: trace-halo 2.4s ease-in-out infinite;
+}
+
+@keyframes trace-fade-in {
+  to { opacity: 1; }
+}
+@keyframes trace-pulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); transform-box: fill-box; transform-origin: center; }
+  50%      { opacity: 0.55; }
+}
+@keyframes trace-halo {
+  0%, 100% { opacity: 0.08; }
+  50%      { opacity: 0.22; }
+}
+
+/* Place the trace above content where they overlap is harmless,
+   but keep typography readable on smaller viewports. */
+@media (max-width: 1000px) {
+  .hero-trace { width: clamp(320px, 50vw, 420px); bottom: -16px; opacity: 0.85; }
+}
+@media (max-width: 720px) {
+  .hero-trace { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-trace { transition: none; }
+  .trace-signal-dot,
+  .trace-signal-halo { animation: none; }
+  .trace-signal-dot animateMotion,
+  .trace-signal-halo animateMotion { /* SMIL respects prefers-reduced-motion in some UAs */ }
+  .trace-signal { display: none; }
+}
+
 /* ─────────────────────────────────────────────────────────
    SECTION HEADER (shared across work/about/skills/contact)
    ───────────────────────────────────────────────────────── */

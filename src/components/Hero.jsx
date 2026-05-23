@@ -1,4 +1,5 @@
 import React from 'react';
+import HeroSystemTrace from './HeroSystemTrace.jsx';
 
 export default function Hero() {
   return (
@@ -36,6 +37,7 @@ export default function Hero() {
             </a>
           </div>
         </div>
+        <HeroSystemTrace />
       </div>
     </section>
   );
