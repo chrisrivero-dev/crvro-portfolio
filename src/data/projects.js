@@ -84,11 +84,11 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label: 'HOMEPAGE DASHBOARD',
+        label: 'INCIDENT MODE DASHBOARD',
         caption:
-          'Homepage dashboard showing ZIP-based search, urgent local updates, emergency alerts, nearby resources, and a map-based get-there panel in one user-facing flow.',
-        image: '/images/help-nearby-home-dashboard.png',
-        alt: 'Help Nearby homepage dashboard with ZIP search, urgent updates, emergency alerts, nearby help resources, and map navigation panel.',
+          'Incident Mode dashboard showing a Garden Grove chemical tank incident alongside ZIP-based discovery, official-source guidance, nearby resources, and location-aware help context.',
+        image: '/images/help-nearby-incident-mode-dashboard.png',
+        alt: 'Help Nearby Incident Mode dashboard showing Garden Grove chemical tank incident, ZIP search, official update links, and nearby resource listings.',
         ratio: '16 / 9',
         fit: 'contain',
         position: 'center center',
@@ -96,22 +96,16 @@ export const PROJECTS = [
         panOnHover: true,
       },
       {
-        label: 'Search results — map view',
+        label: 'RESOURCE DISCOVERY',
         caption:
-          'Interactive Help Nearby map interface for finding local resources.',
-        image: '/images/help-nearby-map.png',
+          'Resource discovery view showing nearby services, distance, source links, directions, and selected-resource map context.',
+        image: '/images/help-nearby-resource-map-flow.png',
+        alt: 'Help Nearby resource discovery screen with nearby service list, source links, directions, and selected-resource map.',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center center',
         hoverScale: 1.08,
         panOnHover: true,
-      },
-      {
-        label: 'RESOURCE DETAIL FLOW',
-        caption:
-          'Expanded guidance showing eligibility, how to apply, and what users should bring before contacting a resource.',
-        image: '/images/help-resource-detail-flow.png',
-        ratio: '16 / 9',
-        fit: 'cover',
-        position: 'center center',
-        zoom: 1,
       },
     ],
     learned: [
