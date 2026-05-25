@@ -51,7 +51,7 @@ function usePathRoute() {
       if (url.origin !== window.location.origin) return;
       e.preventDefault();
       if (url.pathname !== window.location.pathname || url.search !== window.location.search) {
-        window.history.pushState({}, "", url.pathname + url.search);
+        window.history.pushState({}, "", url.pathname + url.search + url.hash);
         setPath(url.pathname);
       }
       if (url.hash) {
@@ -93,6 +93,18 @@ export default function App() {
   useEffect(() => {
     if (route.kind === "case") window.scrollTo({ top: 0, behavior: "instant" });
   }, [route.kind, route.kind === "case" ? route.project.slug : null]);
+
+  // After navigating to home, scroll to the hash target (e.g. /#work from a project page)
+  useEffect(() => {
+    if (route.kind !== "home") return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const rafId = requestAnimationFrame(() => {
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [path]);
 
   // Scrollspy + staggered reveal — home page
   useEffect(() => {

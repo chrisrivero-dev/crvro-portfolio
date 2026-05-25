@@ -28,7 +28,7 @@ export default function Header({ activeId, theme, onToggleTheme }) {
         </a>
         <nav className={"site-nav" + (open ? " open" : "")}>
           {links.map((l) => (
-            <a key={l.id} href={"#" + l.id} className={activeId === l.id ? "active" : ""} onClick={() => setOpen(false)}>
+            <a key={l.id} href={"/#" + l.id} className={activeId === l.id ? "active" : ""} onClick={() => setOpen(false)}>
               <span className="num">{l.n}</span>{l.label}
             </a>
           ))}
