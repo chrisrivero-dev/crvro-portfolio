@@ -8,7 +8,7 @@ export default function Projects() {
       <div className="container-wide">
         <div className="section-head reveal">
           <div className="index">§ 01 — Selected Work</div>
-          <div className="h">A few systems I built, <em>turning ideas into working tools.</em></div>
+          <div className="h">A few systems I built around <em>support, automation, and decision workflows.</em></div>
         </div>
         <ul className="project-list" data-stagger>
           {PROJECTS.map((p) => (
