@@ -13,18 +13,19 @@ export default function Hero() {
           </div>
           <div>
             <h1>
-              A builder of <em>small, useful systems.</em>
+              I build internal tools for support teams and GIS workflows —{' '}
+              <em>from systems I've actually worked in.</em>
             </h1>
             <p className="lede">
-              Automation, AI support systems, and small data workflows. Software
-              that lives in a cron job, a Telegram bot, or a quiet python script
-              that saves hours, reduces mistakes, and makes repetitive work feel
-              manageable.
+              Draft assistants grounded in approved KB content, local
+              automation with confirmation gates and audit trails, and
+              workflow tools for mapping and procedural work. Built from
+              direct experience, not from the outside looking in.
             </p>
             <div className="meta-row">
               <span>
-                <span className="lab">Focus —</span>Automation · AI support ·
-                GIS / CAD
+                <span className="lab">Focus —</span>AI Support Systems · Workflow Automation ·
+                GIS / CAD Tooling
               </span>
               <span className="dot">·</span>
               <span>

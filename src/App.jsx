@@ -4,11 +4,12 @@ import Hero from "./components/Hero.jsx";
 import BuilderTelemetry from "./components/BuilderTelemetry.jsx";
 import Projects from "./components/Projects.jsx";
 import About from "./components/About.jsx";
+import GISProjects from "./components/GISProjects.jsx";
 import Skills from "./components/Skills.jsx";
 import Contact from "./components/Contact.jsx";
 import Footer from "./components/Footer.jsx";
 import CaseStudy from "./components/CaseStudy.jsx";
-import { PROJECTS } from "./data/projects.js";
+import { PROJECTS, GIS_PROJECTS } from "./data/projects.js";
 
 function useTheme() {
   const [theme, setTheme] = useState(
@@ -77,7 +78,9 @@ function parseRoute(path) {
   // /projects/<slug>  →  case study
   const m = path.match(/^\/projects\/([a-z0-9-]+)\/?$/i);
   if (m) {
-    const project = PROJECTS.find((p) => p.slug === m[1]);
+    const project =
+      PROJECTS.find((p) => p.slug === m[1]) ||
+      GIS_PROJECTS.find((p) => p.slug === m[1]);
     if (project) return { kind: "case", project };
   }
   return { kind: "home" };
@@ -190,6 +193,7 @@ export default function App() {
         <BuilderTelemetry />
         <Projects />
         <About />
+        <GISProjects />
         <Skills />
         <Contact />
       </main>
