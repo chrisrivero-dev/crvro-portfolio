@@ -28,24 +28,28 @@ export default function About() {
           </div>
           <div className="body">
             <p>
-              <em>I’m Christopher.</em> For several years I worked as a GIS/CAD
-              Senior Customer Support Specialist — technical support, mapping
-              workflows, and the procedural documentation that sits between the
-              GIS software and the people using it. Later I moved into support
-              operations and started building tools for those same workflows.
+              <em>I’m Christopher.</em> I build internal tools for support
+              teams, automation workflows, and GIS/CAD operations — usually from
+              problems I’ve seen up close.
             </p>
             <p>
-              I’ve spent enough time in those environments to know where the
-              real problems are — not the ones that make good demos, but the
-              ones that break trust quietly: an AI that guesses when it has no
-              match, automation that acts without showing its work, a process
-              where nobody owns the approved wording. The tools I build tend to
-              start there.
+              My background started in GIS/CAD support, where I worked across
+              technical troubleshooting, mapping workflows, and procedural
+              documentation. That experience pushed me deeper into support
+              operations and practical automation: draft assistants grounded in
+              approved content, confirmation gates before anything changes,
+              audit trails that show what happened, and tools that help teams
+              move faster without losing control.
+            </p>
+            <p>
+              I’ve spent enough time inside these workflows to know where the
+              real problems are — an AI that guesses when it has no match,
+              automation that acts without showing its work, or a process where
+              nobody owns the approved wording.
             </p>
             <p>
               If the work involves support engineering, automation, AI ops, or
-              GIS/CAD tooling — especially building for teams doing real
-              operational work — I’d like to hear about it.
+              GIS/CAD tooling, I’d like to hear about it.
             </p>
 
             <div className="stat-list" data-stagger>
