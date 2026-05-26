@@ -7,7 +7,7 @@ export default function About() {
         <div className="section-head reveal">
           <div className="index">§ 02 — About</div>
           <div className="h">
-            A builder of <em>small, useful systems.</em>
+            Support ops, GIS work, and <em>the tools that came out of both.</em>
           </div>
         </div>
         <div className="grid">
@@ -28,36 +28,24 @@ export default function About() {
           </div>
           <div className="body">
             <p>
-              <em>I'm Christopher.</em> I build the small, quiet systems nobody
-              notices until they stop working. I specialize in the unseen
-              infrastructure— cron jobs, Telegram bots, and Python scripts —
-              that takes mundane tasks off your plate and gives you hours back.
-              I don't build for hype. If a tool doesn’t prove useful in the
-              workflow, I don't force it. I build for the relief of a cleared
-              to-do list.
+              <em>I’m Christopher.</em> For several years I worked as a GIS/CAD
+              Senior Customer Support Specialist — technical support, mapping
+              workflows, and the procedural documentation that sits between the
+              GIS software and the people using it. Later I moved into support
+              operations and started building tools for those same workflows.
             </p>
             <p>
-              Most of what I build does not need a big landing page. It might be
-              an AI assistant that drafts a customer reply, a scanner that
-              watches markets and logs every decision, or a workflow tool that
-              turns a repeatable task into something clean and reliable.
+              I’ve spent enough time in those environments to know where the
+              real problems are — not the ones that make good demos, but the
+              ones that break trust quietly: an AI that guesses when it has no
+              match, automation that acts without showing its work, a process
+              where nobody owns the approved wording. The tools I build tend to
+              start there.
             </p>
             <p>
-              I work across automation, AI support tooling, and GIS / CAD
-              pipelines — places where a careful tool can replace hours of
-              manual work. I prefer plain stacks like Python, Postgres,
-              JavaScript, and a little TypeScript, and I would rather ship
-              something narrow that works than something broad that almost
-              works.
-            </p>
-            <p>
-              I tend to dig deeply into problems, trace the edge cases, and keep
-              going until the system is reliable enough to trust.
-            </p>
-            <p>
-              If you're looking for someone in technical operations, automation,
-              AI support, GIS / CAD workflows, or anywhere a thoughtful tool
-              would matter — I'd like to hear about it.
+              If the work involves support engineering, automation, AI ops, or
+              GIS/CAD tooling — especially building for teams doing real
+              operational work — I’d like to hear about it.
             </p>
 
             <div className="stat-list" data-stagger>
