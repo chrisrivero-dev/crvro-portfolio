@@ -19,41 +19,47 @@ function buildSegments(pts) {
   return segs;
 }
 
-// Animation timing offsets from IntersectionObserver fire (ms).
-// Card reveal → segment draw → next card → … → closing line.
-// Segment draw duration is 700ms (matches CSS transition below).
-const SEG_DRAW_MS = 700;
-const CARD_PAUSE  = 350; // gap between card appearing and next segment starting
+// Timing: card appears → halo fires → segment draws → next card.
+const SEG_DRAW_MS = 650;
+const HALO_DELAY  = 250; // ms after card before halo ring fires
+const SEG_DELAY   = 100; // ms after halo before segment starts drawing
+const CARD_GAP    = 150; // ms after segment finishes before next card
+
+// Each hop = HALO_DELAY + SEG_DELAY + SEG_DRAW_MS + CARD_GAP = 1150ms
+const HOP = HALO_DELAY + SEG_DELAY + SEG_DRAW_MS + CARD_GAP;
 
 const T = {
   card0:   0,
-  seg0:    CARD_PAUSE,
-  card1:   CARD_PAUSE + SEG_DRAW_MS,
-  seg1:    CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE,
-  card2:   CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS,
-  seg2:    CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE,
-  card3:   CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS,
-  closing: CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + SEG_DRAW_MS + CARD_PAUSE + 500,
+  halo0:   HALO_DELAY,
+  seg0:    HALO_DELAY + SEG_DELAY,
+  card1:   HOP,
+  halo1:   HOP + HALO_DELAY,
+  seg1:    HOP + HALO_DELAY + SEG_DELAY,
+  card2:   HOP * 2,
+  halo2:   HOP * 2 + HALO_DELAY,
+  seg2:    HOP * 2 + HALO_DELAY + SEG_DELAY,
+  card3:   HOP * 3,
+  halo3:   HOP * 3 + HALO_DELAY,
+  closing: HOP * 3 + HALO_DELAY + 700,
 };
-// T.card0=0, T.seg0=350, T.card1=1050, T.seg1=1400, T.card2=2100,
-// T.seg2=2450, T.card3=3150, T.closing=4000
+// card0=0, halo0=250, seg0=350, card1=1150, halo1=1400, seg1=1500,
+// card2=2300, halo2=2550, seg2=2650, card3=3450, halo3=3700, closing=4400
 
 export default function Projects() {
-  const sectionRef  = useRef(null);
   const mapRef      = useRef(null);
-  // cardRefs[i] → PROJECTS[i] in order (0=Sidecar,1=OpenClaw,2=HelpNearby,3=Predmkt)
   const cardRefs    = useRef(Array(4).fill(null));
-  // segPathRefs[i] → the <path> element for route segment i (0=Sidecar→OC, 1=OC→HN, 2=HN→PM)
   const segPathRefs = useRef([null, null, null]);
 
-  const [segPaths,   setSegPaths]   = useState([]);
-  const [routeNodes, setRouteNodes] = useState([]);
-  const [svgDims,    setSvgDims]    = useState({ w: 0, h: 0 });
+  const [segPaths,    setSegPaths]    = useState([]);
+  const [routeNodes,  setRouteNodes]  = useState([]);
+  const [svgDims,     setSvgDims]     = useState({ w: 0, h: 0 });
   // Sentinel (99999) keeps segments invisible before real lengths are measured.
-  const [segLengths, setSegLengths] = useState([99999, 99999, 99999]);
-  const [segOn,      setSegOn]      = useState([false, false, false]);
-  const [cardOn,     setCardOn]     = useState([false, false, false, false]);
-  const [closingOn,  setClosingOn]  = useState(false);
+  const [segLengths,  setSegLengths]  = useState([99999, 99999, 99999]);
+  const [segReady,    setSegReady]    = useState(false);
+  const [segOn,       setSegOn]       = useState([false, false, false]);
+  const [cardOn,      setCardOn]      = useState([false, false, false, false]);
+  const [nodeHaloOn,  setNodeHaloOn]  = useState([false, false, false, false]);
+  const [closingOn,   setClosingOn]   = useState(false);
 
   // Recompute segment paths + node positions from actual rendered card rects.
   const recompute = useCallback(() => {
@@ -96,13 +102,14 @@ export default function Projects() {
     setSegLengths(lengths);
   }, [segPaths]);
 
-  // Sequential animation chain triggered once when the section enters view.
+  // Sequential animation chain triggered once when the route-map grid enters view.
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+    const map = mapRef.current;
+    if (!map) return;
 
     // Instant-reveal for prefers-reduced-motion.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setSegReady(true);
       setCardOn([true, true, true, true]);
       setSegOn([true, true, true]);
       setClosingOn(true);
@@ -117,21 +124,27 @@ export default function Projects() {
         if (!entry.isIntersecting) return;
         io.disconnect();
 
-        // Sidecar card → seg 0 draws → OpenClaw card → seg 1 draws →
-        // Help Nearby card → seg 2 draws → Predmkt card → closing line.
+        // Enable CSS transition on route segments now so the dashoffset→0
+        // transition fires correctly. Must happen before the seg* timeouts.
+        setSegReady(true);
+
         at(T.card0,   () => setCardOn(p => [true,  p[1], p[2], p[3]]));
+        at(T.halo0,   () => setNodeHaloOn(p => [true,  p[1], p[2], p[3]]));
         at(T.seg0,    () => setSegOn(p  => [true,  p[1], p[2]]));
         at(T.card1,   () => setCardOn(p => [p[0], true,  p[2], p[3]]));
+        at(T.halo1,   () => setNodeHaloOn(p => [p[0], true,  p[2], p[3]]));
         at(T.seg1,    () => setSegOn(p  => [p[0], true,  p[2]]));
         at(T.card2,   () => setCardOn(p => [p[0], p[1], true,  p[3]]));
+        at(T.halo2,   () => setNodeHaloOn(p => [p[0], p[1], true,  p[3]]));
         at(T.seg2,    () => setSegOn(p  => [p[0], p[1], true]));
         at(T.card3,   () => setCardOn(p => [p[0], p[1], p[2], true]));
+        at(T.halo3,   () => setNodeHaloOn(p => [p[0], p[1], p[2], true]));
         at(T.closing, () => setClosingOn(true));
       },
-      { threshold: 0.07 }
+      { threshold: 0.15 }
     );
 
-    io.observe(section);
+    io.observe(map);
     return () => {
       io.disconnect();
       timers.forEach(clearTimeout);
@@ -171,7 +184,7 @@ export default function Projects() {
   };
 
   return (
-    <section className="work" id="work" data-screen-label="02 Work" ref={sectionRef}>
+    <section className="work" id="work" data-screen-label="02 Work">
       <div className="container-wide">
         <div className="section-head reveal">
           <div className="index">§ 01 — Selected Work</div>
@@ -195,16 +208,20 @@ export default function Projects() {
                 <path
                   key={i}
                   ref={(el) => { segPathRefs.current[i] = el; }}
-                  className={`prm-route${segOn[i] ? " prm-route--on" : ""}`}
+                  className={`prm-route${segReady ? " prm-route--ready" : ""}${segOn[i] ? " prm-route--on" : ""}`}
                   d={d}
                   fill="none"
                   strokeDasharray={segLengths[i]}
                   strokeDashoffset={segOn[i] ? 0 : segLengths[i]}
                 />
               ))}
-              {/* Node dots appear alongside their matching card */}
               {routeNodes.map((node, i) => (
-                <g key={i} className={`prm-node${cardOn[i] ? " prm-node--on" : ""}`}>
+                <g key={i} className={`prm-node${cardOn[i] ? " prm-node--on" : ""}${nodeHaloOn[i] ? " prm-node--halo" : ""}`}>
+                  <circle
+                    className="prm-node-halo"
+                    cx={node.x} cy={node.y} r={7}
+                    style={{ stroke: node.color }}
+                  />
                   <circle
                     className="prm-node-ring"
                     cx={node.x} cy={node.y} r={7}

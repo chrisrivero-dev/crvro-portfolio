@@ -674,14 +674,17 @@ section.contact .grid {
 }
 
 /* Route segments — each draws independently via stroke-dashoffset.
-   Transition is always defined; dashoffset changes when --on is applied by JS. */
+   Transition is gated behind --ready (added by JS when IO fires) to prevent
+   a flash when the measured length replaces the 99999 sentinel value. */
 .prm-route {
   stroke: var(--pencil);
   stroke-width: 1;
   fill: none;
   stroke-linecap: round;
   opacity: 0.6;
-  transition: stroke-dashoffset 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.prm-route--ready {
+  transition: stroke-dashoffset 650ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 [data-theme="dark"] .prm-route { stroke: var(--graphite); opacity: 0.5; }
 
@@ -694,6 +697,22 @@ section.contact .grid {
 .prm-node-ring {
   fill: var(--paper);
   stroke-width: 1.5;
+}
+
+/* One-time halo ring: expands and fades when --halo class is added */
+.prm-node-halo {
+  fill: none;
+  stroke-width: 1.2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.prm-node--halo .prm-node-halo {
+  animation: prm-halo-expand 0.8s ease-out forwards;
+}
+@keyframes prm-halo-expand {
+  from { opacity: 0.5; transform: scale(1); }
+  to   { opacity: 0;   transform: scale(2.3); }
 }
 
 /* Card grid column placement */
@@ -858,12 +877,14 @@ section.contact .grid {
   transform: none;
 }
 
-/* prefers-reduced-motion: instant-reveal, no transitions */
+/* prefers-reduced-motion: instant-reveal, no transitions, no halo */
 @media (prefers-reduced-motion: reduce) {
   .prm-card { opacity: 1; }
   .prm-card--on { animation: none; }
   .prm-node { opacity: 1; }
   .prm-route { transition: none; }
+  .prm-route--ready { transition: none; }
+  .prm-node-halo { display: none; }
   .prm-closing { opacity: 1; transform: none; transition: none; }
 }
 
