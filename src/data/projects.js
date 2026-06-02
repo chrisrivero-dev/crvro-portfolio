@@ -249,10 +249,13 @@ export const PROJECTS = [
         ],
       },
       {
-        label: 'Tool router output',
+        label: 'HERMES SKILL + MEMORY LOOP',
         caption:
-          'Internal view: how a short message becomes a typed tool call with validated arguments.',
-        mockup: 'tool-router',
+          'Hermes turns repeated workflows into reusable skills, grounds them in local context, previews changes before action, and records approvals and results in an audit trail.',
+        image: '/images/openclaw-hermes-skills-learning-diagram.png',
+        ratio: '16 / 9',
+        fit: 'contain',
+        fullWidth: true,
       },
       {
         label: 'Audit log',
