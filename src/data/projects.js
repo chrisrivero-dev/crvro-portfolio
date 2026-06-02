@@ -370,16 +370,22 @@ export const PROJECTS = [
         panOnHover: true,
       },
       {
-        label: 'RESOURCE DISCOVERY',
+        label: 'Search results — map view',
         caption:
-          'Resource discovery view showing nearby services, distance, source links, directions, and selected-resource map context.',
-        image: '/images/help-nearby-resource-map-flow.png',
-        alt: 'Help Nearby resource discovery screen with nearby service list, source links, directions, and selected-resource map.',
-        ratio: '16 / 9',
-        fit: 'contain',
-        position: 'center center',
+          'Interactive Help Nearby map interface for finding local resources.',
+        image: '/images/help-nearby-map.png',
         hoverScale: 1.08,
         panOnHover: true,
+      },
+      {
+        label: 'RESOURCE DETAIL FLOW',
+        caption:
+          'Expanded guidance showing eligibility, how to apply, and what users should bring before contacting a resource.',
+        image: '/images/help-resource-detail-flow.png',
+        ratio: '16 / 9',
+        fit: 'cover',
+        position: 'center center',
+        zoom: 1,
       },
     ],
     learned: [
