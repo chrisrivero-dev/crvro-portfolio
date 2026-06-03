@@ -612,7 +612,17 @@ export const GIS_PROJECTS = [
         items: ['Desktop preview', 'OCR / Tesseract', 'Source-span review'],
       },
     ],
-    screenshots: [],
+    screenshots: [
+      {
+        label: 'PARCEL ENGINE DESKTOP PREVIEW',
+        caption:
+          'Desktop preview of Parcel Engine showing legal description input, extracted COGO courses, and parcel geometry validation in a local QA workflow.',
+        image: '/images/parcel-engine-desktop-preview.png',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center center',
+      },
+    ],
     learned: [
       'Legal descriptions are more varied than they appear. Handling the full range of bearing formats and notation styles is the bulk of the parsing problem.',
       'Closure validation is the most reliable feedback signal for whether a description was interpreted correctly.',
