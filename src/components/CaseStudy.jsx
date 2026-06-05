@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 import ProjectMark from './ProjectMark.jsx';
+import ParcelPreview from './ParcelPreview.jsx';
 
 function ToolRouterMockup() {
   return (
@@ -154,6 +155,8 @@ function ImageBlock({
             <AuditLogMockup />
             <span className="placeholder-label">{label}</span>
           </>
+        ) : mockup === 'parcel-preview' ? (
+          <ParcelPreview />
         ) : (
           <>
             <span className="placeholder-mark" aria-hidden="true">
@@ -300,6 +303,7 @@ export default function CaseStudy({ project: p }) {
             caption={p.screenshots[0].caption}
             image={p.screenshots[0].image}
             images={p.screenshots[0].images}
+            mockup={p.screenshots[0].mockup}
             ratio={p.screenshots[0].ratio || '16 / 9'}
             fit={p.screenshots[0].fit || 'cover'}
             position={p.screenshots[0].position || 'center center'}

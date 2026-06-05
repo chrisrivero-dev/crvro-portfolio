@@ -909,6 +909,111 @@ section.contact .grid {
 }
 
 /* ─────────────────────────────────────────────────────────
+   PARCEL ENGINE CARD — special row layout + animated visual
+   The visual gets a dedicated wide left column.
+   No border — the SVG floats free in the card area.
+   ───────────────────────────────────────────────────────── */
+
+/* Override grid: [visual 300px] [info 1fr] [meta 220px] [arrow 32px] */
+.project-row--parcel {
+  grid-template-columns: 300px 1fr 220px 32px;
+  align-items: center;
+}
+
+/* The animated visual container — no hard border, floats free in the card.
+   Height matches the SVG's natural render size at 300px wide:
+   380/210 AR → 300 × 166px. Use 172px for a clean fit with minimal letterbox. */
+.pe-card-visual {
+  position: relative;
+  height: 172px;
+  overflow: hidden;
+  border-radius: var(--r-2);
+  /* Subtle left border only — acts as a thin editorial margin line */
+  border-left: 2px solid #4A6B3F;
+}
+
+/* The parcel-preview fills the container absolutely */
+.parcel-preview--compact {
+  background: transparent;
+}
+
+/* Bolder lines for the card — override the 1.5px default */
+.parcel-preview--compact .pp-seg {
+  stroke-width: 2;
+  opacity: 0.88;
+}
+
+/* Info column for parcel variant — stacks idx above title */
+.pe-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  padding: 28px 0;
+}
+
+/* Index number sitting above the title in the info column */
+.pe-idx {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent-gold);
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+/* Tablet: shrink visual, drop meta column */
+@media (max-width: 920px) {
+  .project-row--parcel {
+    grid-template-columns: 200px 1fr 24px;
+    gap: 18px;
+    padding: 24px 0;
+  }
+  .project-row--parcel .meta-cell { display: none; }
+  /* At 200px wide: SVG renders at 200 × 110px — still readable */
+  .pe-card-visual { height: 118px; }
+}
+
+/* Mobile: visual spans full width above info, labels hidden */
+@media (max-width: 680px) {
+  .project-row--parcel {
+    grid-template-columns: 1fr 24px;
+    grid-template-rows: auto auto;
+    gap: 0;
+    padding: 0 0 24px;
+  }
+  .pe-card-visual {
+    grid-column: 1 / -1;
+    height: 180px;
+    border-radius: var(--r-2);
+    border-left: 2px solid #4A6B3F;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 4px;
+  }
+  .pe-info {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 16px 0 8px;
+  }
+  .project-row--parcel .arrow {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: center;
+  }
+  /* Labels too small at mobile width — hide them */
+  .parcel-preview--compact .pp-label  { display: none; }
+  .parcel-preview--compact .pp-closure { display: none; }
+}
+
+/* Very narrow: tighten visual height */
+@media (max-width: 420px) {
+  .pe-card-visual { height: 155px; }
+}
+
+/* ─────────────────────────────────────────────────────────
    ABOUT
    ───────────────────────────────────────────────────────── */
 .about { padding: 96px 0; border-bottom: 1px solid var(--rule); }

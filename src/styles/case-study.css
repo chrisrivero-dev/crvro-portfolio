@@ -704,6 +704,134 @@
     flex-wrap: wrap;
   }
 }
+/* ── Parcel Preview — animated SVG technical drawing ──────── */
+.parcel-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parcel-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Parcel fill — fades in last */
+.pp-fill {
+  fill: #4A6B3F;
+  fill-opacity: 0;
+  transition: fill-opacity 1.2s ease;
+}
+.pp-fill--on { fill-opacity: 0.055; }
+[data-theme="dark"] .pp-fill--on { fill-opacity: 0.11; }
+
+/* Line segments */
+.pp-seg {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  opacity: 0.78;
+}
+
+/* POB marker */
+.pp-pob {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.pp-pob--on { opacity: 1; }
+.pp-pob-dot  { fill: #4A6B3F; }
+.pp-pob-ring { fill: none; stroke: #4A6B3F; stroke-width: 1; opacity: 0.32; }
+
+/* Intermediate corner dots */
+.pp-vtx {
+  fill: var(--ink);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.pp-vtx--on { opacity: 0.55; }
+
+/* Bearing / distance label groups */
+.pp-label {
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+.pp-label--on { opacity: 1; }
+
+/* SVG text base */
+.pp-text { font-family: var(--font-mono); fill: var(--graphite); }
+
+.pp-text--title {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  fill: var(--pencil);
+  opacity: 0.65;
+}
+.pp-text--bearing {
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+}
+.pp-text--dist {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  fill: var(--pencil);
+}
+.pp-text--pob {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  fill: #4A6B3F;
+}
+.pp-text--north {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  fill: var(--ink);
+}
+.pp-text--closure {
+  font-size: 8.5px;
+  letter-spacing: 0.10em;
+  fill: var(--graphite);
+}
+.pp-text--closure-sub {
+  font-size: 7.5px;
+  letter-spacing: 0.08em;
+  fill: var(--pencil);
+  opacity: 0.7;
+}
+
+/* North arrow */
+.pp-north {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.pp-north--on { opacity: 1; }
+.pp-north-stem { stroke: var(--ink); stroke-width: 1; stroke-linecap: round; }
+.pp-north-head { fill: var(--ink); opacity: 0.85; }
+.pp-north-base { fill: var(--ink); opacity: 0.45; }
+
+/* Closure note */
+.pp-closure {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.pp-closure--on { opacity: 1; }
+
+/* Reduced motion — instant reveal, no transitions */
+@media (prefers-reduced-motion: reduce) {
+  .pp-seg { transition: none !important; }
+  .pp-label, .pp-north, .pp-pob, .pp-closure { opacity: 1 !important; transition: none; }
+  .pp-fill { fill-opacity: 0.055 !important; transition: none; }
+  .pp-vtx  { opacity: 0.55 !important; transition: none; }
+}
+
 /* ── screenshot image + hover zoom / pan ─────────────────── */
 .frame-img {
   width: 100%;
