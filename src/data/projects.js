@@ -617,7 +617,7 @@ export const GIS_PROJECTS = [
         label: 'PARCEL ENGINE DESKTOP PREVIEW',
         caption:
           'Desktop preview of Parcel Engine showing legal description input, extracted COGO courses, and parcel geometry validation in a local QA workflow.',
-        image: '/images/parcel-engine-desktop-preview.png',
+        image: '/images/parcel-enging.png',
         ratio: '16 / 9',
         fit: 'contain',
         position: 'center center',
