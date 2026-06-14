@@ -16,7 +16,7 @@ export default function Contact() {
               If you'd rather keep it short, GitHub or LinkedIn work too.
             </p>
             <div className="links" data-stagger>
-              <a href="mailto:contact@crvro.com" className="reveal">
+              <a href="mailto:christopherarivero@gmail.com" className="reveal">
                 <span className="left"><span className="lab">Email</span>contact@crvro.com</span>
                 <span className="right">primary <span className="ar">↗</span></span>
               </a>
