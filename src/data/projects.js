@@ -568,7 +568,7 @@ export const PROJECTS = [
     statusBadge: 'Current focus',
     outcome: 'Working AI tool for first-pass property feasibility that turns a parcel address into a cited, reviewable report covering zoning context, risk signals, and verification needs.',
     repo: null,
-    demo: 'https://property-decision-engine.vercel.app/',
+    demo: 'https://www.usegroundrules.com/',
     overview: [
       'GroundRules helps ADU builders, architects, permit expediters, small developers, and real estate professionals quickly screen whether an address is worth deeper review using public parcel, zoning, hazard, and jurisdiction data. It turns an address or parcel into a plain-English first-pass report showing what may be possible, what looks risky, and what needs verification.',
       'It is built around the kind of messy public-record and GIS workflows that usually require manual checking: parcel data, zoning, jurisdiction rules, hazard layers, source citations, and unknowns that need human review.',
