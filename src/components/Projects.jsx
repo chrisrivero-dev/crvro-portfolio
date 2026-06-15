@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import ProjectMark from "./ProjectMark.jsx";
 import { PROJECTS } from "../data/projects.js";
 
-// Returns 3 separate cubic-bezier path strings — one per route hop.
+// Returns cubic-bezier path strings — one per route hop.
 // Splitting into segments lets each piece draw independently.
 function buildSegments(pts) {
   if (pts.length < 2) return [];
@@ -40,25 +40,29 @@ const T = {
   seg2:    HOP * 2 + HALO_DELAY + SEG_DELAY,
   card3:   HOP * 3,
   halo3:   HOP * 3 + HALO_DELAY,
-  closing: HOP * 3 + HALO_DELAY + 700,
+  seg3:    HOP * 3 + HALO_DELAY + SEG_DELAY,
+  card4:   HOP * 4,
+  halo4:   HOP * 4 + HALO_DELAY,
+  closing: HOP * 4 + HALO_DELAY + 700,
 };
 // card0=0, halo0=250, seg0=350, card1=1150, halo1=1400, seg1=1500,
-// card2=2300, halo2=2550, seg2=2650, card3=3450, halo3=3700, closing=4400
+// card2=2300, halo2=2550, seg2=2650, card3=3450, halo3=3700, seg3=3800,
+// card4=4600, halo4=4850, closing=5550
 
 export default function Projects() {
   const mapRef      = useRef(null);
-  const cardRefs    = useRef(Array(4).fill(null));
-  const segPathRefs = useRef([null, null, null]);
+  const cardRefs    = useRef(Array(5).fill(null));
+  const segPathRefs = useRef([null, null, null, null]);
 
   const [segPaths,    setSegPaths]    = useState([]);
   const [routeNodes,  setRouteNodes]  = useState([]);
   const [svgDims,     setSvgDims]     = useState({ w: 0, h: 0 });
   // Sentinel (99999) keeps segments invisible before real lengths are measured.
-  const [segLengths,  setSegLengths]  = useState([99999, 99999, 99999]);
+  const [segLengths,  setSegLengths]  = useState([99999, 99999, 99999, 99999]);
   const [segReady,    setSegReady]    = useState(false);
-  const [segOn,       setSegOn]       = useState([false, false, false]);
-  const [cardOn,      setCardOn]      = useState([false, false, false, false]);
-  const [nodeHaloOn,  setNodeHaloOn]  = useState([false, false, false, false]);
+  const [segOn,       setSegOn]       = useState([false, false, false, false]);
+  const [cardOn,      setCardOn]      = useState([false, false, false, false, false]);
+  const [nodeHaloOn,  setNodeHaloOn]  = useState([false, false, false, false, false]);
   const [closingOn,   setClosingOn]   = useState(false);
 
   // Recompute segment paths + node positions from actual rendered card rects.
@@ -68,7 +72,7 @@ export default function Projects() {
     const cr = container.getBoundingClientRect();
 
     const pts = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const el = cardRefs.current[i];
       if (!el) continue;
       const r = el.getBoundingClientRect();
@@ -110,8 +114,8 @@ export default function Projects() {
     // Instant-reveal for prefers-reduced-motion.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setSegReady(true);
-      setCardOn([true, true, true, true]);
-      setSegOn([true, true, true]);
+      setCardOn([true, true, true, true, true]);
+      setSegOn([true, true, true, true]);
       setClosingOn(true);
       return;
     }
@@ -128,17 +132,20 @@ export default function Projects() {
         // transition fires correctly. Must happen before the seg* timeouts.
         setSegReady(true);
 
-        at(T.card0,   () => setCardOn(p => [true,  p[1], p[2], p[3]]));
-        at(T.halo0,   () => setNodeHaloOn(p => [true,  p[1], p[2], p[3]]));
-        at(T.seg0,    () => setSegOn(p  => [true,  p[1], p[2]]));
-        at(T.card1,   () => setCardOn(p => [p[0], true,  p[2], p[3]]));
-        at(T.halo1,   () => setNodeHaloOn(p => [p[0], true,  p[2], p[3]]));
-        at(T.seg1,    () => setSegOn(p  => [p[0], true,  p[2]]));
-        at(T.card2,   () => setCardOn(p => [p[0], p[1], true,  p[3]]));
-        at(T.halo2,   () => setNodeHaloOn(p => [p[0], p[1], true,  p[3]]));
-        at(T.seg2,    () => setSegOn(p  => [p[0], p[1], true]));
-        at(T.card3,   () => setCardOn(p => [p[0], p[1], p[2], true]));
-        at(T.halo3,   () => setNodeHaloOn(p => [p[0], p[1], p[2], true]));
+        at(T.card0,   () => setCardOn(p => [true,  p[1], p[2], p[3], p[4]]));
+        at(T.halo0,   () => setNodeHaloOn(p => [true,  p[1], p[2], p[3], p[4]]));
+        at(T.seg0,    () => setSegOn(p  => [true,  p[1], p[2], p[3]]));
+        at(T.card1,   () => setCardOn(p => [p[0], true,  p[2], p[3], p[4]]));
+        at(T.halo1,   () => setNodeHaloOn(p => [p[0], true,  p[2], p[3], p[4]]));
+        at(T.seg1,    () => setSegOn(p  => [p[0], true,  p[2], p[3]]));
+        at(T.card2,   () => setCardOn(p => [p[0], p[1], true,  p[3], p[4]]));
+        at(T.halo2,   () => setNodeHaloOn(p => [p[0], p[1], true,  p[3], p[4]]));
+        at(T.seg2,    () => setSegOn(p  => [p[0], p[1], true,  p[3]]));
+        at(T.card3,   () => setCardOn(p => [p[0], p[1], p[2], true,  p[4]]));
+        at(T.halo3,   () => setNodeHaloOn(p => [p[0], p[1], p[2], true,  p[4]]));
+        at(T.seg3,    () => setSegOn(p  => [p[0], p[1], p[2], true]));
+        at(T.card4,   () => setCardOn(p => [p[0], p[1], p[2], p[3], true]));
+        at(T.halo4,   () => setNodeHaloOn(p => [p[0], p[1], p[2], p[3], true]));
         at(T.closing, () => setClosingOn(true));
       },
       { threshold: 0.15 }
@@ -194,9 +201,9 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* Cards are direct grid children — preserves 01,02,03,04 DOM order for mobile */}
+        {/* Cards are direct grid children — preserves DOM order for mobile */}
         <div className="project-route-map" ref={mapRef}>
-          {/* Three individually animated SVG route segments — position:absolute, non-interactive */}
+          {/* Four individually animated SVG route segments — position:absolute, non-interactive */}
           {segPaths.length > 0 && (
             <svg
               className="prm-svg"
@@ -237,10 +244,11 @@ export default function Projects() {
             </svg>
           )}
 
-          {renderCard(0)}{/* Sidecar     — left  col, row 1 */}
-          {renderCard(1)}{/* OpenClaw    — right col, row 1, offset */}
-          {renderCard(2)}{/* Help Nearby — left  col, row 2 */}
-          {renderCard(3)}{/* Predmkt Bot — right col, row 2, offset */}
+          {renderCard(0)}{/* Sidecar      — left  col, row 1 */}
+          {renderCard(1)}{/* OpenClaw     — right col, row 1, offset */}
+          {renderCard(2)}{/* Help Nearby  — left  col, row 2 */}
+          {renderCard(3)}{/* Predmkt Bot  — right col, row 2, offset */}
+          {renderCard(4)}{/* GroundRules  — left  col, row 3 */}
         </div>
 
         <p className={`prm-closing${closingOn ? " prm-closing--on" : ""}`}>
