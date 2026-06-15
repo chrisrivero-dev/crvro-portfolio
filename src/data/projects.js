@@ -547,6 +547,93 @@ export const PROJECTS = [
       'Avoid scaling until the data supports it.',
     ],
   },
+
+  // ---------------------------------------------------------
+  // GroundRules
+  // ---------------------------------------------------------
+  {
+    id: 'groundrules',
+    slug: 'groundrules',
+    n: '05',
+    title: 'GroundRules',
+    titleEm: '— property feasibility from public records.',
+    kind: 'Web app / Property intel',
+    year: '2026',
+    desc: 'An AI property feasibility tool that turns an address or parcel into a plain-English report showing what may be possible, what looks risky, and what needs verification.',
+    tags: ['parcel data · zoning · GIS · public records'],
+    accent: '#3B6B55',
+    shape: 'arc',
+    role: 'Solo build — product, AI workflow, frontend',
+    status: 'Active build · current focus',
+    statusBadge: 'Current focus',
+    outcome: 'Working AI tool that turns a parcel address into a plain-English property feasibility report covering zoning context, risk signals, and verification needs — with source references where available.',
+    repo: null,
+    demo: 'https://property-decision-engine.vercel.app/',
+    overview: [
+      'GroundRules is an AI property feasibility tool that turns an address or parcel into a plain-English report showing what may be possible, what looks risky, and what needs verification.',
+      'It is built around the kind of messy public-record and GIS workflows that usually require manual checking: parcel data, zoning, jurisdiction rules, hazard layers, source citations, and unknowns that need human review.',
+      'The goal is not to replace official review or permit approval. The goal is to make the early feasibility step clearer, faster, and easier to verify.',
+    ],
+    problem: [
+      'Early property feasibility is time-consuming and scattered. Parcel data, zoning codes, hazard layers, jurisdiction rules, and permit history live in different places — often requiring multiple lookups across county portals, state databases, and GIS systems.',
+      'The person doing that research may be a homeowner, agent, investor, builder, or advisor. What they need is not a raw data dump — they need a readable summary that separates what looks possible, what looks risky, and what needs a professional to verify.',
+      'The first wedge is residential feasibility questions like ADUs, additions, solar, zoning context, and early permit risk.',
+    ],
+    built: [
+      'A parcel lookup flow that accepts an address or APN and retrieves relevant public data.',
+      'An AI report layer that transforms structured parcel and zoning data into plain-English feasibility summaries.',
+      'A report structure that clearly separates what may be possible, what looks risky, and what needs human verification.',
+      'Source citations in the report so users can trace where each finding came from.',
+      'A coverage page showing which jurisdictions and data sources are currently supported.',
+      'A sample report so users can preview the output format before running a lookup.',
+    ],
+    features: [
+      'Address and APN lookup for parcel-level data',
+      'Plain-English feasibility report organized by signal type',
+      'Zoning context, hazard flags, and jurisdiction notes',
+      'Source citations — every finding links back to a data source',
+      'Three-part structure: what may be possible, what looks risky, what needs verification',
+      'Sample report for previewing output before committing',
+      'Coverage page showing supported jurisdictions',
+    ],
+    stack: [
+      {
+        group: 'Frontend',
+        items: ['Next.js', 'React', 'CSS'],
+      },
+      {
+        group: 'AI / data',
+        items: ['LLM API for report generation', 'Public parcel and zoning data', 'GIS data sources'],
+      },
+      {
+        group: 'Infrastructure',
+        items: ['Vercel'],
+      },
+    ],
+    screenshots: [
+      {
+        label: 'GroundRules property feasibility report',
+        caption: 'GroundRules turns a parcel address into a plain-English report covering what may be possible, what looks risky, and what needs verification — with source references where available.',
+        image: '/images/groundrules-preview.png',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center top',
+        zoom: 1,
+      },
+    ],
+    learned: [
+      'Public records are messier than they look. Zoning codes, parcel data, and hazard layers often disagree with each other or contain stale information — the report has to acknowledge this rather than paper over it.',
+      'Plain-English output is harder to get right than structured output. The goal is something someone can actually read and act on, not a JSON dump of zoning fields.',
+      'Source citations matter a lot. Users need to know where a finding came from before they can trust it.',
+      'The early feasibility step is where uncertainty is highest. The tool has to be honest about what it does not know.',
+    ],
+    next: [
+      'Expand coverage to more jurisdictions and parcel data sources.',
+      'Improve the zoning interpretation layer.',
+      'Add a comparison flow for evaluating multiple parcels.',
+      'Explore a shareable report format for sending feasibility summaries to collaborators.',
+    ],
+  },
 ];
 
 export function getProjectBySlug(slug) {
