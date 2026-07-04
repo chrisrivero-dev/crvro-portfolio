@@ -361,11 +361,23 @@ export const PROJECTS = [
     ],
     screenshots: [
       {
-        label: 'INCIDENT MODE DASHBOARD',
+        label: 'HELP NEARBY DASHBOARD',
         caption:
-          'Incident Mode dashboard showing a Garden Grove chemical tank incident alongside ZIP-based discovery, official-source guidance, nearby resources, and location-aware help context.',
+          'Current Help Nearby layout showing location-aware resource discovery, category filtering, and nearby support options in a simplified public-facing workflow.',
+        image: '/images/help-nearby-newlayout-dashboard.png',
+        alt: 'Current Help Nearby dashboard showing location-aware resource discovery, category filtering, and nearby support options.',
+        ratio: '16 / 9',
+        fit: 'contain',
+        position: 'center center',
+        hoverScale: 1.1,
+        panOnHover: true,
+      },
+      {
+        label: 'INCIDENT MODE CONTEXT',
+        caption:
+          'Incident-aware view showing emergency context alongside nearby resources, official-source guidance, and location-based help discovery.',
         image: '/images/help-nearby-incident-mode-dashboard.png',
-        alt: 'Help Nearby Incident Mode dashboard showing Garden Grove chemical tank incident, ZIP search, official update links, and nearby resource listings.',
+        alt: 'Help Nearby incident-aware dashboard showing emergency context, official update links, and nearby resource listings.',
         ratio: '16 / 9',
         fit: 'contain',
         position: 'center center',
