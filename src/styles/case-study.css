@@ -586,6 +586,115 @@
 .log-ok    { color: var(--success); }
 .log-kv    { color: var(--graphite); font-size: 11px; padding-left: 74px; }
 
+/* Workflow flow mockup */
+.flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 6px;
+  padding: 22px 16px 14px;
+}
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  min-width: 88px;
+  text-align: center;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-1);
+}
+.flow-k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.flow-d {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--graphite);
+}
+.flow-arrow {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--pencil);
+  flex-shrink: 0;
+}
+.flow-trace {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--amber-deep);
+  padding: 10px 16px 16px;
+  margin-top: 4px;
+  border-top: 1px dashed var(--rule);
+}
+@media (max-width: 720px) {
+  .flow-row { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  /* Stacked flow needs more height than a wide 21/9 frame allows */
+  .case-figure .frame.frame--workflow-flow {
+    aspect-ratio: auto !important;
+    padding: 24px 0;
+  }
+}
+
+/* ── capability cards (Key features) ─────────────────── */
+.capability-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.capability-card {
+  padding: 20px;
+  background: color-mix(in oklab, var(--paper-2) 70%, var(--paper));
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+}
+.capability-card h4 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  margin: 0 0 10px;
+}
+.capability-card p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .capability-grid { grid-template-columns: 1fr; }
+}
+
+/* ── representative use cases ─────────────────────────── */
+.use-cases {
+  margin-top: 32px;
+}
+.use-cases .lab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  margin-bottom: 12px;
+}
+.use-cases .bullet-list {
+  margin-top: 0;
+}
+
 /* ── Telegram slideshow ──────────────────────────────── */
 .tg-slideshow {
   position: absolute;

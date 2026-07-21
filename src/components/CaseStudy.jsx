@@ -26,6 +26,39 @@ function ToolRouterMockup() {
   );
 }
 
+function WorkflowFlowMockup() {
+  const stages = [
+    { k: 'Request', d: 'Telegram · local' },
+    { k: 'Route', d: 'Local or cloud model' },
+    { k: 'Tools', d: 'Code · repo · files' },
+    { k: 'Test', d: 'Build + verify' },
+    { k: 'Review', d: 'Human approval' },
+    { k: 'Deploy', d: 'Git → GitHub → live' },
+  ];
+  return (
+    <div className="mockup mockup-flow">
+      <div className="mockup-bar">
+        <span className="mockup-dots"><i /><i /><i /></span>
+        <span className="mockup-fname">hermes · workflow</span>
+      </div>
+      <div className="flow-row">
+        {stages.map((s, i) => (
+          <React.Fragment key={s.k}>
+            <div className="flow-node">
+              <span className="flow-k">{s.k}</span>
+              <span className="flow-d">{s.d}</span>
+            </div>
+            {i < stages.length - 1 && (
+              <span className="flow-arrow" aria-hidden="true">→</span>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="flow-trace">Every step logged — traceable from request to deployment.</div>
+    </div>
+  );
+}
+
 function AuditLogMockup() {
   return (
     <div className="mockup mockup-log">
@@ -110,7 +143,11 @@ function ImageBlock({
   return (
     <figure className="case-figure">
       <div
-        className={hasPan ? 'frame frame--pan' : 'frame'}
+        className={
+          'frame' +
+          (hasPan ? ' frame--pan' : '') +
+          (mockup ? ` frame--${mockup}` : '')
+        }
         ref={frameRef}
         style={{ aspectRatio: ratio }}
         onMouseMove={handleMouseMove}
@@ -148,6 +185,11 @@ function ImageBlock({
         ) : mockup === 'tool-router' ? (
           <>
             <ToolRouterMockup />
+            <span className="placeholder-label">{label}</span>
+          </>
+        ) : mockup === 'workflow-flow' ? (
+          <>
+            <WorkflowFlowMockup />
             <span className="placeholder-label">{label}</span>
           </>
         ) : mockup === 'audit-log' ? (
@@ -333,14 +375,36 @@ export default function CaseStudy({ project: p }) {
 
       {/* ── key features ─────────────────────────────────── */}
       <Section index="04" label="Key features" title="What it does.">
-        <ul className="feature-list">
-          {p.features.map((f, i) => (
-            <li key={i}>
-              <span className="bullet">·</span>
-              <span>{f}</span>
-            </li>
-          ))}
-        </ul>
+        {p.capabilities ? (
+          <div className="capability-grid">
+            {p.capabilities.map((c) => (
+              <div key={c.title} className="capability-card">
+                <h4>{c.title}</h4>
+                <p>{c.desc}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul className="feature-list">
+            {p.features.map((f, i) => (
+              <li key={i}>
+                <span className="bullet">·</span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {p.useCases && (
+          <div className="use-cases">
+            <div className="lab">Representative use cases</div>
+            <ul className="bullet-list">
+              {p.useCases.map((u, i) => (
+                <li key={i}>{u}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Section>
 
       {/* ── secondary screenshots ───────────────────────── */}
