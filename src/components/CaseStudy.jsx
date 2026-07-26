@@ -1,6 +1,8 @@
 import React, { useRef, useCallback } from 'react';
 import ProjectMark from './ProjectMark.jsx';
 import ParcelPreview from './ParcelPreview.jsx';
+import EvidencePanel from './EvidencePanel.jsx';
+import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 
 function ToolRouterMockup() {
   return (
@@ -240,6 +242,9 @@ function MetaRow({ label, value }) {
 }
 
 export default function CaseStudy({ project: p }) {
+  const total = PROJECTS.some((proj) => proj.slug === p.slug)
+    ? PROJECTS.length
+    : GIS_PROJECTS.length;
   return (
     <article className="case-study" data-screen-label={'Case ' + p.slug}>
       {/* ── back link ─────────────────────────────────────── */}
@@ -255,7 +260,7 @@ export default function CaseStudy({ project: p }) {
         <div className="container-wide">
           <div className="grid">
             <div className="marker">
-              <span className="num">{p.n} / 04</span>
+              <span className="num">{p.n} / {String(total).padStart(2, '0')}</span>
               <span className="kind">{p.kind}</span>
               <span className="yr">{p.year}</span>
             </div>
@@ -302,7 +307,7 @@ export default function CaseStudy({ project: p }) {
                     label="Links"
                     value={
                       <span style={{ color: 'var(--pencil)' }}>
-                        Repo / demo coming soon
+                        No public repo or demo yet
                       </span>
                     }
                   />
@@ -322,6 +327,9 @@ export default function CaseStudy({ project: p }) {
           </div>
         </div>
       )}
+
+      {/* ── evidence panel ───────────────────────────────── */}
+      <EvidencePanel project={p} />
 
       {/* ── overview ─────────────────────────────────────── */}
       <Section index="01" label="Overview" title="What it is.">

@@ -169,14 +169,17 @@ button { font: inherit; cursor: pointer; }
 .hero h1 em {
   font-style: italic; font-weight: 500; color: var(--amber);
 }
-.hero .lede {
-  font-family: var(--font-serif);
-  font-size: clamp(20px, 2.2vw, 26px);
-  line-height: 1.45;
-  font-weight: 400;
+.hero-eyebrow {
+  margin-bottom: 18px;
   color: var(--graphite);
-  max-width: 640px;
-  margin: 0 0 40px;
+}
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: clamp(16px, 1.6vw, 18px);
+  line-height: 1.55;
+  color: var(--graphite);
+  max-width: 620px;
+  margin: 0 0 32px;
   text-wrap: pretty;
 }
 .hero .meta-row {
@@ -244,91 +247,105 @@ button { font: inherit; cursor: pointer; }
   .hero .marker { animation: none; }
 }
 
-/* ─── Hero system trace ──────────────────────────────────── */
+/* ─── Hero command center — tri-mode interactive demonstration ─ */
 .hero { position: relative; }
 .hero .container-wide { position: relative; }
 
-.hero-trace {
-  position: absolute;
-  right: 0;
-  bottom: -24px;
-  width: clamp(360px, 38vw, 520px);
-  pointer-events: none;
-  z-index: 0;
-  transform: translate(var(--tx, 0), var(--ty, 0));
-  transition: transform 600ms var(--ease-out);
-  opacity: 0;
-  animation: trace-fade-in 1.4s var(--ease-out) 0.9s forwards;
+.hcc {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
 }
-.hero-trace svg { width: 100%; height: auto; display: block; overflow: visible; }
-
-.trace-path {
-  stroke: var(--graphite);
-  stroke-width: 1;
-  opacity: 0.5;
-  stroke-dasharray: 2 4;
+.hcc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
 }
-
-.trace-node-dot {
-  fill: var(--graphite);
-  opacity: 0.7;
-}
-.trace-node-ring {
-  fill: none;
-  stroke: var(--graphite);
-  stroke-width: 0.8;
-  opacity: 0.38;
-}
-.trace-label {
+.hcc-tab {
   font-family: var(--font-mono);
-  font-size: 8.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  fill: var(--graphite);
-  opacity: 0.7;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--graphite);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: border-color 0.25s var(--ease-out), color 0.25s var(--ease-out), background 0.25s var(--ease-out);
+}
+.hcc-tab:hover { color: var(--ink); border-color: var(--rule-strong); }
+.hcc-tab:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.hcc-tab--active {
+  color: var(--ink);
+  border-color: var(--hcc-accent, var(--ink));
+  background: color-mix(in oklab, var(--hcc-accent, var(--ink)) 10%, transparent);
 }
 
-[data-theme="dark"] .trace-path { stroke: var(--pencil); opacity: 0.42; }
-[data-theme="dark"] .trace-node-dot { fill: var(--graphite); opacity: 0.6; }
-[data-theme="dark"] .trace-node-ring { stroke: var(--pencil); opacity: 0.32; }
-[data-theme="dark"] .trace-label { fill: var(--graphite); opacity: 0.6; }
-
-.trace-signal-dot {
-  fill: var(--accent-gold);
-  filter: drop-shadow(0 0 3px rgba(154, 122, 63, 0.55));
-  animation: trace-pulse 2.4s ease-in-out infinite;
-}
-.trace-signal-halo {
-  fill: var(--accent-gold);
-  opacity: 0.12;
-  animation: trace-halo 2.4s ease-in-out infinite;
+.hcc-caption {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--graphite);
+  margin: 0 0 18px;
 }
 
-@keyframes trace-fade-in {
-  to { opacity: 1; }
+/* Step rail — drawn as an SVG route so it reads as part of the same
+   cartographic system as the RouteRail on Selected Work, not a plain list. */
+.hcc-rail-svg {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  margin-bottom: 22px;
+  overflow: visible;
 }
-@keyframes trace-pulse {
-  0%, 100% { opacity: 0.9; transform: scale(1); transform-box: fill-box; transform-origin: center; }
-  50%      { opacity: 0.55; }
-}
-@keyframes trace-halo {
-  0%, 100% { opacity: 0.08; }
-  50%      { opacity: 0.22; }
+.hcc-rail-base { stroke: var(--rule-strong); stroke-width: 1.4; opacity: 0.4; }
+.hcc-rail-active { stroke-width: 1.8; stroke-linecap: round; }
+.hcc-rail-signal { filter: drop-shadow(0 0 3px currentColor); opacity: 0.9; }
+.hcc-rail-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--ink);
 }
 
-/* Place the trace above content where they overlap is harmless,
-   but keep typography readable on smaller viewports. */
-@media (max-width: 1024px) {
-  .hero-trace { display: none; }
-}
+.hcc-panel-wrap { perspective: 900px; }
+.hcc-panel { transform-style: preserve-3d; will-change: transform; }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-trace { transition: none; }
-  .trace-signal-dot,
-  .trace-signal-halo { animation: none; }
-  .trace-signal-dot animateMotion,
-  .trace-signal-halo animateMotion { /* SMIL respects prefers-reduced-motion in some UAs */ }
-  .trace-signal { display: none; }
+.hcc-visual {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+.hcc-chip {
+  fill: color-mix(in oklab, var(--hcc-accent) 16%, var(--paper-2));
+  stroke: var(--hcc-accent);
+  stroke-width: 1;
+}
+.hcc-gate-post { stroke: var(--rule-strong); stroke-width: 2; }
+.hcc-gate-bar { fill: color-mix(in oklab, var(--state-review) 20%, var(--paper-2)); stroke: var(--state-review); stroke-width: 1.4; }
+.hcc-gate-label {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; fill: var(--state-review);
+}
+.hcc-route-line { stroke: var(--rule-strong); stroke-width: 1.5; fill: none; }
+.hcc-route-line--active { stroke: var(--state-permission); }
+.hcc-route-signal { fill: var(--state-permission); filter: drop-shadow(0 0 3px currentColor); }
+.hcc-route-label { font-family: var(--font-mono); font-size: 10px; fill: var(--ink); }
+.hcc-route-label--dim { fill: var(--pencil); }
+.hcc-stamp-ring { fill: none; stroke: var(--state-verified); stroke-width: 2; }
+.hcc-stamp-check { fill: none; stroke: var(--state-verified); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.hcc-grid line { stroke: var(--rule); stroke-width: 0.6; }
+.hcc-parcel-line { fill: none; stroke: #4A6B3F; stroke-width: 1.8; }
+.hcc-parcel-fill { fill: color-mix(in oklab, #4A6B3F 12%, transparent); stroke: none; }
+.hcc-parcel-signal { fill: #4A6B3F; filter: drop-shadow(0 0 3px currentColor); }
+
+@media (max-width: 720px) {
+  .hcc { margin-top: 40px; padding-top: 22px; }
+  .hcc-rail-label { font-size: 10.5px; }
+  .hcc-visual { max-width: 340px; }
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -376,6 +393,14 @@ section.contact .grid {
   grid-template-columns: 220px 1fr;
   gap: 64px;
   align-items: start;
+}
+/* Grid tracks default to min-width:auto, so a long unbreakable string
+   (e.g. the linkedin.com/in/... link text) can blow the 1fr column past
+   the viewport. min-width:0 lets it wrap/truncate within the track instead. */
+section.about .grid > *,
+section.skills .grid > *,
+section.contact .grid > * {
+  min-width: 0;
 }
 @media (max-width: 720px) {
   section.about .grid,
@@ -646,217 +671,137 @@ section.contact .grid {
 }
 
 /* ─────────────────────────────────────────────────────────
-   PROJECT ROUTE MAP
-   Editorial two-column route diagram — desktop layout.
-   SVG path (computed by JS) connects card edge midpoints
-   in PROJECTS order: 01→02→03→04.
+   PROJECT MAP — four independent floating cards in a staggered
+   zigzag, connected by curved routes through the gutters (never
+   through card content). See RouteRail.jsx for the SVG overlay.
+   Framer Motion drives whileInView reveals; already no-ops
+   correctly under reduced motion.
    ───────────────────────────────────────────────────────── */
-
-/* Desktop: 2-column grid. Cards are direct children in DOM order (01,02,03,04)
-   so stacking on mobile preserves the correct reading sequence. */
-.project-route-map {
+.project-map {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 96px;
-  align-items: start;
-  padding: 48px 0 72px;
+  column-gap: 56px;
+  row-gap: 56px;
+  padding: 12px 0 8px;
 }
+.pr-card--tl { grid-column: 1; grid-row: 1; }
+.pr-card--tr { grid-column: 2; grid-row: 1; margin-top: 76px; }
+.pr-card--bl { grid-column: 1; grid-row: 2; }
+.pr-card--br { grid-column: 2; grid-row: 2; margin-top: 76px; }
 
-/* SVG route line — absolutely positioned, so it does not participate in grid flow */
-.prm-svg {
+/* SVG overlay — clipped to the map, sits behind the cards (DOM order:
+   RouteRail renders first, cards after, so cards paint on top). */
+.route-map-svg {
   position: absolute;
   top: 0;
   left: 0;
   pointer-events: none;
-  overflow: visible;
+  overflow: hidden;
   z-index: 0;
 }
+.route-seg-base { stroke: var(--rule-strong); stroke-width: 1.4; opacity: 0.4; }
+.route-seg-active { stroke-width: 1.8; stroke-linecap: round; }
+.route-seg-signal { filter: drop-shadow(0 0 3px currentColor); }
+.route-port-pulse { fill: none; stroke-width: 1.6; }
+.route-port-node { stroke: var(--paper); stroke-width: 2; }
 
-/* Route segments — each draws independently via stroke-dashoffset.
-   Transition is gated behind --ready (added by JS when IO fires) to prevent
-   a flash when the measured length replaces the 99999 sentinel value. */
-.prm-route {
-  stroke: var(--pencil);
-  stroke-width: 1;
-  fill: none;
-  stroke-linecap: round;
-  opacity: 0.6;
-}
-.prm-route--ready {
-  transition: stroke-dashoffset 650ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-[data-theme="dark"] .prm-route { stroke: var(--graphite); opacity: 0.5; }
-
-/* Route node — outer ring + inner dot */
-.prm-node {
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
-}
-.prm-node--on { opacity: 1; }
-.prm-node-ring {
-  fill: var(--paper);
-  stroke-width: 1.5;
-}
-
-/* One-time halo ring: expands and fades when --halo class is added */
-.prm-node-halo {
-  fill: none;
-  stroke-width: 1.2;
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-.prm-node--halo .prm-node-halo {
-  animation: prm-halo-expand 0.8s ease-out forwards;
-}
-@keyframes prm-halo-expand {
-  from { opacity: 0.5; transform: scale(1); }
-  to   { opacity: 0;   transform: scale(2.3); }
-}
-
-/* Card grid column placement */
-.prm-card--left  { grid-column: 1; }
-.prm-card--right {
-  grid-column: 2;
-  /* Vertical offset creates the zigzag rhythm between columns */
-  margin-top: 160px;
-}
-
-/* Project card */
-.prm-card {
-  display: flex;
-  flex-direction: column;
+.pr-card {
+  position: relative;
+  z-index: 1;
   background: var(--paper);
   border: 1px solid var(--rule);
-  border-radius: var(--r-2);
-  padding: 28px;
-  color: var(--ink);
-  opacity: 0; /* initial hidden — no transform so getBoundingClientRect returns final position */
-  transition:
-    border-color var(--dur-base) var(--ease-out),
-    box-shadow   var(--dur-slow) var(--ease-out);
+  border-radius: var(--r-3);
+  padding: 26px;
+  box-shadow: 0 1px 3px rgba(32, 33, 36, 0.05);
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
 }
-.prm-card:hover {
-  color: var(--ink); /* suppress a:hover amber bleed */
-  border-color: var(--rule-strong);
-  box-shadow: 0 3px 20px rgba(32, 33, 36, 0.07);
-}
-[data-theme="dark"] .prm-card:hover {
-  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
-}
+.pr-card:hover { border-color: var(--rule-strong); box-shadow: 0 10px 30px rgba(32, 33, 36, 0.08); }
+[data-theme="dark"] .pr-card { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+[data-theme="dark"] .pr-card:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32); }
 
-/* Reveal animation — JS adds --on after intersection */
-.prm-card--on {
-  animation: prm-card-rise 0.65s var(--ease-out) both;
+/* Invisible measurement anchors — RouteRail draws the actual visible
+   node in the SVG overlay at these coordinates. */
+.pr-port {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
 }
-@keyframes prm-card-rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
+.pr-port--right  { right: -4px; top: 50%; transform: translateY(-50%); }
+.pr-port--left   { left: -4px; top: 50%; transform: translateY(-50%); }
+.pr-port--top    { top: -4px; left: 50%; transform: translateX(-50%); }
+.pr-port--bottom { bottom: -4px; left: 50%; transform: translateX(-50%); }
 
-/* Card top row: index · mark · meta */
-.prm-card-top {
+.pr-card-top {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 18px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
-.prm-idx {
+.pr-idx {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.08em;
   color: var(--accent-gold);
-  padding-top: 2px;
-  flex-shrink: 0;
 }
-.prm-mark-wrap {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.prm-meta {
+.pr-meta {
   margin-left: auto;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 5px;
-  flex-shrink: 0;
-}
-.prm-kind {
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--graphite);
 }
-.prm-yr {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--pencil);
-}
-
-/* Card title */
-.prm-title {
+.pr-title {
   font-family: var(--font-serif);
-  font-size: clamp(20px, 2vw, 26px);
+  font-size: clamp(19px, 1.7vw, 23px);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   color: var(--ink);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   text-wrap: balance;
 }
-.prm-title em {
-  font-style: italic;
-  font-weight: 500;
-  color: var(--graphite);
-}
-
-/* Card description */
-.prm-desc {
+.pr-title em { font-style: italic; font-weight: 500; color: var(--graphite); }
+.pr-desc {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.55;
   color: var(--graphite);
-  margin: 0 0 20px;
-  flex: 1;
+  margin: 0 0 10px;
+}
+.pr-tags {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--pencil);
+  margin-bottom: 18px;
 }
 
-/* Card footer: tags · arrow */
-.prm-foot {
-  display: flex;
+.pr-demo { margin-bottom: 16px; }
+
+.pr-cta-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid var(--rule);
-  padding-top: 14px;
-  margin-top: auto;
-}
-.prm-tags {
+  gap: 8px;
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--pencil);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--accent-gold);
+  padding-bottom: 2px;
 }
-.prm-arrow {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  color: var(--pencil);
-  transition: transform 0.3s var(--ease-out), color 0.3s var(--ease-out);
-  flex-shrink: 0;
-}
-.prm-card:hover .prm-arrow {
-  transform: translateX(5px);
-  color: var(--amber);
-}
+.pr-cta-link .ar { transition: transform 0.3s var(--ease-out); }
+.pr-cta-link:hover .ar { transform: translateX(5px); }
 
-/* Closing editorial line below the route map */
 .prm-closing {
   font-family: var(--font-serif);
   font-style: italic;
@@ -865,47 +810,121 @@ section.contact .grid {
   color: var(--graphite);
   text-align: center;
   max-width: 560px;
-  margin: 40px auto 0;
+  margin: 48px auto 0;
   padding-top: 40px;
   border-top: 1px solid var(--rule);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.prm-closing--on {
-  opacity: 1;
-  transform: none;
 }
 
-/* prefers-reduced-motion: instant-reveal, no transitions, no halo */
-@media (prefers-reduced-motion: reduce) {
-  .prm-card { opacity: 1; }
-  .prm-card--on { animation: none; }
-  .prm-node { opacity: 1; }
-  .prm-route { transition: none; }
-  .prm-route--ready { transition: none; }
-  .prm-node-halo { display: none; }
-  .prm-closing { opacity: 1; transform: none; transition: none; }
-}
-
-/* ── Responsive: tablet / mobile stacked layout ── */
-@media (max-width: 820px) {
-  /* Single-column grid preserves correct reading order (01,02,03,04) */
-  .project-route-map {
+@media (max-width: 900px) {
+  .project-map {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 24px 0 48px;
+    row-gap: 40px;
+    padding-left: 22px;
   }
-  .prm-card--left, .prm-card--right { grid-column: 1; margin-top: 0; }
-  .prm-svg { display: none; }
-  /* Always show cards and closing line on small screens — no intersection-gate */
-  .prm-card { opacity: 1; }
-  .prm-card--on { animation: none; }
-  .prm-closing { opacity: 1; transform: none; transition: none; }
+  .pr-card--tl, .pr-card--tr, .pr-card--bl, .pr-card--br {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0;
+  }
+  /* Simplified vertical route: every port sits in a fixed left gutter so
+     the connectors read as one clean vertical line down the outside edge. */
+  .pr-port--left, .pr-port--right { left: -18px; right: auto; top: 50%; }
+  .pr-port--top { left: -18px; top: 16px; }
+  .pr-port--bottom { left: -18px; top: auto; bottom: 16px; }
 }
-@media (max-width: 520px) {
-  .prm-card { padding: 20px; }
-  .prm-title { font-size: 20px; }
+
+/* ── Homepage compact demo (HomeEvidenceDemo.jsx) ─────────── */
+.hd-demo {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: color-mix(in oklab, var(--paper-2) 65%, var(--paper));
+  overflow: hidden;
+}
+.hd-demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--paper-3) 60%, var(--paper));
+}
+.hd-demo-dots { display: inline-flex; gap: 5px; }
+.hd-demo-dots i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--rule-strong);
+  display: inline-block;
+}
+.hd-demo-title {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--graphite);
+}
+.hd-demo-body { padding: 16px; }
+
+.hd-flow { list-style: none; margin: 0; padding: 0; }
+.hd-stage {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.hd-stage:last-child { border-bottom: 0; padding-bottom: 0; }
+.hd-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0;
+  align-self: center;
+}
+.hd-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.hd-short {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--graphite);
+}
+.hd-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-1);
+  border: 1px solid color-mix(in oklab, var(--tag-c, var(--graphite)) 45%, var(--rule-strong));
+  color: var(--tag-c, var(--graphite));
+  white-space: nowrap;
+}
+
+.hd-packet { margin: 0; }
+.hd-packet-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.hd-packet-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.hd-packet-row dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--pencil);
+  margin-bottom: 3px;
+}
+.hd-packet-row dd {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1105,6 +1124,7 @@ section.contact .grid {
   display: flex; align-items: baseline; justify-content: space-between;
   gap: 24px;
   padding: 22px 0;
+  min-width: 0;
   border-bottom: 1px solid var(--rule);
   background: none; color: var(--ink);
   transition:
@@ -1122,6 +1142,8 @@ section.contact .grid {
   font-family: var(--font-display);
   font-size: clamp(18px, 2vw, 22px);
   font-weight: 500;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .contact .links a .left .lab {
   font-family: var(--font-mono);

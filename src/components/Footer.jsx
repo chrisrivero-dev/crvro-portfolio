@@ -9,7 +9,9 @@ export default function Footer() {
           <span style={{ color: "var(--pencil)" }}>crvro.com · 2026</span>
         </div>
         <div className="right">
-          <a href="mailto:contact@crvro.com">email</a>
+          {/* Visible address is contact@crvro.com; mailto targets the working inbox
+              behind it (see Contact.jsx) so messages don't bounce. */}
+          <a href="mailto:christopherarivero@gmail.com">email</a>
           <a href="https://github.com/chrisrivero-dev" target="_blank" rel="noreferrer">github</a>
           <a href="#top">top ↑</a>
         </div>

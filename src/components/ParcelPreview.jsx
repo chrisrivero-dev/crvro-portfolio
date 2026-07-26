@@ -206,15 +206,17 @@ export default function ParcelPreview({ compact = false }) {
               style={{ fontSize:'9px', letterSpacing:'0.1em' }}>N</text>
           </g>
 
-          {/* Closure validation — appears last */}
+          {/* Closure validation state — appears last. Qualitative only:
+              no exact misclosure/precision figure is traceable to a
+              reproducible artifact, so this shows the check ran, not a number. */}
           <g className={`pp-closure${closureOn ? ' pp-closure--on' : ''}`}>
             <text x="372" y="193" textAnchor="end" className="pp-text"
-              style={{ fontSize:'8.5px', letterSpacing:'0.10em', fill:'var(--graphite)' }}>
-              CLOSURE  0.02'
+              style={{ fontSize:'8.5px', letterSpacing:'0.10em', fill:'var(--state-verified)' }}>
+              CLOSURE CHECKED
             </text>
             <text x="372" y="205" textAnchor="end" className="pp-text"
-              style={{ fontSize:'7.5px', letterSpacing:'0.08em', fill:'var(--pencil)', opacity:0.75 }}>
-              PRECISION  1 : 16,400
+              style={{ fontSize:'7.5px', letterSpacing:'0.08em', fill:'var(--pencil)', opacity:0.85 }}>
+              WITHIN TOLERANCE
             </text>
           </g>
         </svg>
@@ -285,10 +287,10 @@ export default function ParcelPreview({ compact = false }) {
 
         <g className={`pp-closure${closureOn ? ' pp-closure--on' : ''}`}>
           <text x="700" y="393" textAnchor="end" className="pp-text pp-text--closure">
-            CLOSURE  0.02'
+            CLOSURE CHECKED
           </text>
           <text x="700" y="408" textAnchor="end" className="pp-text pp-text--closure-sub">
-            PRECISION  1 : 16,400
+            WITHIN TOLERANCE
           </text>
         </g>
 

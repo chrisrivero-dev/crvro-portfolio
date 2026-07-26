@@ -16,6 +16,11 @@ export default function Contact() {
               If you'd rather keep it short, GitHub or LinkedIn work too.
             </p>
             <div className="links" data-stagger>
+              {/* No backend contact form exists on this static site — this is a
+                  plain mailto: link. Visible text stays contact@crvro.com (the
+                  public address); the mailto target is the actual inbox that
+                  receives it, christopherarivero@gmail.com, so mail doesn't
+                  bounce. Footer.jsx uses the same destination for consistency. */}
               <a href="mailto:christopherarivero@gmail.com" className="reveal">
                 <span className="left"><span className="lab">Email</span>contact@crvro.com</span>
                 <span className="right">primary <span className="ar">↗</span></span>

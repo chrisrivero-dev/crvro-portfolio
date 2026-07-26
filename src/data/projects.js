@@ -21,8 +21,10 @@ export const PROJECTS = [
     shape: 'half',
     role: 'Solo build — design, backend, frontend, KB workflow',
     status: 'Active project · deployed on Railway',
-    statusBadge: 'Active build',
+    statusBadge: 'Demonstrated prototype',
     outcome: 'Functional support-assistant prototype that grounds draft replies in a local knowledge base and keeps human review in the loop.',
+    disclaimer:
+      'Independent support-workflow prototype demonstrated with synthetic or sanitized content. No private customer tickets, credentials, or proprietary company code are included.',
     repo: null,
     demo: null,
     overview: [
@@ -144,7 +146,7 @@ export const PROJECTS = [
       'Improve Suggested KB Matches so the agent can see why a specific article was surfaced.',
       'Add lightweight edit/discard logging so I can see which drafts agents actually use.',
       'Add a small test set for common ticket types to catch regressions when prompts or KB content changes.',
-      'Add decision log support for management-approved wording-approved wording so team leads can flag canonical answers.',
+      'Add decision log support for management-approved wording so team leads can flag canonical answers.',
       'Improve the Telegram bot so new article drafts cite the source link they were built from.',
       'Keep auto-send advisory only — drafts assist, the agent decides.',
     ],
@@ -169,6 +171,8 @@ export const PROJECTS = [
     status: 'Active development — operating daily across real projects',
     statusBadge: 'Active development',
     outcome: 'A human-supervised workflow system that routes local and cloud models across research, development, testing, and deployment, with approval checkpoints on consequential actions.',
+    disclaimer:
+      'OpenClaw is built around Hermes Agent, Ollama, and a mix of local and cloud models. Hermes Agent and Ollama are open-source foundations Christopher did not author. Everything else described here — the workflow architecture, model registry, routing policies, development and testing tooling, deployment verification, approval gates, audit trail, and the Telegram and local-service integrations — is the operating system Christopher designed, configured, and runs around them.',
     repo: null,
     demo: null,
     overview: [
@@ -611,7 +615,7 @@ export const PROJECTS = [
     shape: 'arc',
     role: 'Solo build — product, AI/GIS workflow, frontend, report design',
     status: 'Active build · LA City beta · expanding jurisdiction coverage',
-    statusBadge: 'Active build',
+    statusBadge: 'Public sample available',
     outcome: 'Working property screening tool that turns an address into a cited, reviewable first-pass feasibility report covering parcel context, zoning signals, jurisdiction notes, risk flags, and verification needs.',
     repo: null,
     demo: 'https://www.usegroundrules.com/',
@@ -709,7 +713,7 @@ export const GIS_PROJECTS = [
     shape: 'arc',
     role: 'Solo build — parser, geometry, export, QA workflow',
     status: 'Active Build · local tool',
-    statusBadge: 'Active Build',
+    statusBadge: 'Evaluation harness in progress',
     outcome: 'Local research tool for parsing, validating, and exporting metes-and-bounds legal descriptions for mapping workflow testing.',
     repo: 'https://github.com/chrisrivero-dev/parcel-engine',
     demo: null,

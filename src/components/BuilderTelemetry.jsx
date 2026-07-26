@@ -16,7 +16,7 @@ export default function BuilderTelemetry() {
 
         <div className="tele-grid" data-stagger>
           <div className="tele-block reveal">
-            <h3 className="tele-head">Currently investigating</h3>
+            <h2 className="tele-head">Currently investigating</h2>
             <ul className="tele-invest">
               {INVESTIGATING.map((item) => (
                 <li key={item}>{item}</li>

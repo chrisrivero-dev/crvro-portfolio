@@ -968,3 +968,303 @@
   }
   /* pan frames: JS drives the transform; CSS just provides the cursor */
 }
+
+/* ============================================================
+   Evidence panel — sanitized workflow demonstrations
+   Desktop: project copy | evidence panel, side by side.
+   Mobile: copy, then panel, then CTA.
+   ============================================================ */
+.evidence-block {
+  margin: 0 auto 80px;
+}
+.evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "copy panel" "cta panel";
+  gap: 20px 56px;
+  align-items: start;
+}
+.evidence-copy { grid-area: copy; max-width: 480px; }
+.evidence-copy .idx {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+  margin-bottom: 14px;
+}
+.evidence-copy h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+.evidence-copy p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin: 0;
+}
+.evidence-cta {
+  grid-area: cta;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.evidence-panel { grid-area: panel; }
+
+@media (max-width: 860px) {
+  .evidence-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: "copy" "panel" "cta";
+  }
+  .evidence-copy { max-width: none; }
+  .evidence-cta { margin-top: 8px; }
+}
+
+/* ── panel frame (shared console chrome) ─────────────────── */
+.ep-panel {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: color-mix(in oklab, var(--paper-2) 65%, var(--paper));
+  overflow: hidden;
+}
+.ep-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--paper-3) 60%, var(--paper));
+}
+.ep-panel-dots { display: inline-flex; gap: 5px; }
+.ep-panel-dots i {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--rule-strong);
+  display: inline-block;
+}
+.ep-panel-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--graphite);
+}
+.ep-panel-body { padding: 20px 20px 22px; }
+
+/* ── stage flow (timeline of workflow steps) ─────────────── */
+.ep-flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ep-stage {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 14px;
+}
+.ep-stage-rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.ep-stage-rail::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: -14px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+.ep-stage--last .ep-stage-rail::before { display: none; }
+.ep-stage-node {
+  position: relative;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--paper-2);
+}
+.ep-stage-body { padding-bottom: 18px; }
+.ep-stage--last .ep-stage-body { padding-bottom: 0; }
+.ep-stage-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.ep-stage-n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--pencil);
+}
+.ep-stage-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.ep-stage-detail {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--graphite);
+  margin: 0;
+}
+
+/* ── classification tags ─────────────────────────────────── */
+.ep-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--r-1);
+  border: 1px solid color-mix(in oklab, var(--tag-c, var(--graphite)) 45%, var(--rule-strong));
+  color: var(--tag-c, var(--graphite));
+  white-space: nowrap;
+}
+
+/* ── audit excerpt (ordered events, no invented timestamps) ─ */
+.ep-audit {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.ep-audit-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--pencil);
+  margin-bottom: 8px;
+}
+.ep-audit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+/* ── Hermes open-source vs system-layer split ────────────── */
+.ep-stack-split {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+}
+.ep-stack-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--amber-deep);
+  margin-bottom: 14px;
+}
+.ep-stack-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.ep-stack-col-head {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--graphite);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+.ep-stack-col--mine .ep-stack-col-head { color: var(--ink); }
+.ep-stack-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--graphite);
+}
+.ep-stack-col--mine ul { color: var(--ink); }
+@media (max-width: 480px) {
+  .ep-stack-cols { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* ── GroundRules screening packet ────────────────────────── */
+.ep-packet-note {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--pencil);
+  margin-bottom: 14px;
+}
+.ep-packet {
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+.ep-packet-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.ep-packet-row dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--pencil);
+  margin-bottom: 4px;
+}
+.ep-packet-row dd {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ep-packet-val {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+/* ── Parcel Engine mini diagram ───────────────────────────── */
+.ep-parcel-diagram {
+  width: 100%;
+  height: auto;
+  max-width: 320px;
+  margin-bottom: 18px;
+  display: block;
+}
+.ep-parcel-poly {
+  fill: color-mix(in oklab, var(--amber) 8%, transparent);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+.ep-parcel-pob { fill: var(--amber-deep); }
+.ep-parcel-vtx { fill: var(--graphite); }
+.ep-parcel-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  fill: var(--graphite);
+}
+
+@media (max-width: 720px) {
+  .evidence-block { margin-bottom: 56px; }
+  .ep-panel-body { padding: 16px; }
+}

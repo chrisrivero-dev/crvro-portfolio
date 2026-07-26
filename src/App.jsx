@@ -86,11 +86,67 @@ function parseRoute(path) {
   return { kind: "home" };
 }
 
+const SITE_URL = "https://crvro.com";
+const DEFAULT_META = {
+  title: "crvro.com — Christopher Rivero",
+  description:
+    "Christopher Rivero — a builder of small, useful systems. Automation, AI support tooling, GIS / CAD pipelines.",
+};
+
+function setMetaTag(attr, key, content) {
+  let el = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
+
+function setCanonical(href) {
+  let el = document.head.querySelector('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", "canonical");
+    document.head.appendChild(el);
+  }
+  el.setAttribute("href", href);
+}
+
+// Keeps <title>, description, canonical, and OG/Twitter tags in sync with
+// the current SPA route — direct loads get the right tags from index.html;
+// this covers client-side navigation between them.
+function useRouteMeta(route) {
+  useEffect(() => {
+    const isCase = route.kind === "case";
+    const p = isCase ? route.project : null;
+
+    const title = isCase
+      ? `${p.title} — Christopher Rivero`
+      : DEFAULT_META.title;
+    const description = isCase ? p.desc : DEFAULT_META.description;
+    const path = isCase ? `/projects/${p.slug}` : "/";
+    const url = SITE_URL + path;
+
+    document.title = title;
+    setMetaTag("name", "description", description);
+    setCanonical(url);
+    setMetaTag("property", "og:title", title);
+    setMetaTag("property", "og:description", description);
+    setMetaTag("property", "og:url", url);
+    setMetaTag("property", "og:type", isCase ? "article" : "website");
+    setMetaTag("name", "twitter:card", "summary_large_image");
+    setMetaTag("name", "twitter:title", title);
+    setMetaTag("name", "twitter:description", description);
+  }, [route.kind, route.kind === "case" ? route.project.slug : null]);
+}
+
 export default function App() {
   const path = usePathRoute();
   const route = parseRoute(path);
   const [activeId, setActiveId] = useState("work");
   const [theme, toggleTheme] = useTheme();
+  useRouteMeta(route);
 
   // Scroll to top whenever a route change happens (case ↔ home)
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import HeroSystemTrace from './HeroSystemTrace.jsx';
+import HeroCommandCenter from './HeroCommandCenter.jsx';
 
 export default function Hero() {
   return (
@@ -12,10 +12,17 @@ export default function Hero() {
             <span>Lakewood, CA</span>
           </div>
           <div>
+            <div className="eyebrow hero-eyebrow">
+              SUPPORT AUTOMATION · AI OPERATIONS · GIS SYSTEMS
+            </div>
             <h1>
-              I build internal tools for support teams and GIS workflows —{' '}
-              <em>from systems I've actually worked in.</em>
+              I turn difficult support and mapping workflows into{' '}
+              <em>controlled, testable software.</em>
             </h1>
+            <p className="hero-sub">
+              Python automation, human-supervised AI, and GIS/CAD tooling—built
+              from workflows I've operated firsthand.
+            </p>
             <div className="meta-row">
               <span>
                 <span className="lab">Focus —</span>AI Support Systems · Workflow Automation ·
@@ -32,7 +39,7 @@ export default function Hero() {
             </a>
           </div>
         </div>
-        <HeroSystemTrace />
+        <HeroCommandCenter />
       </div>
     </section>
   );

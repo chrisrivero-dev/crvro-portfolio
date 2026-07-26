@@ -22,7 +22,11 @@ export default function Header({ activeId, theme, onToggleTheme }) {
   return (
     <header className={"site-header" + (scrolled ? " scrolled" : "")} data-screen-label="Header">
       <div className="inner">
-        <a href="#top" className="wordmark" aria-label="crvro.com — Christopher Rivero">
+        {/* No aria-label here on purpose: the accessible name is derived
+            from the visible text (both spans) so it matches what's on
+            screen — an explicit label previously omitted "Portfolio" and
+            didn't match, which fails WCAG 2.5.3 Label in Name. */}
+        <a href="#top" className="wordmark">
           <span className="top">crvro.com · Portfolio</span>
           <span className="name">Christopher Rivero</span>
         </a>

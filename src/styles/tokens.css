@@ -3,7 +3,13 @@
    Cool minimal professional · stone + charcoal + muted slate
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap');
+/* Weights trimmed to what's actually used in portfolio.css / case-study.css:
+   Inter Tight and Inter only ever render at 400/500; Newsreader (incl. italic)
+   only at 400/500; JetBrains Mono is requested at 600 in many label styles
+   (.tele-head, .disclaimer .lab, .stack-col h4, etc.) but was previously only
+   loaded at 400/500, so those labels were rendering synthetic/faux bold —
+   added 600 here so they use the real weight instead. */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 
 :root {
   /* ─── Color: surface / ink ──────────────────────────── */
@@ -12,14 +18,14 @@
   --paper-3:     #e7e7e2;   /* tag fill / muted surface */
   --ink:         #202124;   /* primary text — charcoal */
   --graphite:    #4f565c;   /* secondary text */
-  --pencil:      #767b80;   /* tertiary, dividers */
+  --pencil:      #6c7175;   /* tertiary, dividers — darkened from #767b80 for AA contrast on paper */
   --rule:        #cfcfca;   /* hairlines */
   --rule-strong: #b6b8b2;
 
   /* ─── Color: UI accent ──────────────────────────────── */
   --amber:       #6f7c85;   /* muted slate-blue — restrained accent */
   --amber-deep:  #58676f;
-  --accent-gold: #9a7a3f;   /* muted brass — tiny warm counterpoint to cool gray */
+  --accent-gold: #896c38;   /* muted brass — darkened from #9a7a3f for AA contrast on paper */
   --terracotta:  #B85A3A;   /* help-nearby (community/warm) */
   --olive:       #6B6B3E;   /* sidecar (calm/AI) */
   --indigo:      #2D3960;   /* prediction-market (data) */
@@ -42,6 +48,19 @@
   --success: #4A6B3F;
   --warn:    #A37018;
   --error:   #8B2E2E;
+
+  /* ─── Operational state language (hero / evidence panels) ─
+     Aliases onto existing tokens — one vocabulary shared by the
+     hero command center, homepage demos, and case-study panels. */
+  --state-incoming:    var(--graphite);
+  --state-evidence:    var(--amber-deep);
+  --state-processing:  var(--accent-gold);
+  --state-permission:  var(--indigo);
+  --state-review:      var(--warn);
+  --state-verified:    var(--success);
+  --state-warning:     var(--warn);
+  --state-fallback:    var(--olive);
+  --state-export:      var(--success);
 
   /* ─── Type families ─────────────────────────────────── */
   --font-display: "Inter Tight", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -84,13 +103,24 @@
   --paper-3:     #2b2824;
   --ink:         #e4dfd6;   /* warm off-white */
   --graphite:    #9c9890;
-  --pencil:      #6a6660;
+  --pencil:      #86837e;   /* lightened from #6a6660 for AA contrast on dark paper */
   --rule:        #2f2c28;
   --rule-strong: #3d3935;
 
   --amber:       #8faab8;   /* slightly brighter in dark */
   --amber-deep:  #7b9aaa;
   --accent-gold: #c09455;   /* warmer brass on dark */
+
+  /* Semantic + project-accent colors lightened for AA contrast on dark
+     paper — the light-mode values (~1.5–3:1 here) were never adjusted
+     for dark mode before this pass. */
+  --success:     #718b69;
+  --warn:        #aa7b2a;
+  --error:       #b27575;
+  --terracotta:  #c06d51;
+  --olive:       #858560;
+  --indigo:      #7c849c;
+  --plum:        #9c7f88;
 
   --fg-1:        var(--ink);
   --fg-2:        var(--graphite);
