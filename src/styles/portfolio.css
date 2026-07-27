@@ -252,7 +252,7 @@ button { font: inherit; cursor: pointer; }
 .hero .container-wide { position: relative; }
 
 .hcc {
-  margin-top: 56px;
+  margin-top: 32px;
   padding-top: 28px;
   border-top: 1px solid var(--rule);
 }
@@ -261,6 +261,23 @@ button { font: inherit; cursor: pointer; }
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 22px;
+}
+
+/* Desktop: center and enlarge the command center visual */
+@media (min-width: 900px) {
+  .hcc {
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Center tabs */
+  .hcc-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 8px;
+  }
 }
 .hcc-tab {
   font-family: var(--font-mono);
@@ -276,6 +293,14 @@ button { font: inherit; cursor: pointer; }
   transition: border-color 0.25s var(--ease-out), color 0.25s var(--ease-out), background 0.25s var(--ease-out);
 }
 .hcc-tab:hover { color: var(--ink); border-color: var(--rule-strong); }
+
+/* Desktop larger tabs */
+@media (min-width: 900px) {
+  .hcc-tab {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
 .hcc-tab:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .hcc-tab--active {
   color: var(--ink);
@@ -294,7 +319,7 @@ button { font: inherit; cursor: pointer; }
    cartographic system as the RouteRail on Selected Work, not a plain list. */
 .hcc-rail-svg {
   width: 100%;
-  max-width: 560px;
+  max-width: 740px;
   height: auto;
   display: block;
   margin-bottom: 22px;
@@ -315,9 +340,11 @@ button { font: inherit; cursor: pointer; }
 
 .hcc-visual {
   width: 100%;
-  max-width: 420px;
+  max-width: 580px;
   height: auto;
   display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 .hcc-chip {
   fill: color-mix(in oklab, var(--hcc-accent) 16%, var(--paper-2));
@@ -343,7 +370,11 @@ button { font: inherit; cursor: pointer; }
 .hcc-parcel-signal { fill: #4A6B3F; filter: drop-shadow(0 0 3px currentColor); }
 
 @media (max-width: 720px) {
-  .hcc { margin-top: 40px; padding-top: 22px; }
+  .hcc { margin-top: 32px; padding-top: 22px; }
+  .hcc-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
   .hcc-rail-label { font-size: 10.5px; }
   .hcc-visual { max-width: 340px; }
 }
