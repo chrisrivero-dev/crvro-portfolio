@@ -25,7 +25,7 @@ function OperatorProfile() {
       <div className="operator-portrait-frame">
         <div className="operator-portrait-bar">
           <span className="operator-portrait-dots" aria-hidden="true"><i /><i /><i /></span>
-          <span className="operator-portrait-label">operator · profile</span>
+          <span className="operator-portrait-label">builder · profile</span>
         </div>
         <div className="operator-portrait-img-wrap">
           <span className="operator-tick operator-tick--tl" aria-hidden="true" />
@@ -41,7 +41,7 @@ function OperatorProfile() {
             loading="lazy"
           />
         </div>
-        <span className="operator-tag">OPERATOR</span>
+        <span className="operator-tag">SYSTEMS BUILDER</span>
       </div>
 
       <div className="operator-copy">
