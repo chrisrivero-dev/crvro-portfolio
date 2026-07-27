@@ -3,13 +3,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 const EASE = [0.16, 1, 0.3, 1];
 
-const OPERATOR_POINTS = [
-  'Builds practical AI systems and internal tools.',
-  'Works across support operations, workflow automation, and GIS/CAD.',
-  'Uses Hermes daily to coordinate projects and troubleshoot problems.',
-  'Approves important actions before they run.',
-];
-
 function OperatorProfile() {
   const reduced = useReducedMotion();
   return (
@@ -48,11 +41,6 @@ function OperatorProfile() {
           improving one system, starting another, or looking for practical
           ways AI can make difficult work easier for people.”
         </p>
-        <ul className="operator-list">
-          {OPERATOR_POINTS.map((point) => (
-            <li key={point}>{point}</li>
-          ))}
-        </ul>
       </div>
     </motion.div>
   );
@@ -89,43 +77,21 @@ export default function About() {
           </div>
           <div className="body">
             <p>
-              <em>I’m Christopher.</em> I build practical AI systems and
-              internal tools for support teams, workflow automation, and
-              GIS/CAD operations. Most of them start with problems I’ve
-              worked with firsthand.
+              I’m Christopher. I build practical AI systems and internal tools
+              for support, automation, and GIS/CAD. Most of them start with
+              problems I’ve dealt with myself.
             </p>
             <p>
-              My background started in GIS/CAD support, where I handled
-              technical problems, mapping workflows, documentation, and
-              customer support. That work led me to build automation and AI
-              tools for the same kinds of day-to-day problems.
+              I started in GIS/CAD support and gradually moved deeper into
+              automation and human-supervised AI. I built my own local AI
+              workstation and use Hermes every day to organize projects,
+              investigate problems, and troubleshoot bugs. I still make the
+              final calls.
             </p>
             <p>
-              I built and configured my own local AI workstation, where I use
-              Hermes as a second brain and daily assistant. It helps me
-              organize projects, investigate problems, and troubleshoot bugs.
-              I still make the final calls.
-            </p>
-            <p>
-              I build tools that show where an answer came from and pause
-              before important actions. Automation should save time without
-              hiding what happened or who approved it.
-            </p>
-            <p>
-              I’ve seen AI guess when it has no match. I’ve also seen
-              automation make changes without leaving a clear record. I build
-              around those failures so the person using the tool can see what
-              happened.
-            </p>
-            <p>
-              I usually have more ideas than time. I keep improving the
-              systems I already use, and I start new projects when I see a
-              problem worth solving.
-            </p>
-            <p>
-              If the work involves applied AI, AI operations, support
-              engineering, workflow automation, or GIS/CAD tooling, I’d like
-              to hear about it.
+              I usually have more ideas than time. I keep improving the systems
+              I already use and start new projects when I see a problem worth
+              solving.
             </p>
 
             <div className="stat-list" data-stagger>

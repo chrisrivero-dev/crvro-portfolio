@@ -13,6 +13,13 @@ const EASE = [0.16, 1, 0.3, 1];
 // unless added here deliberately; their case-study routes are unaffected.
 const HOMEPAGE_SLUGS = ["sidecar", "openclaw", "help-nearby", "groundrules"];
 
+const HOMEPAGE_DESCRIPTIONS = {
+  sidecar: "Drafts support replies from approved KB articles and leaves the final response to the agent.",
+  openclaw: "The AI workflow system I use every day to route work between local and cloud models under my approval.",
+  "help-nearby": "Enter a ZIP code and choose a need to find nearby resources without creating an account.",
+  groundrules: "Turns an address into an early property screen showing findings and what still needs verification.",
+};
+
 const homepageProjects = HOMEPAGE_SLUGS.map((slug) =>
   PROJECTS.find((p) => p.slug === slug)
 ).filter(Boolean);
@@ -56,7 +63,7 @@ function ProjectCard({ project: p, index, cardRef, inRef, outRef }) {
       <h3 className="pr-title">
         {p.title} <em>{p.titleEm}</em>
       </h3>
-      <p className="pr-desc">{p.desc}</p>
+      <p className="pr-desc">{HOMEPAGE_DESCRIPTIONS[p.slug]}</p>
       <span className="pr-tags">{p.tags[0]}</span>
 
       <div className="pr-demo">
@@ -111,11 +118,6 @@ export default function Projects() {
           ))}
         </div>
 
-        <p className="prm-closing">
-          The projects are different. In each one, I try to make the work
-          easier to follow and leave important decisions with the person
-          using it.
-        </p>
       </div>
     </section>
   );

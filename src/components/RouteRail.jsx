@@ -100,6 +100,7 @@ export default function RouteRail({ containerRef, cards }) {
     const container = containerRef.current;
     if (!container) return;
     const cr = container.getBoundingClientRect();
+    const mobile = window.matchMedia('(max-width: 900px)').matches;
     const rel = (el) => {
       if (!el) return null;
       const r = el.getBoundingClientRect();
@@ -115,7 +116,12 @@ export default function RouteRail({ containerRef, cards }) {
       const inPt = rel(inAnchor?.ref.current);
       if (!outPt || !inPt) continue;
       nextSegs.push({
-        d: segmentPath(outPt, outAnchor.side, inPt, inAnchor.side),
+        d: segmentPath(
+          outPt,
+          mobile ? 'bottom' : outAnchor.side,
+          inPt,
+          mobile ? 'top' : inAnchor.side
+        ),
         accent: b.accent,
         key: i,
       });
@@ -123,6 +129,12 @@ export default function RouteRail({ containerRef, cards }) {
 
     const nextPorts = [];
     cards.forEach((c) => {
+      if (mobile) {
+        const anchor = c.ports.in || c.ports.out;
+        const pt = rel(anchor?.ref.current);
+        if (pt) nextPorts.push({ ...pt, accent: c.accent, key: c.id + '-mobile' });
+        return;
+      }
       ['in', 'out'].forEach((k) => {
         const anchor = c.ports[k];
         if (!anchor) return;

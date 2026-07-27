@@ -20,8 +20,7 @@ export default function Hero() {
               <em>controlled, testable software.</em>
             </h1>
             <p className="hero-sub">
-              Python automation, human-supervised AI, and GIS/CAD tooling—built
-              from workflows I've operated firsthand.
+              I build Python automation and AI tools for support and GIS/CAD work I know firsthand.
             </p>
             <div className="meta-row">
               <span>

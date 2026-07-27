@@ -15,8 +15,7 @@ export default function Contact() {
           <div></div>
           <div className="body">
             <p>
-              Email is fastest. I read everything; I usually reply within a day.
-              If you'd rather keep it short, GitHub or LinkedIn work too.
+              Email is fastest. I usually reply within a day.
             </p>
             <div className="links" data-stagger>
               {/* No backend contact form exists on this static site — this is a
