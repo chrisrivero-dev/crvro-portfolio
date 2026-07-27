@@ -30,6 +30,18 @@
   --olive:       #6B6B3E;   /* sidecar (calm/AI) */
   --indigo:      #2D3960;   /* prediction-market (data) */
   --plum:        #5B2A3A;   /* openclaw (local/private) */
+  /* Theme-aware twins of the two greens hard-coded in projects.js.
+     The case studies keep their hex; the Project World chart uses
+     these so both greens stay legible on the dark ground. */
+  --gr-green:     #3B6B55;  /* groundrules */
+  --parcel-green: #4A6B3F;  /* parcel engine */
+
+  /* ─── Project World chart surfaces ──────────────────── */
+  --sea:       color-mix(in oklab, var(--amber) 9%, var(--paper-2));
+  --land:      var(--paper-3);
+  --coast:     color-mix(in oklab, var(--ink) 78%, var(--paper-3));
+  --map-line:  var(--rule-strong);
+  --map-faint: color-mix(in oklab, var(--rule-strong) 55%, transparent);
 
   /* ─── Color: foreground/background tokens ───────────── */
   --fg-1:        var(--ink);
@@ -121,6 +133,13 @@
   --olive:       #858560;
   --indigo:      #7c849c;
   --plum:        #9c7f88;
+  --gr-green:     #7ba38d;
+  --parcel-green: #718b69;
+
+  /* Chart goes from warm parchment to a night blueprint in dark mode */
+  --sea:   color-mix(in oklab, #8faab8 7%, #16191d);
+  --land:  #262420;
+  --coast: color-mix(in oklab, var(--ink) 66%, var(--paper-3));
 
   --fg-1:        var(--ink);
   --fg-2:        var(--graphite);
