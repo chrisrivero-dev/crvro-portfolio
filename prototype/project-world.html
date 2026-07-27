@@ -1,0 +1,1873 @@
+<title>Project World — crvro.com prototype</title>
+
+<style>
+/* ============================================================
+   PROJECT WORLD — clickable prototype for crvro.com
+   Selected Work redesign only. Tokens mirror src/styles/tokens.css.
+   Fonts: system fallbacks stand in for Newsreader / Inter / JetBrains Mono
+   (production loads the real webfonts).
+   ============================================================ */
+
+:root {
+  --paper:       #f5f5f2;
+  --paper-2:     #ebebeb;
+  --paper-3:     #e7e7e2;
+  --ink:         #202124;
+  --graphite:    #4f565c;
+  --pencil:      #6c7175;
+  --rule:        #cfcfca;
+  --rule-strong: #b6b8b2;
+
+  --amber:       #6f7c85;
+  --amber-deep:  #58676f;
+  --accent-gold: #896c38;
+  --terracotta:  #B85A3A;
+  --olive:       #6B6B3E;
+  --indigo:      #2D3960;
+  --plum:        #5B2A3A;
+  --gr-green:    #3B6B55;
+  --parcel-green:#4A6B3F;
+
+  --success: #4A6B3F;
+  --warn:    #A37018;
+
+  /* Map layer — parchment chart in light, blueprint night chart in dark */
+  --sea:       color-mix(in oklab, var(--amber) 9%, var(--paper-2));
+  --land:      var(--paper-3);
+  --land-2:    color-mix(in oklab, var(--ink) 6%, var(--paper-3));
+  --coast:     color-mix(in oklab, var(--ink) 78%, var(--paper-3));
+  --map-line:  var(--rule-strong);
+  --map-faint: color-mix(in oklab, var(--rule-strong) 55%, transparent);
+
+  --font-serif: "Newsreader", Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-body:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --r-1: 2px; --r-2: 4px; --r-3: 8px; --r-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:       #1a1917;
+    --paper-2:     #221f1c;
+    --paper-3:     #2b2824;
+    --ink:         #e4dfd6;
+    --graphite:    #9c9890;
+    --pencil:      #86837e;
+    --rule:        #2f2c28;
+    --rule-strong: #3d3935;
+    --amber:       #8faab8;
+    --amber-deep:  #7b9aaa;
+    --accent-gold: #c09455;
+    --terracotta:  #c06d51;
+    --olive:       #858560;
+    --indigo:      #7c849c;
+    --plum:        #9c7f88;
+    --gr-green:    #7ba38d;
+    --parcel-green:#718b69;
+    --success:     #718b69;
+    --warn:        #aa7b2a;
+    --sea:         color-mix(in oklab, #8faab8 7%, #16191d);
+    --land:        #262420;
+    --land-2:      #1f1d1a;
+    --coast:       color-mix(in oklab, var(--ink) 66%, var(--paper-3));
+  }
+}
+:root[data-theme="dark"] {
+  --paper:       #1a1917;
+  --paper-2:     #221f1c;
+  --paper-3:     #2b2824;
+  --ink:         #e4dfd6;
+  --graphite:    #9c9890;
+  --pencil:      #86837e;
+  --rule:        #2f2c28;
+  --rule-strong: #3d3935;
+  --amber:       #8faab8;
+  --amber-deep:  #7b9aaa;
+  --accent-gold: #c09455;
+  --terracotta:  #c06d51;
+  --olive:       #858560;
+  --indigo:      #7c849c;
+  --plum:        #9c7f88;
+  --gr-green:    #7ba38d;
+  --parcel-green:#718b69;
+  --success:     #718b69;
+  --warn:        #aa7b2a;
+  --sea:         color-mix(in oklab, #8faab8 7%, #16191d);
+  --land:        #262420;
+  --land-2:      #1f1d1a;
+  --coast:       color-mix(in oklab, var(--ink) 66%, var(--paper-3));
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html[data-motion="reduced"] { scroll-behavior: auto; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(111,124,133,0.05) 0, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(111,124,133,0.03) 0, transparent 50%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums oldstyle-nums;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; cursor: pointer; color: inherit; }
+a { color: var(--ink); text-decoration: none; }
+::selection { background: var(--accent-gold); color: var(--paper); }
+
+/* Kill all motion when reduced — media default or explicit toggle */
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001s !important;
+}
+
+.container-wide { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+@media (max-width: 720px) { .container-wide { padding: 0 20px; } }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  clip: rect(0 0 0 0); clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+
+/* ── Header (existing) ─────────────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in oklab, var(--paper) 90%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.site-header .inner {
+  max-width: 1240px; margin: 0 auto; padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.wordmark { display: inline-flex; flex-direction: column; gap: 2px; line-height: 1; }
+.wordmark .top {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--graphite);
+}
+.wordmark .name {
+  font-family: var(--font-serif); font-size: 18px; font-style: italic;
+  font-weight: 500; color: var(--ink);
+}
+.site-nav { display: flex; align-items: center; gap: 24px; }
+.site-nav a {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  font-size: 14px; font-weight: 500; color: var(--graphite);
+}
+.site-nav a .num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; }
+.site-nav a:hover { color: var(--amber); }
+.header-controls { display: inline-flex; align-items: center; gap: 8px; }
+.hbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--rule); border-radius: var(--r-pill);
+  padding: 6px 12px; color: var(--graphite);
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  transition: color .2s var(--ease-out), border-color .2s var(--ease-out), background .2s var(--ease-out);
+}
+.hbtn:hover { color: var(--ink); border-color: var(--rule-strong); background: var(--paper-2); }
+.hbtn:focus-visible, a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--amber); outline-offset: 2px;
+}
+@media (max-width: 720px) { .site-nav { display: none; } }
+
+.proto-note {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
+}
+.proto-note .container-wide {
+  display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;
+  padding-top: 8px; padding-bottom: 8px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--graphite);
+}
+.proto-note b { color: var(--accent-gold); font-weight: 600; }
+
+/* ── Hero (existing, preserved) ────────────────────────── */
+.hero { padding: 96px 0 72px; border-bottom: 1px solid var(--rule); }
+.hero .grid {
+  display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 40px;
+  margin-bottom: 56px;
+}
+.hero .marker {
+  display: flex; flex-direction: column; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--graphite);
+  padding-top: 20px;
+}
+.hero .marker .yr { opacity: 0.78; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--graphite); margin-bottom: 22px;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(44px, 6.6vw, 84px);
+  font-weight: 500; line-height: 1.04; letter-spacing: -0.02em;
+  margin: 0; text-wrap: balance;
+}
+.hero h1 em { font-style: italic; font-weight: 500; color: var(--graphite); }
+.hero-sub { font-size: 17px; line-height: 1.65; color: var(--graphite); max-width: 56ch; margin: 22px 0 0; }
+.hero .meta-row {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline;
+  margin-top: 26px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ink);
+}
+.hero .meta-row .lab { color: var(--graphite); margin-right: 8px; }
+.hero .meta-row .dot { color: var(--accent-gold); }
+.scroll-cue {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 34px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--graphite);
+}
+.scroll-cue .ar { transition: transform .3s var(--ease-out); }
+.scroll-cue:hover { color: var(--amber); }
+.scroll-cue:hover .ar { transform: translateY(4px); }
+@media (max-width: 880px) { .hero .grid { grid-template-columns: 1fr; gap: 20px; } .hero .marker { flex-direction: row; gap: 18px; padding-top: 0; } }
+
+/* Command center (existing animation, compact rebuild) */
+.hcc { max-width: 760px; }
+.hcc-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.hcc-tab {
+  background: none; border: 1px solid var(--rule); border-radius: var(--r-pill);
+  padding: 6px 14px;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--graphite);
+  transition: all .2s var(--ease-out);
+}
+.hcc-tab:hover { color: var(--ink); border-color: var(--rule-strong); }
+.hcc-tab--active { color: var(--ink); border-color: var(--hcc-accent, var(--amber)); box-shadow: inset 0 0 0 1px var(--hcc-accent, var(--amber)); }
+.hcc-panel {
+  border: 1px solid var(--rule); border-radius: var(--r-3);
+  background: var(--paper); padding: 18px 22px 8px;
+  box-shadow: 0 1px 3px rgba(32,33,36,0.05);
+}
+.hcc-caption {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--graphite); margin: 0 0 6px;
+}
+.hcc-rail-svg { width: 100%; height: auto; }
+.hcc-rail-base { stroke: var(--rule-strong); stroke-width: 1.4; opacity: 0.4; }
+.hcc-rail-active { stroke-width: 1.8; stroke-linecap: round; }
+.hcc-rail-label { font-family: var(--font-mono); font-size: 10.5px; fill: var(--graphite); }
+.hcc-draw { stroke-dasharray: 560; stroke-dashoffset: 560; animation: hccDraw 1.4s var(--ease-out) forwards; }
+@keyframes hccDraw { to { stroke-dashoffset: 0; } }
+.hcc-node { animation: hccNode .4s var(--ease-out) backwards; }
+@keyframes hccNode { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Section head (existing) ───────────────────────────── */
+.section-head { margin-bottom: 40px; }
+.section-head .index {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--accent-gold); margin-bottom: 18px;
+  padding-top: 16px; border-top: 1px solid var(--ink); display: inline-block;
+}
+.section-head .h {
+  font-family: var(--font-serif); font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 500; line-height: 1.12; letter-spacing: -0.015em; text-wrap: balance;
+}
+.section-head .h em { font-style: italic; color: var(--graphite); }
+
+/* ── Departure strip: hero → Project World ─────────────── */
+.pw-depart { position: relative; padding: 34px 32px 6px; text-align: center; }
+.pw-depart .line {
+  width: 1px; height: 44px; margin: 0 auto 12px;
+  background: repeating-linear-gradient(to bottom, var(--rule-strong) 0 4px, transparent 4px 9px);
+}
+.pw-depart .lab {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--pencil);
+}
+.pw-depart .lab b { color: var(--accent-gold); font-weight: 600; }
+
+/* ── Project World section ─────────────────────────────── */
+.work { padding: 72px 0 0; border-bottom: 1px solid var(--rule); }
+.pw-intro { max-width: 620px; margin-top: -18px; }
+.pw-intro p { margin: 0 0 6px; font-size: 17px; color: var(--graphite); }
+.pw-intro .cap {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--pencil); margin-top: 14px;
+}
+.pw-topctl { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 8px; }
+
+.pwbtn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r-pill);
+  padding: 7px 14px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--graphite);
+  transition: all .2s var(--ease-out);
+}
+.pwbtn:hover:not(:disabled) { color: var(--ink); border-color: var(--rule-strong); background: var(--paper-2); }
+.pwbtn:disabled { opacity: 0.4; cursor: default; }
+.pwbtn--gold { border-color: var(--accent-gold); color: var(--accent-gold); }
+.pwbtn--gold:hover:not(:disabled) { color: var(--accent-gold); }
+
+/* Desktop journey: tall track + sticky stage */
+.pw-track { position: relative; height: 560vh; }
+.pw-stage {
+  position: sticky; top: 64px;
+  height: calc(100vh - 72px); min-height: 540px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 392px;
+  gap: 28px; align-items: center; padding: 8px 0 16px;
+}
+.pw-map-wrap { position: relative; height: 100%; display: flex; align-items: center; }
+#pwMap {
+  width: 100%; height: auto; max-height: calc(100vh - 110px);
+  transition: transform .9s var(--ease-out);
+}
+.pw-stage.pw-ov #pwMap { transform: scale(0.93); }
+
+/* Side column */
+.pw-side { display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - 100px); overflow-y: auto; padding: 4px 2px; }
+.pw-progress {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--graphite);
+}
+.pw-dots { display: flex; gap: 7px; align-items: center; }
+.pw-dot {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0;
+  border: 1px solid var(--rule-strong); background: transparent;
+  transition: all .25s var(--ease-out);
+}
+.pw-dot[aria-current="true"] { background: var(--accent-gold); border-color: var(--accent-gold); transform: scale(1.25); }
+.pw-dot.done { background: var(--rule-strong); }
+.pw-dot--ov { border-radius: 2px; }
+.pw-nav { display: flex; gap: 10px; }
+.pw-nav .pwbtn { flex: 1; justify-content: center; }
+.pw-aux { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.pw-skip {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--graphite);
+  border-bottom: 1px solid var(--rule-strong); padding-bottom: 2px;
+}
+.pw-skip:hover { color: var(--amber); }
+
+/* ── Existing-style project cards ──────────────────────── */
+.pr-card {
+  position: relative; background: var(--paper);
+  border: 1px solid var(--rule); border-radius: var(--r-3);
+  padding: 24px; box-shadow: 0 1px 3px rgba(32,33,36,0.05);
+}
+:root[data-theme="dark"] .pr-card { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.pw-card { display: none; }
+.pw-card.active { display: block; animation: cardIn .5s var(--ease-out); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.pr-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pr-idx { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; color: var(--accent-gold); }
+.pr-meta {
+  margin-left: auto; display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.07em; text-transform: uppercase; color: var(--graphite);
+  text-align: right; flex-wrap: wrap; justify-content: flex-end;
+}
+.proj-status {
+  display: inline-block; font-family: var(--font-mono); font-size: 10px;
+  font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--graphite); padding: 2px 5px; border: 1px solid var(--rule);
+  border-radius: var(--r-1); white-space: nowrap;
+}
+.pr-title {
+  font-family: var(--font-serif); font-size: 22px; font-weight: 500;
+  line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 8px; text-wrap: balance;
+}
+.pr-title em { font-style: italic; font-weight: 500; color: var(--graphite); }
+.pr-desc { font-size: 14.5px; line-height: 1.55; color: var(--graphite); margin: 0 0 10px; }
+.pr-tags { display: block; font-family: var(--font-mono); font-size: 10.5px; color: var(--pencil); margin-bottom: 18px; }
+
+.mark { position: relative; display: block; background: currentColor; flex-shrink: 0; }
+.mark.circle { border-radius: 50%; }
+.mark.half { border-radius: 999px 999px 0 0; height: 22px !important; align-self: center; }
+.mark.arc {
+  background: transparent; border: 7px solid currentColor;
+  border-bottom-color: transparent; border-right-color: transparent;
+  border-radius: 50%; transform: rotate(45deg);
+}
+.mark.stack { background: transparent; display: flex !important; flex-direction: column; justify-content: space-between; gap: 4px; }
+.mark.stack .mark-dot { display: block; flex: 1; background: currentColor; border-radius: 6px; width: 100%; }
+.mark.stack .mark-dot:first-child { opacity: 0.55; }
+
+.pr-process-rail {
+  position: relative; display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none; margin: 0 0 18px; padding: 0;
+}
+.pr-process-rail.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.pr-process-rail::before {
+  content: ''; position: absolute; top: 5px; left: 12.5%; right: 12.5%;
+  height: 1px; background: var(--rule-strong);
+}
+.pr-process-rail.cols-5::before { left: 10%; right: 10%; }
+.pr-process-rail li {
+  position: relative; z-index: 1; display: flex; min-width: 0;
+  flex-direction: column; align-items: center; gap: 7px; padding: 0 3px;
+  font-family: var(--font-mono); font-size: 9px; line-height: 1.25;
+  letter-spacing: 0.02em; text-align: center; color: var(--graphite);
+}
+.pr-process-node {
+  width: 11px; height: 11px; flex-shrink: 0;
+  border: 2px solid var(--paper); border-radius: 50%;
+  background: var(--accent-gold); box-shadow: 0 0 0 1px var(--rule-strong);
+}
+.active .pr-process-rail li,
+.pwm-stop.active .pr-process-rail li {
+  animation: nodeIn .45s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 250ms);
+}
+@keyframes nodeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.pr-cta-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: 0; padding: 0 0 2px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink);
+  border-bottom: 1px solid var(--accent-gold);
+}
+.pr-cta-link .ar { transition: transform .3s var(--ease-out); }
+.pr-cta-link:hover .ar { transform: translateX(5px); }
+.pr-cta-row { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.pr-foot-note { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--pencil); margin-top: 14px; text-transform: uppercase; }
+
+/* ── The map itself ────────────────────────────────────── */
+.pw-seabg { fill: var(--sea); }
+.pw-frame { fill: none; stroke: var(--map-line); stroke-width: 1.2; }
+.pw-frame-tick { stroke: var(--map-line); stroke-width: 1; }
+.pw-grat { stroke: var(--map-faint); stroke-width: 0.6; }
+.pw-wave { stroke: var(--map-line); stroke-width: 1; fill: none; opacity: 0.7; }
+.pw-sealabel {
+  font-family: var(--font-serif); font-style: italic; font-size: 15px;
+  fill: var(--pencil); opacity: 0.85; letter-spacing: 0.22em;
+}
+.pw-cart-rect { fill: var(--paper); stroke: var(--map-line); opacity: 0.94; }
+.pw-cart-title { font-family: var(--font-serif); font-size: 21px; fill: var(--ink); letter-spacing: 0.02em; }
+.pw-cart-sub { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; fill: var(--graphite); }
+.pw-cart-sub2 { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.08em; fill: var(--pencil); }
+.pw-scale-line { stroke: var(--graphite); stroke-width: 1; }
+.pw-scale-t { font-family: var(--font-mono); font-size: 8px; fill: var(--pencil); letter-spacing: 0.06em; }
+
+.pw-compass-ring { fill: none; stroke: var(--graphite); stroke-width: 1; }
+.pw-compass-ray { stroke: var(--graphite); stroke-width: 0.8; }
+.pw-compass-needle { fill: var(--accent-gold); stroke: var(--graphite); stroke-width: 0.6; }
+.pw-compass-t { font-family: var(--font-mono); font-size: 9px; fill: var(--graphite); }
+
+.pw-route { fill: none; stroke: var(--map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
+.pw-route-gone { fill: none; stroke: var(--accent-gold); stroke-width: 2; stroke-linecap: round; }
+
+.isle-coast {
+  fill: var(--land); stroke: var(--coast); stroke-width: 1.6;
+  transition: fill .5s var(--ease-out), stroke .5s var(--ease-out);
+}
+.isle-contour { fill: none; stroke: var(--map-line); stroke-width: 0.8; stroke-dasharray: 1 5; opacity: 0.8; }
+.isle-lms { color: var(--graphite); opacity: 0.62; transition: opacity .4s var(--ease-out); }
+.lm-line { stroke: currentColor; stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.lm-fill { fill: color-mix(in oklab, currentColor 14%, var(--land)); stroke: currentColor; stroke-width: 1.2; }
+.lm-dash { stroke: currentColor; stroke-width: 1.1; fill: none; stroke-dasharray: 3 4; stroke-linecap: round; }
+.lm-dot { fill: var(--accent-gold); }
+.lm-t {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.04em;
+  fill: var(--graphite); text-anchor: middle;
+}
+.isle-label { cursor: pointer; }
+.isle-name {
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  letter-spacing: 0.14em; fill: var(--ink); text-anchor: middle;
+}
+.isle-sub {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.18em;
+  fill: var(--pencil); text-anchor: middle;
+}
+.isle-harbor { fill: var(--paper); stroke: var(--graphite); stroke-width: 1.6; }
+
+.pw-isle { cursor: pointer; }
+.pw-isle:hover .isle-coast { stroke: var(--ink); }
+.pw-isle:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.pw-isle.active .isle-coast {
+  fill: color-mix(in oklab, var(--isle) 12%, var(--land));
+  stroke: var(--isle); stroke-width: 2.4;
+}
+.pw-isle.active .isle-lms { color: var(--isle); opacity: 1; }
+.pw-isle.active .isle-name { fill: var(--isle); }
+.pw-isle.active .isle-harbor { stroke: var(--isle); }
+.pw-isle.visited:not(.active) .isle-name { fill: var(--accent-gold); }
+.pw-isle.visited:not(.active) .isle-lms { opacity: 0.85; }
+
+.pw-isle.active .isle-lms > .lm {
+  animation: lmIn .5s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+@keyframes lmIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.lm-beacon-ring { fill: none; stroke: currentColor; stroke-width: 1.4; opacity: 0; }
+.pw-isle.active .lm-beacon-ring { animation: beaconPulse 2.2s ease-out infinite 0.7s; }
+@keyframes beaconPulse {
+  0% { opacity: 0.8; transform: scale(0.4); }
+  70% { opacity: 0; transform: scale(1.6); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+.lm-beacon-ring, .lm-beam { transform-box: fill-box; transform-origin: center; }
+.lm-beam { fill: currentColor; opacity: 0; }
+.pw-isle.active .lm-beam { animation: beamSweep 4s ease-in-out infinite 0.6s; transform-origin: left center; }
+@keyframes beamSweep {
+  0% { opacity: 0; transform: rotate(-14deg); }
+  25% { opacity: 0.22; }
+  50% { opacity: 0.22; transform: rotate(14deg); }
+  75% { opacity: 0.22; }
+  100% { opacity: 0; transform: rotate(-14deg); }
+}
+.lm-gatebar { transform-box: fill-box; transform-origin: left center; }
+.pw-isle.active .lm-gatebar { animation: gateClose .55s var(--ease-out) 0.6s both; }
+@keyframes gateClose { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Ship + wake + flags */
+.pw-ship-hull { fill: var(--ink); }
+.pw-ship-sail { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+.pw-ship-mast { stroke: var(--ink); stroke-width: 1.2; }
+.pw-ship-flag { fill: var(--accent-gold); }
+.pw-ship-inner { animation: shipBob 3.2s ease-in-out infinite; }
+html[data-motion="reduced"] .pw-ship-inner { animation: none; }
+@keyframes shipBob { 0%,100% { transform: translateY(0) rotate(0.6deg); } 50% { transform: translateY(-2px) rotate(-0.8deg); } }
+.pw-wake-dot { fill: none; stroke: var(--amber-deep); stroke-width: 1.1; opacity: 0.5; animation: wakeFade 1s ease-out forwards; }
+@keyframes wakeFade { from { opacity: 0.45; } to { opacity: 0; transform: scale(1.9); } }
+.pw-wake-dot { transform-box: fill-box; transform-origin: center; }
+.pw-flag-pole { stroke: var(--graphite); stroke-width: 1.2; }
+.pw-flag-cloth { fill: var(--accent-gold); }
+.pw-flag { animation: lmIn .4s var(--ease-out) both; }
+
+/* Parcel Engine side-island popover */
+.pw-parcel-pop {
+  position: absolute; right: 8px; bottom: 8px; width: 300px; z-index: 5;
+  box-shadow: 0 10px 30px rgba(32,33,36,0.12);
+}
+.pw-parcel-pop .pr-title { font-size: 18px; }
+.pw-pop-close {
+  position: absolute; top: 10px; right: 12px;
+  background: none; border: 0; padding: 4px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--graphite);
+}
+.pw-pop-close:hover { color: var(--ink); }
+
+/* ── Mobile journey ────────────────────────────────────── */
+.pw-mobile { display: none; }
+.pwm-rail-svg { position: absolute; top: 0; left: 0; height: 100%; width: 64px; overflow: visible; pointer-events: none; }
+.pwm-rail-path { fill: none; stroke: var(--map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
+.pwm-rail-gone { fill: none; stroke: var(--accent-gold); stroke-width: 2; stroke-linecap: round; }
+.pwm-stops { list-style: none; margin: 0; padding: 0; }
+.pwm-stop { padding: 34px 0 34px 56px; position: relative; }
+.pwm-stop + .pwm-stop { border-top: 1px dashed var(--rule); }
+.pwm-vig { border: 1px solid var(--rule); border-radius: var(--r-3); overflow: hidden; margin-bottom: 16px; background: var(--sea); }
+.pwm-vig svg { width: 100%; height: auto; }
+.pwm-stopnum {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--accent-gold); margin-bottom: 10px;
+}
+.pwm-stop .pr-card { opacity: 0; transform: translateY(14px); transition: opacity .5s var(--ease-out), transform .5s var(--ease-out); }
+.pwm-stop.active .pr-card { opacity: 1; transform: none; }
+html[data-motion="reduced"] .pwm-stop .pr-card { opacity: 1; transform: none; }
+.pwm-stop.active .pwm-vig .pw-isle-static { --active: 1; }
+.pwm-vig .pw-isle, .pwm-vig .isle-label { cursor: default; }
+.pwm-mapbtn {
+  position: fixed; bottom: 18px; right: 18px; z-index: 90;
+  display: none; align-items: center; gap: 8px;
+  background: var(--ink); color: var(--paper);
+  border: 1px solid var(--ink); border-radius: var(--r-pill);
+  padding: 10px 18px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  box-shadow: 0 6px 24px rgba(32,33,36,0.25);
+}
+.pwm-mapbtn.show { display: inline-flex; }
+.pwm-closing { padding: 40px 0 0; }
+.pwm-worldmini { border: 1px solid var(--rule); border-radius: var(--r-3); overflow: hidden; margin: 18px 0 22px; }
+.pwm-worldmini svg { width: 100%; height: auto; }
+
+@media (max-width: 880px) {
+  .pw-desktop { display: none; }
+  .pw-mobile { display: block; position: relative; }
+}
+
+/* ── Closing block (desktop uses card; shared styles) ──── */
+.pw-close-actions { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+
+/* ── Landfall strip: Project World → About ─────────────── */
+.pw-landfall { padding: 40px 32px 8px; text-align: center; }
+.pw-landfall .line {
+  width: 1px; height: 40px; margin: 12px auto 0;
+  background: repeating-linear-gradient(to bottom, var(--rule-strong) 0 4px, transparent 4px 9px);
+}
+.pw-landfall .lab {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--pencil);
+}
+
+/* ── About (existing, preserved) ───────────────────────── */
+.about { padding: 88px 0 96px; border-bottom: 1px solid var(--rule); }
+.about-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 40px; }
+.about-grid .marker {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--graphite);
+  padding-top: 14px; border-top: 1px solid var(--ink); align-self: start;
+}
+.about .body p { margin: 0 0 16px; font-size: 17px; line-height: 1.65; }
+.operator-profile {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr);
+  gap: 40px; align-items: center; margin-bottom: 56px;
+}
+.operator-portrait-frame { border: 1px solid var(--rule); border-radius: var(--r-3); background: var(--paper); overflow: hidden; }
+.operator-portrait-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--pencil);
+}
+.operator-portrait-dots { display: inline-flex; gap: 4px; }
+.operator-portrait-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-strong); }
+.operator-portrait-ph {
+  aspect-ratio: 6 / 5; display: flex; align-items: center; justify-content: center;
+  background: var(--paper-2);
+  font-family: var(--font-serif); font-style: italic; font-size: 15px; color: var(--pencil);
+}
+.operator-tag {
+  display: block; padding: 8px 12px; border-top: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--accent-gold);
+}
+.operator-quote {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: clamp(20px, 2.2vw, 26px); line-height: 1.45; color: var(--ink);
+  margin: 0; text-wrap: balance;
+}
+.stat-list { margin-top: 26px; border-top: 1px solid var(--rule); }
+.stat-list .row {
+  display: grid; grid-template-columns: 130px 1fr; gap: 18px;
+  padding: 12px 0; border-bottom: 1px solid var(--rule);
+}
+.stat-list .label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--graphite);
+}
+.stat-list .value { font-size: 15px; }
+.about-note {
+  margin-top: 40px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--pencil);
+}
+@media (max-width: 880px) {
+  .operator-profile { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* ── Overlay: world map overview ───────────────────────── */
+.pw-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+}
+.pw-overlay[hidden] { display: none; }
+.pw-overlay-panel {
+  background: var(--paper); border: 1px solid var(--rule-strong); border-radius: var(--r-3);
+  max-width: 880px; width: 100%; max-height: 92vh; overflow-y: auto;
+  padding: 18px 20px 20px;
+  box-shadow: 0 24px 80px rgba(32,33,36,0.3);
+}
+.pw-overlay-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.pw-overlay-head .t {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+}
+.pw-ov-list { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; }
+.pw-ov-list .pwbtn .n { color: var(--accent-gold); }
+
+/* ── Footer ────────────────────────────────────────────── */
+.site-footer { padding: 40px 0 56px; }
+.site-footer .container-wide {
+  display: flex; flex-direction: column; gap: 10px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--pencil);
+}
+.site-footer b { color: var(--graphite); font-weight: 600; }
+</style>
+
+<!-- ══════════════════ HEADER (existing) ══════════════════ -->
+<header class="site-header">
+  <div class="inner">
+    <a href="#top" class="wordmark">
+      <span class="top">crvro.com · Portfolio</span>
+      <span class="name">Christopher Rivero</span>
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      <a href="#work"><span class="num">01</span>work</a>
+      <a href="#about"><span class="num">02</span>about</a>
+      <a href="#about"><span class="num">03</span>skills</a>
+      <a href="#about"><span class="num">04</span>contact</a>
+    </nav>
+    <div class="header-controls">
+      <button class="hbtn" id="motionToggle" aria-pressed="false">Motion: full</button>
+      <button class="hbtn" id="themeToggle">Theme: light</button>
+    </div>
+  </div>
+</header>
+
+<div class="proto-note">
+  <div class="container-wide">
+    <span><b>Prototype</b> — “Project World” hybrid Selected Work section</span>
+    <span>· Everything outside § 01 stays as-is on crvro.com</span>
+    <span>· ~70% existing design / 30% illustrated map</span>
+  </div>
+</div>
+
+<main id="top">
+
+<!-- ══════════════════ HERO (existing, preserved) ══════════════════ -->
+<section class="hero" aria-label="Intro">
+  <div class="container-wide">
+    <div class="grid">
+      <div class="marker">
+        <span>§ crvro.com</span>
+        <span class="yr">2024 — 2026</span>
+        <span>Lakewood, CA</span>
+      </div>
+      <div>
+        <div class="hero-eyebrow">SUPPORT AUTOMATION · AI OPERATIONS · GIS SYSTEMS</div>
+        <h1>I turn difficult support and mapping workflows into <em>controlled, testable software.</em></h1>
+        <p class="hero-sub">I build Python automation and AI tools for support and GIS/CAD work I know firsthand.</p>
+        <div class="meta-row">
+          <span><span class="lab">Focus —</span>AI Support Systems · Workflow Automation · GIS / CAD Tooling</span>
+          <span class="dot">·</span>
+          <span><span class="lab">Status —</span>Open to new work</span>
+        </div>
+        <a href="#work" class="scroll-cue"><span>01 — come take the journey</span><span class="ar">↓</span></a>
+      </div>
+    </div>
+
+    <div class="hcc" id="hcc">
+      <div class="hcc-tabs" role="tablist" aria-label="Professional discipline demonstrations"></div>
+      <div class="hcc-panel">
+        <p class="hcc-caption" id="hccCaption"></p>
+        <svg class="hcc-rail-svg" id="hccRail" viewBox="0 0 600 64" role="img" aria-label="Workflow step sequence"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- hero → Project World transition -->
+<div class="pw-depart" aria-hidden="true">
+  <div class="line"></div>
+  <span class="lab">DEPARTURE — <b>PROJECT WORLD</b> · CHART № 01 · FIRST PORT: DAVENTRY ONE</span>
+</div>
+
+<!-- ══════════════════ § 01 SELECTED WORK — PROJECT WORLD ══════════════════ -->
+<section class="work" id="work" aria-label="Selected Work — Project World">
+  <div class="container-wide">
+    <div class="section-head">
+      <div class="index">§ 01 — Selected Work · Project World</div>
+      <div class="h">Come take a journey through <em>the systems I build.</em></div>
+    </div>
+    <div class="pw-intro">
+      <p>Each one started with a problem I cared enough to solve.</p>
+      <p class="cap">Depart Daventry One · four ports of call · ship at anchor</p>
+      <div class="pw-topctl">
+        <a class="pwbtn" href="#about" id="skipJourney">Skip journey ↓</a>
+        <button class="pwbtn" id="overviewOpen">World map overview</button>
+      </div>
+    </div>
+
+    <!-- Desktop: sticky map + card, scroll- or click-driven -->
+    <div class="pw-desktop">
+      <div class="pw-track" id="pwTrack">
+        <div class="pw-stage" id="pwStage">
+          <div class="pw-map-wrap">
+            <svg id="pwMap" viewBox="0 0 1040 820" role="group" aria-label="Illustrated map of Project World. Five clickable islands: Daventry One, OpenClaw slash Hermes, Sidecar, Help Nearby, GroundRules."></svg>
+            <div class="pw-parcel-pop pr-card" id="parcelPop" hidden>
+              <button class="pw-pop-close" id="parcelClose" aria-label="Close Parcel Engine note">✕ close</button>
+              <div class="pr-card-top">
+                <span class="pr-idx">SIDE ISLAND</span>
+                <span class="mark arc" style="color: var(--parcel-green); width: 28px; height: 28px;"></span>
+              </div>
+              <h3 class="pr-title">Parcel Engine <em>— optional side quest.</em></h3>
+              <p class="pr-desc">A local metes-and-bounds parser and parcel geometry validator. Off the main route, but on the same map.</p>
+              <a class="pr-cta-link" href="https://crvro.com/projects/parcel-engine" target="_blank" rel="noreferrer">View case study <span class="ar">→</span></a>
+            </div>
+          </div>
+
+          <aside class="pw-side" aria-label="Journey log">
+            <div class="pw-progress">
+              <span id="pwStopLabel">STOP 01 / 05 — DAVENTRY ONE</span>
+              <div class="pw-dots" id="pwDots" role="group" aria-label="Jump to stop"></div>
+            </div>
+            <div class="pw-cards" id="pwCards"></div>
+            <div class="pw-nav">
+              <button class="pwbtn" id="pwPrev">← Previous</button>
+              <button class="pwbtn pwbtn--gold" id="pwNext">Next port →</button>
+            </div>
+            <div class="pw-aux">
+              <a class="pw-skip" href="#about">Skip journey ↓</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile: one island per screen, ship on a continuous vertical route -->
+    <div class="pw-mobile" id="pwMobile">
+      <svg class="pwm-rail-svg" id="pwmRail" aria-hidden="true"></svg>
+      <ol class="pwm-stops" id="pwmStops"></ol>
+      <div class="pwm-closing" id="pwmClosing">
+        <div class="section-head" style="margin-bottom: 8px;">
+          <div class="index">§ VOYAGE LOG</div>
+          <div class="h">Every route, <em>logged.</em></div>
+        </div>
+        <div class="pwm-worldmini" id="pwmWorldMini"></div>
+        <div class="pw-close-actions">
+          <a class="pr-cta-link" href="https://crvro.com/#work" target="_blank" rel="noreferrer">Explore case studies <span class="ar">→</span></a>
+          <a class="pr-cta-link" href="https://crvro.com/#contact" target="_blank" rel="noreferrer">Contact Christopher <span class="ar">→</span></a>
+          <a class="pw-skip" href="#about">Continue — About ↓</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project World → About transition -->
+  <div class="pw-landfall" aria-hidden="true">
+    <span class="lab">MAKE LANDFALL — § 02 ABOUT · UNCHANGED FROM HERE ON</span>
+    <div class="line"></div>
+  </div>
+</section>
+
+<button class="pwm-mapbtn" id="pwmMapBtn">World map</button>
+
+<!-- ══════════════════ § 02 ABOUT (existing, preserved) ══════════════════ -->
+<section class="about" id="about" aria-label="About">
+  <div class="container-wide">
+    <div class="section-head">
+      <div class="index">§ 02 — About</div>
+      <div class="h">Support ops, GIS work, and <em>the tools that came out of both.</em></div>
+    </div>
+
+    <div class="operator-profile">
+      <div class="operator-portrait-frame">
+        <div class="operator-portrait-bar">
+          <span class="operator-portrait-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>builder · profile</span>
+        </div>
+        <div class="operator-portrait-ph">portrait — unchanged</div>
+        <span class="operator-tag">SYSTEMS BUILDER</span>
+      </div>
+      <div>
+        <p class="operator-quote">“I tend to get a little obsessed with building. I’m always improving one system, starting another, or looking for practical ways AI can make difficult work easier for people.”</p>
+      </div>
+    </div>
+
+    <div class="about-grid">
+      <div class="marker">Bio</div>
+      <div class="body">
+        <p>I’m Christopher. I build practical AI systems and internal tools for support, automation, and GIS/CAD. Most of them start with problems I’ve dealt with myself.</p>
+        <p>I started in GIS/CAD support and gradually moved deeper into automation and human-supervised AI. I built my own local AI workstation and use Hermes every day to organize projects, investigate problems, and troubleshoot bugs. I still make the final calls.</p>
+        <div class="stat-list">
+          <div class="row"><span class="label">Based</span><span class="value">Lakewood, CA · PT</span></div>
+          <div class="row"><span class="label">Currently</span><span class="value">Building automation &amp; AI tooling</span></div>
+          <div class="row"><span class="label">Open to</span><span class="value">Automation · AI support · GIS / CAD ops</span></div>
+        </div>
+        <p class="about-note">Prototype ends here — GIS Projects, Skills, Contact, and all case-study pages continue unchanged.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container-wide">
+    <span><b>Project World prototype</b> · Selected Work section only · original illustrated map, no borrowed geography or artwork</span>
+    <span>Type shown in system fallbacks — production uses Newsreader · Inter Tight · Inter · JetBrains Mono</span>
+    <span>© 2026 Christopher Rivero · crvro.com</span>
+  </div>
+</footer>
+
+<!-- ══════════════════ WORLD MAP OVERLAY ══════════════════ -->
+<div class="pw-overlay" id="pwOverlay" hidden role="dialog" aria-modal="true" aria-label="World map overview">
+  <div class="pw-overlay-panel">
+    <div class="pw-overlay-head">
+      <span class="t">Project World — full chart</span>
+      <button class="pwbtn" id="overlayClose">✕ Close</button>
+    </div>
+    <div id="overlayMapWrap"></div>
+    <ol class="pw-ov-list" id="overlayList"></ol>
+  </div>
+</div>
+
+<div class="visually-hidden" aria-live="polite" id="pwLive"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ────────────────────────────────────────────────────────
+     Helpers
+     ──────────────────────────────────────────────────────── */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var F = function (n) { return (+n).toFixed(1); };
+
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function smoothClosed(p) {
+    var n = p.length;
+    var d = 'M ' + F(p[0][0]) + ' ' + F(p[0][1]);
+    for (var i = 0; i < n; i++) {
+      var p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+      var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ' C ' + F(c1x) + ' ' + F(c1y) + ', ' + F(c2x) + ' ' + F(c2y) + ', ' + F(p2[0]) + ' ' + F(p2[1]);
+    }
+    return d + ' Z';
+  }
+
+  function blobPath(cx, cy, rx, ry, seed, n, wob) {
+    n = n || 16; wob = wob === undefined ? 0.22 : wob;
+    var r = rng(seed), pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = (i / n) * Math.PI * 2;
+      var k = 1 - wob / 2 + r() * wob;
+      pts.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]);
+    }
+    return smoothClosed(pts);
+  }
+
+  function polyPath(cx, cy, rel, seed, close) {
+    var r = rng(seed || 7);
+    var d = rel.map(function (p, i) {
+      var jx = (r() - 0.5) * 6, jy = (r() - 0.5) * 6;
+      return (i === 0 ? 'M ' : 'L ') + F(cx + p[0] + jx) + ' ' + F(cy + p[1] + jy);
+    }).join(' ');
+    return close === false ? d : d + ' Z';
+  }
+
+  /* Motion preference: media query default + explicit toggle */
+  var motionState = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full';
+  function applyMotion() {
+    document.documentElement.setAttribute('data-motion', motionState);
+    var b = $('#motionToggle');
+    b.textContent = 'Motion: ' + motionState;
+    b.setAttribute('aria-pressed', motionState === 'reduced' ? 'true' : 'false');
+  }
+  var isReduced = function () { return motionState === 'reduced'; };
+  $('#motionToggle').addEventListener('click', function () {
+    motionState = isReduced() ? 'full' : 'reduced';
+    applyMotion();
+  });
+  applyMotion();
+
+  /* Theme toggle — same data-theme contract as the live site */
+  var theme = document.documentElement.getAttribute('data-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', theme);
+    $('#themeToggle').textContent = 'Theme: ' + theme;
+  }
+  $('#themeToggle').addEventListener('click', function () {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    applyTheme();
+  });
+  applyTheme();
+
+  /* ────────────────────────────────────────────────────────
+     Landmark builders (small hand-drawn structures)
+     ──────────────────────────────────────────────────────── */
+  function lab(x, y, t, anchor) {
+    return '<text class="lm-t" x="' + x + '" y="' + y + '"' +
+      (anchor ? ' style="text-anchor:' + anchor + '"' : '') + '>' + t + '</text>';
+  }
+  function tower(x, y, h) {
+    return '<rect class="lm-fill" x="' + (x - 7) + '" y="' + (y - h) + '" width="14" height="' + h + '"/>' +
+      '<path class="lm-line" d="M ' + (x - 9) + ' ' + (y - h) + ' L ' + x + ' ' + (y - h - 9) + ' L ' + (x + 9) + ' ' + (y - h) + '"/>' +
+      '<line class="lm-line" x1="' + x + '" y1="' + (y - h - 9) + '" x2="' + x + '" y2="' + (y - h - 16) + '"/>' +
+      '<rect class="lm-fill" x="' + (x - 2.5) + '" y="' + (y - h + 6) + '" width="5" height="6"/>';
+  }
+  function hut(x, y, w, h) {
+    return '<rect class="lm-fill" x="' + (x - w / 2) + '" y="' + (y - h) + '" width="' + w + '" height="' + h + '"/>' +
+      '<path class="lm-line" d="M ' + (x - w / 2 - 2) + ' ' + (y - h) + ' L ' + x + ' ' + (y - h - w * 0.34) + ' L ' + (x + w / 2 + 2) + ' ' + (y - h) + '"/>';
+  }
+  function gate(x, y) {
+    return '<line class="lm-line" x1="' + (x - 10) + '" y1="' + (y - 14) + '" x2="' + (x - 10) + '" y2="' + y + '"/>' +
+      '<line class="lm-line" x1="' + (x + 10) + '" y1="' + (y - 14) + '" x2="' + (x + 10) + '" y2="' + y + '"/>' +
+      '<rect class="lm-fill lm-gatebar" x="' + (x - 10) + '" y="' + (y - 12) + '" width="20" height="6"/>';
+  }
+  function mast(x, y, h) {
+    return '<line class="lm-line" x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y - h) + '"/>' +
+      '<path class="lm-line" d="M ' + (x - 8) + ' ' + (y - h + 2) + ' q 8 -8 16 0" opacity="0.85"/>' +
+      '<path class="lm-line" d="M ' + (x - 13) + ' ' + (y - h + 7) + ' q 13 -13 26 0" opacity="0.5"/>' +
+      '<line class="lm-line" x1="' + (x - 5) + '" y1="' + y + '" x2="' + (x + 5) + '" y2="' + y + '"/>';
+  }
+  function cloudPuff(x, y) {
+    return '<path class="lm-line" d="M ' + (x - 10) + ' ' + y + ' q 2 -7 9 -6 q 3 -6 9 -2 q 6 -1 5 6 q 4 4 -3 5 l -17 0 q -6 -1 -3 -3 Z" opacity="0.9"/>';
+  }
+  function boat(x, y) {
+    return '<path class="lm-fill" d="M ' + (x - 9) + ' ' + y + ' q 9 6 18 0 l -3 -1 l -12 0 Z"/>' +
+      '<line class="lm-line" x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y - 11) + '"/>' +
+      '<path class="lm-fill" d="M ' + x + ' ' + (y - 11) + ' l 8 3 l -8 3 Z"/>';
+  }
+  function pin(x, y, txt) {
+    return '<path class="lm-line" d="M ' + x + ' ' + y + ' c -6 -8 -6 -14 0 -14 c 6 0 6 6 0 14 Z"/>' +
+      '<circle class="lm-dot" cx="' + x + '" cy="' + (y - 9) + '" r="1.8"/>' +
+      (txt ? lab(x, y - 18, txt) : '');
+  }
+  function beacon(x, y) {
+    return '<circle class="lm-beacon-ring" cx="' + x + '" cy="' + y + '" r="10"/>' +
+      '<circle class="lm-dot" cx="' + x + '" cy="' + y + '" r="3.4"/>';
+  }
+  function peak(x, y, w, h) {
+    return '<path class="lm-line" d="M ' + (x - w) + ' ' + y + ' L ' + x + ' ' + (y - h) + ' L ' + (x + w) + ' ' + y + '"/>' +
+      '<path class="lm-line" d="M ' + (x - w * 0.25) + ' ' + (y - h * 0.55) + ' l ' + w * 0.2 + ' ' + h * 0.18 + ' l ' + w * 0.2 + ' -' + h * 0.3 + '" opacity="0.7"/>';
+  }
+  function pine(x, y) {
+    return '<path class="lm-line" d="M ' + (x - 5) + ' ' + y + ' L ' + x + ' ' + (y - 12) + ' L ' + (x + 5) + ' ' + y + ' M ' + (x - 4) + ' ' + (y - 5) + ' L ' + x + ' ' + (y - 15) + ' L ' + (x + 4) + ' ' + (y - 5) + '"/>' +
+      '<line class="lm-line" x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y + 3) + '"/>';
+  }
+  function signpost(x, y) {
+    return '<line class="lm-line" x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y - 14) + '"/>' +
+      '<rect class="lm-fill" x="' + (x - 9) + '" y="' + (y - 14) + '" width="18" height="7"/>' +
+      '<path class="lm-line" d="M ' + (x - 5) + ' ' + (y - 10.5) + ' l 3 3 l 6 -6"/>';
+  }
+  function scrollDoc(x, y) {
+    return '<rect class="lm-fill" x="' + (x - 11) + '" y="' + (y - 14) + '" width="22" height="14" rx="1"/>' +
+      '<circle class="lm-line" cx="' + (x - 11) + '" cy="' + (y - 7) + '" r="2.6" fill="none"/>' +
+      '<circle class="lm-line" cx="' + (x + 11) + '" cy="' + (y - 7) + '" r="2.6" fill="none"/>' +
+      '<line class="lm-line" x1="' + (x - 6) + '" y1="' + (y - 10) + '" x2="' + (x + 6) + '" y2="' + (y - 10) + '" opacity="0.7"/>' +
+      '<line class="lm-line" x1="' + (x - 6) + '" y1="' + (y - 6) + '" x2="' + (x + 3) + '" y2="' + (y - 6) + '" opacity="0.7"/>';
+  }
+
+  /* ────────────────────────────────────────────────────────
+     Stops — geometry, landmarks, card copy
+     ──────────────────────────────────────────────────────── */
+  var STOPS = [
+    {
+      id: 'daventry', name: 'DAVENTRY ONE', sub: 'HOME PORT · WORKSTATION',
+      cx: 185, cy: 640, rx: 102, ry: 74, seed: 11,
+      accent: 'var(--accent-gold)', harbor: [248, 560],
+      card: {
+        idx: '§ 00', kind: 'AI workstation', badge: 'Home port', shape: 'circle',
+        accent: 'var(--accent-gold)',
+        title: 'Daventry One', em: '— my local AI workstation and the home of Hermes.',
+        desc: 'It helps me research, build, test, troubleshoot, and coordinate projects. I still make the final calls.',
+        tags: 'local models · hermes · telegram',
+        process: ['Request', 'Model', 'Tools', 'Approval', 'Verification'],
+        slug: null,
+        ctaText: 'Set sail — begin the journey', ctaStop: 1,
+        foot: 'Origin — not a standard project card'
+      },
+      landmarks: function () {
+        return [
+          tower(140, 630, 42) + lab(140, 646, 'command tower'),
+          hut(196, 668, 26, 15) + '<circle class="lm-line" cx="196" cy="659" r="3" fill="none"/>' + lab(196, 684, 'engine room'),
+          mast(246, 610, 34) + lab(246, 624, 'signal'),
+          gate(198, 606) + lab(198, 589, 'approval gate'),
+          '<path class="lm-line" d="M 146 624 C 165 634 176 650 186 658"/>' + lab(166, 653, 'local', 'end'),
+          '<path class="lm-dash" d="M 206 601 C 218 584 232 572 245 563"/><path class="lm-dash" d="M 202 598 C 204 572 214 549 230 532"/>' + cloudPuff(236, 524) + lab(236, 512, 'cloud'),
+          '<path class="lm-line" d="M 108 690 l 26 8 M 112 697 l 22 7 M 118 705 l 18 5"/>' + boat(140, 706) + lab(122, 722, 'shipyard'),
+          '<circle class="lm-dot" cx="165" cy="640" r="2"/><circle class="lm-dot" cx="212" cy="592" r="2"/><circle class="lm-dot" cx="232" cy="576" r="2"/>' + lab(150, 596, 'routes logged', 'end'),
+          peak(95, 610, 16, 22)
+        ];
+      }
+    },
+    {
+      id: 'openclaw', name: 'OPENCLAW / HERMES', sub: 'PORT 01 · AI WORKFLOW',
+      cx: 345, cy: 222, rx: 92, ry: 70, seed: 23, labelDY: 26,
+      accent: 'var(--plum)', harbor: [318, 314],
+      card: {
+        idx: '№ 01', kind: 'AI Workflow', badge: 'Active development', shape: 'stack',
+        accent: 'var(--plum)',
+        title: 'OpenClaw / Hermes', em: '— a local-first AI workflow system.',
+        desc: 'The AI workflow system I use every day to route work between local and cloud models under my approval.',
+        tags: 'python · ollama · llm routing · telegram',
+        process: ['Request', 'Permission', 'Action', 'Verify'],
+        slug: 'openclaw'
+      },
+      landmarks: function () {
+        return [
+          tower(340, 214, 38) + lab(340, 230, 'routing tower'),
+          '<path class="lm-line" d="M 334 208 C 315 218 303 228 296 234"/>' + hut(290, 244, 22, 13) + lab(290, 260, 'local models'),
+          '<path class="lm-dash" d="M 346 194 C 368 182 384 174 398 168"/>' + cloudPuff(408, 162) + lab(408, 148, 'cloud'),
+          hut(394, 240, 24, 15) + '<path class="lm-line" d="M 388 231 l 5 -5 m -2 0 l 4 4" opacity="0.9"/>' + lab(394, 256, 'tool workshop'),
+          gate(322, 272) + lab(322, 290, 'approval gate'),
+          beacon(320, 302) + lab(352, 306, 'verify beacon', 'start'),
+          peak(398, 196, 14, 20) + peak(414, 200, 11, 14)
+        ];
+      }
+    },
+    {
+      id: 'sidecar', name: 'SIDECAR', sub: 'PORT 02 · AI SUPPORT TOOL',
+      cx: 668, cy: 118, rx: 82, ry: 58, seed: 37,
+      accent: 'var(--olive)', harbor: [612, 186],
+      card: {
+        idx: '№ 02', kind: 'AI tool', badge: 'Demonstrated prototype', shape: 'half',
+        accent: 'var(--olive)',
+        title: 'Sidecar', em: '— support drafting grounded in KB content.',
+        desc: 'Drafts support replies from approved KB articles and leaves the final response to the agent.',
+        tags: 'python · flask · telegram',
+        process: ['Request', 'KB source', 'Draft', 'Review'],
+        slug: 'sidecar'
+      },
+      landmarks: function () {
+        return [
+          /* support-console lighthouse with sweeping beam */
+          '<path class="lm-beam" d="M 668 74 L 716 62 L 716 84 Z"/>' +
+          '<path class="lm-fill" d="M 662 112 L 665 76 L 671 76 L 674 112 Z"/>' +
+          '<line class="lm-line" x1="663.5" y1="100" x2="672.5" y2="100"/><line class="lm-line" x1="664.5" y1="88" x2="671.5" y2="88"/>' +
+          '<rect class="lm-fill" x="663" y="70" width="10" height="7"/><circle class="lm-dot" cx="668" cy="73.5" r="2"/>' + lab(668, 130, 'support light'),
+          hut(606, 128, 30, 17) + '<line class="lm-line" x1="598" y1="128" x2="598" y2="115"/><line class="lm-line" x1="606" y1="128" x2="606" y2="115"/><line class="lm-line" x1="614" y1="128" x2="614" y2="115"/>' + lab(606, 106, 'approved KB'),
+          boat(576, 62) + '<rect class="lm-fill" x="580" y="46" width="9" height="6"/><path class="lm-line" d="M 580 46 l 4.5 3 l 4.5 -3"/>' + lab(576, 40, 'incoming request'),
+          '<path class="lm-dash" d="M 616 138 C 622 148 626 156 630 162"/>' + lab(648, 152, 'draft', 'start'),
+          gate(632, 170) + lab(664, 182, 'review gate', 'start'),
+          pine(706, 146) + pine(722, 138)
+        ];
+      }
+    },
+    {
+      id: 'help-nearby', name: 'HELP NEARBY', sub: 'PORT 03 · COMMUNITY FINDER',
+      cx: 868, cy: 418, rx: 88, ry: 72, seed: 53,
+      accent: 'var(--terracotta)', harbor: [795, 362],
+      card: {
+        idx: '№ 03', kind: 'Web app', badge: 'Work in progress', shape: 'circle',
+        accent: 'var(--terracotta)',
+        title: 'Help Nearby', em: '— a community resource finder.',
+        desc: 'Enter a ZIP code and choose a need to find nearby resources without creating an account.',
+        tags: 'react · next.js · css',
+        process: ['ZIP', 'Need', 'Resource', 'Confirm'],
+        slug: 'help-nearby'
+      },
+      landmarks: function () {
+        return [
+          hut(852, 400, 16, 11) + hut(868, 404, 14, 10) + hut(884, 400, 16, 11) + lab(868, 418, 'town'),
+          pin(890, 372, 'ZIP 90712'),
+          '<path class="lm-line" d="M 858 406 C 840 414 826 420 816 424 M 866 408 C 862 424 858 436 854 444 M 878 406 C 890 418 896 428 900 436 M 884 398 C 896 392 904 388 910 384" opacity="0.55"/>',
+          hut(812, 432, 18, 12) + lab(812, 448, 'housing'),
+          hut(852, 458, 18, 12) + lab(852, 474, 'food'),
+          hut(902, 446, 18, 12) + lab(902, 462, 'safety'),
+          hut(914, 380, 18, 12) + lab(914, 366, 'transit'),
+          signpost(806, 388) + lab(800, 374, 'verify before arrival')
+        ];
+      }
+    },
+    {
+      id: 'groundrules', name: 'GROUNDRULES', sub: 'PORT 04 · PROPERTY INTEL',
+      cx: 612, cy: 692, rx: 100, ry: 66, seed: 71, parcel: true,
+      accent: 'var(--gr-green)', harbor: [640, 616],
+      card: {
+        idx: '№ 04', kind: 'Web app / Property intel', badge: 'Public sample available', shape: 'arc',
+        accent: 'var(--gr-green)',
+        title: 'GroundRules', em: '— cited first-pass property screening.',
+        desc: 'Turns an address into an early property screen showing findings and what still needs verification.',
+        tags: 'parcel data · zoning · GIS · public records',
+        process: ['Address', 'Records', 'Findings', 'Verify'],
+        slug: 'groundrules'
+      },
+      landmarks: function () {
+        return [
+          /* zoning grid clipped to the parcel */
+          '<g clip-path="url(#grClip)"><path class="lm-line" opacity="0.35" d="M 520 660 H 712 M 520 692 H 712 M 520 724 H 712 M 552 620 V 760 M 594 620 V 760 M 636 620 V 760 M 678 620 V 760"/></g>' + lab(560, 664, 'zoning grid'),
+          /* jurisdiction boundary */
+          '<path class="lm-dash" d="M 500 668 C 512 626 560 606 616 610 C 676 614 726 646 722 694 C 718 740 660 772 600 768 C 544 764 492 722 500 668" opacity="0.8"/>' + lab(710, 726, 'jurisdiction line', 'end'),
+          /* hazard overlay */
+          '<path class="lm-fill" d="M 648 656 L 690 668 L 682 700 L 642 690 Z" fill="url(#hazHatch)" style="stroke: currentColor;"/>' + lab(668, 648, 'hazard overlay'),
+          scrollDoc(556, 712) + lab(556, 726, 'screening report'),
+          '<circle class="lm-dot" cx="524" cy="668" r="2.4"/><circle class="lm-dot" cx="700" cy="650" r="2.4"/><circle class="lm-dot" cx="688" cy="742" r="2.4"/><circle class="lm-dot" cx="536" cy="740" r="2.4"/>'
+        ];
+      }
+    }
+  ];
+
+  var OVERVIEW = STOPS.length;      /* band index of the pull-back overview */
+  var BANDS = STOPS.length + 1;
+
+  var LEGS = [
+    'M 248 560 C 300 500, 230 386, 318 314',
+    'M 318 314 C 400 262, 520 236, 612 186',
+    'M 612 186 C 712 196, 786 268, 795 362',
+    'M 795 362 C 788 486, 724 588, 640 616'
+  ];
+
+  /* GroundRules parcel outline (shared by coast + clip) */
+  var GR_REL = [[-98, -40], [-30, -70], [60, -62], [100, -16], [88, 46], [10, 66], [-74, 54]];
+
+  function coastFor(s) {
+    if (s.parcel) return polyPath(s.cx, s.cy, GR_REL, s.seed);
+    return blobPath(s.cx, s.cy, s.rx, s.ry, s.seed);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     Map assembly
+     ──────────────────────────────────────────────────────── */
+  function islandSVG(s, i, interactive) {
+    var coast = coastFor(s);
+    var contour = s.parcel
+      ? polyPath(s.cx, s.cy + 2, GR_REL.map(function (p) { return [p[0] * 1.14, p[1] * 1.14]; }), s.seed + 1)
+      : blobPath(s.cx, s.cy, s.rx * 1.16, s.ry * 1.18, s.seed + 1);
+    var lms = s.landmarks().map(function (m, j) {
+      return '<g class="lm" style="--d:' + (0.35 + j * 0.09).toFixed(2) + 's">' + m + '</g>';
+    }).join('');
+    var labelY = s.cy + (s.parcel ? 96 : s.ry + 26) + (s.labelDY || 0);
+    var inter = interactive
+      ? ' tabindex="0" role="button" aria-pressed="false" aria-label="' + s.name.replace(/"/g, '') + ' — stop ' + (i + 1) + ' of ' + STOPS.length + '. Activate to sail here."'
+      : '';
+    return '<g class="pw-isle" data-stop="' + i + '" style="--isle:' + s.accent + '"' + inter + '>' +
+      '<path class="isle-contour" d="' + contour + '"/>' +
+      '<path class="isle-coast" d="' + coast + '"/>' +
+      '<g class="isle-lms">' + lms + '</g>' +
+      '<circle class="isle-harbor" cx="' + s.harbor[0] + '" cy="' + s.harbor[1] + '" r="4.5"/>' +
+      '<g class="isle-label"><text class="isle-name" x="' + s.cx + '" y="' + labelY + '">' + s.name + '</text>' +
+      '<text class="isle-sub" x="' + s.cx + '" y="' + (labelY + 14) + '">' + s.sub + '</text></g>' +
+      '</g>';
+  }
+
+  function mapInner(opts) {
+    opts = opts || {};
+    var out = [];
+
+    out.push('<defs>' +
+      '<clipPath id="grClip"><path d="' + coastFor(STOPS[4]) + '"/></clipPath>' +
+      '<pattern id="hazHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+      '<line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></pattern>' +
+      '<filter id="paperNoise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>' +
+      '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0.4 0 0 0 0 0.38 0 0 0 0 0.34 0 0 0 0.05 0"/></filter>' +
+      '</defs>');
+
+    out.push('<rect class="pw-seabg" x="0" y="0" width="1040" height="820"/>');
+
+    /* graticule */
+    var g = [];
+    for (var x = 94; x < 1040; x += 76) g.push('<line class="pw-grat" x1="' + x + '" y1="18" x2="' + x + '" y2="806"/>');
+    for (var y = 94; y < 806; y += 76) g.push('<line class="pw-grat" x1="18" y1="' + y + '" x2="1022" y2="' + y + '"/>');
+    out.push('<g aria-hidden="true">' + g.join('') + '</g>');
+
+    /* paper texture */
+    out.push('<rect x="0" y="0" width="1040" height="820" filter="url(#paperNoise)" opacity="0.5" aria-hidden="true"/>');
+
+    /* frame + ticks */
+    var ticks = [];
+    for (var tx = 78; tx < 1040 - 30; tx += 60) {
+      ticks.push('<line class="pw-frame-tick" x1="' + tx + '" y1="18" x2="' + tx + '" y2="24"/>');
+      ticks.push('<line class="pw-frame-tick" x1="' + tx + '" y1="800" x2="' + tx + '" y2="806"/>');
+    }
+    for (var ty = 78; ty < 806 - 30; ty += 60) {
+      ticks.push('<line class="pw-frame-tick" x1="18" y1="' + ty + '" x2="24" y2="' + ty + '"/>');
+      ticks.push('<line class="pw-frame-tick" x1="1016" y1="' + ty + '" x2="1022" y2="' + ty + '"/>');
+    }
+    out.push('<rect class="pw-frame" x="18" y="18" width="1004" height="788"/><g aria-hidden="true">' + ticks.join('') + '</g>');
+
+    /* waves */
+    var wavePts = [[470, 250], [540, 320], [420, 350], [740, 480], [870, 580], [330, 470], [910, 240], [180, 420], [760, 720], [940, 420]];
+    out.push('<g aria-hidden="true">' + wavePts.map(function (p) {
+      return '<path class="pw-wave" d="M ' + (p[0] - 12) + ' ' + p[1] + ' q 6 -5 12 0 q 6 5 12 0"/>';
+    }).join('') + '</g>');
+
+    /* sea labels */
+    out.push('<text class="pw-sealabel" x="455" y="428" transform="rotate(-7 455 428)" text-anchor="middle">SEA OF SMALL, USEFUL SYSTEMS</text>');
+    out.push('<text class="pw-sealabel" x="268" y="438" transform="rotate(83 268 438)" text-anchor="middle" style="font-size:11px">APPROVAL SOUND</text>');
+
+    /* cartouche */
+    out.push('<g aria-hidden="true"><rect class="pw-cart-rect" x="36" y="30" width="248" height="96" rx="2"/>' +
+      '<rect class="pw-cart-rect" x="41" y="35" width="238" height="86" rx="1" fill="none"/>' +
+      '<text class="pw-cart-title" x="56" y="66">Project World</text>' +
+      '<text class="pw-cart-sub" x="56" y="84">CHART № 01 · THE SYSTEMS I BUILD</text>' +
+      '<text class="pw-cart-sub2" x="56" y="98">surveyed 2024 — 2026 · drawn at Daventry One</text>' +
+      '<line x1="56" y1="106" x2="86" y2="106" class="pw-route"/><text class="pw-cart-sub2" x="92" y="109">planned</text>' +
+      '<line x1="140" y1="106" x2="170" y2="106" class="pw-route-gone"/><text class="pw-cart-sub2" x="176" y="109">traveled</text></g>');
+
+    /* scale bar */
+    out.push('<g aria-hidden="true"><line class="pw-scale-line" x1="40" y1="758" x2="160" y2="758"/>' +
+      '<line class="pw-scale-line" x1="40" y1="754" x2="40" y2="762"/><line class="pw-scale-line" x1="100" y1="755" x2="100" y2="761"/><line class="pw-scale-line" x1="160" y1="754" x2="160" y2="762"/>' +
+      '<text class="pw-scale-t" x="40" y="772">0</text><text class="pw-scale-t" x="146" y="772">10 leagues</text>' +
+      '<text class="pw-scale-t" x="40" y="746">one league ≈ one shipped iteration</text></g>');
+
+    /* compass */
+    out.push('<g aria-hidden="true" transform="translate(474 512)">' +
+      '<circle class="pw-compass-ring" r="30"/><circle class="pw-compass-ring" r="22" opacity="0.6"/>' +
+      [0, 45, 90, 135].map(function (a) {
+        return '<line class="pw-compass-ray" x1="0" y1="-30" x2="0" y2="30" transform="rotate(' + a + ')"/>';
+      }).join('') +
+      '<path class="pw-compass-needle" d="M 0 -26 L 5 0 L 0 26 L -5 0 Z"/>' +
+      '<circle class="pw-compass-needle" r="2.5"/>' +
+      '<text class="pw-compass-t" x="0" y="-36" text-anchor="middle">N</text>' +
+      '<text class="pw-compass-t" x="38" y="3" text-anchor="middle">E</text>' +
+      '<text class="pw-compass-t" x="0" y="44" text-anchor="middle">S</text>' +
+      '<text class="pw-compass-t" x="-38" y="3" text-anchor="middle">W</text></g>');
+
+    /* routes */
+    out.push(LEGS.map(function (d, i) { return '<path class="pw-route" d="' + d + '" data-leg="' + i + '"/>'; }).join(''));
+    out.push(LEGS.map(function (d, i) { return '<path class="pw-route-gone" d="' + d + '" data-legov="' + i + '"/>'; }).join(''));
+
+    /* islands */
+    out.push(STOPS.map(function (s, i) { return islandSVG(s, i, !!opts.interactive); }).join(''));
+
+    /* Parcel Engine — optional side island */
+    var pe = 'M 918 646 L 962 634 L 992 654 L 984 680 L 934 686 Z';
+    out.push('<g class="pw-isle pw-isle--side" data-side="parcel" ' + (opts.interactive ? 'tabindex="0" role="button" aria-label="Parcel Engine — optional side island. Activate for details."' : '') + ' style="--isle:var(--parcel-green)">' +
+      '<path class="isle-coast" d="' + pe + '"/>' +
+      '<g class="isle-lms" style="opacity:0.8"><path class="lm-dash" d="M 930 654 L 978 668"/><text class="lm-t" x="954" y="652">N 42° E</text></g>' +
+      '<g class="isle-label"><text class="isle-name" x="954" y="706" style="font-size:9.5px">PARCEL ENGINE</text>' +
+      '<text class="isle-sub" x="954" y="718">SIDE ISLAND · OPTIONAL</text></g></g>');
+
+    /* wake + flags + ship */
+    if (opts.ship) {
+      out.push('<g id="pwWake" aria-hidden="true"></g><g id="pwFlags" aria-hidden="true"></g>');
+      out.push('<g id="pwShip" aria-hidden="true"><g class="pw-ship-inner">' +
+        '<path class="pw-ship-hull" d="M -13 2 C -9 8 9 8 13 2 L 8 2 L -11 2 Z"/>' +
+        '<line class="pw-ship-mast" x1="0" y1="1" x2="0" y2="-15"/>' +
+        '<path class="pw-ship-sail" d="M 1 -3 L 1 -13 C 7 -10 9 -6 2 -3 Z"/>' +
+        '<path class="pw-ship-sail" d="M -1 -4 L -9 -4 L -1 -12 Z"/>' +
+        '<path class="pw-ship-flag" d="M 0 -15 L 6 -13 L 0 -11 Z"/>' +
+        '</g></g>');
+    }
+    return out.join('');
+  }
+
+  /* ────────────────────────────────────────────────────────
+     Cards
+     ──────────────────────────────────────────────────────── */
+  function markHTML(shape, color) {
+    if (shape === 'stack') {
+      return '<span class="mark mark-stack stack" style="color:' + color + ';width:38px;height:38px" aria-hidden="true"><span class="mark-dot"></span><span class="mark-dot"></span></span>';
+    }
+    return '<span class="mark ' + shape + '" style="color:' + color + ';width:38px;height:38px" aria-hidden="true"></span>';
+  }
+
+  function cardHTML(s) {
+    var c = s.card;
+    var proc = c.process.map(function (p, j) {
+      return '<li style="--i:' + j + '"><span class="pr-process-node" aria-hidden="true"></span><span>' + p + '</span></li>';
+    }).join('');
+    var cta;
+    if (c.slug) {
+      cta = '<a class="pr-cta-link" href="https://crvro.com/projects/' + c.slug + '" target="_blank" rel="noreferrer">View case study <span class="ar">→</span></a>';
+    } else {
+      cta = '<button class="pr-cta-link" data-sail="' + c.ctaStop + '">' + c.ctaText + ' <span class="ar">→</span></button>';
+    }
+    return '<div class="pr-card-top">' +
+      '<span class="pr-idx">' + c.idx + '</span>' + markHTML(c.shape, c.accent) +
+      '<div class="pr-meta"><span class="proj-status">' + c.badge + '</span><span>' + c.kind + '</span></div></div>' +
+      '<h3 class="pr-title">' + c.title + ' <em>' + c.em + '</em></h3>' +
+      '<p class="pr-desc">' + c.desc + '</p>' +
+      '<span class="pr-tags">' + c.tags + '</span>' +
+      '<ol class="pr-process-rail cols-' + c.process.length + '" aria-label="' + c.title + ' process">' + proc + '</ol>' +
+      cta +
+      (c.foot ? '<p class="pr-foot-note">' + c.foot + '</p>' : '');
+  }
+
+  var closingCardHTML =
+    '<div class="pr-card-top"><span class="pr-idx">§ VOYAGE LOG</span>' +
+    markHTML('circle', 'var(--accent-gold)') +
+    '<div class="pr-meta"><span class="proj-status">Journey complete</span></div></div>' +
+    '<h3 class="pr-title">Every route, <em>logged.</em></h3>' +
+    '<p class="pr-desc">Pulled back, the whole chart reads as one system: local models where possible, approval gates on everything consequential, verification before anything ships.</p>' +
+    '<span class="pr-tags">5 harbors · 4 case studies · 1 side island</span>' +
+    '<div class="pr-cta-row">' +
+    '<a class="pr-cta-link" href="https://crvro.com/#work" target="_blank" rel="noreferrer">Explore case studies <span class="ar">→</span></a>' +
+    '<a class="pr-cta-link" href="https://crvro.com/#contact" target="_blank" rel="noreferrer">Contact Christopher <span class="ar">→</span></a>' +
+    '<a class="pw-skip" href="#about">Continue below — About ↓</a></div>';
+
+  /* ────────────────────────────────────────────────────────
+     Build desktop DOM
+     ──────────────────────────────────────────────────────── */
+  var mapEl = $('#pwMap');
+  mapEl.innerHTML = mapInner({ ship: true, interactive: true });
+
+  var cardsEl = $('#pwCards');
+  cardsEl.innerHTML = STOPS.map(function (s, i) {
+    return '<article class="pr-card pw-card" data-card="' + i + '">' + cardHTML(s) + '</article>';
+  }).join('') + '<article class="pr-card pw-card" data-card="' + OVERVIEW + '">' + closingCardHTML + '</article>';
+
+  var dotsEl = $('#pwDots');
+  dotsEl.innerHTML = STOPS.map(function (s, i) {
+    return '<button class="pw-dot" data-goto="' + i + '" aria-label="Go to stop ' + (i + 1) + ': ' + s.name + '"></button>';
+  }).join('') + '<button class="pw-dot pw-dot--ov" data-goto="' + OVERVIEW + '" aria-label="Go to world overview"></button>';
+
+  /* ────────────────────────────────────────────────────────
+     Ship engine (desktop)
+     ──────────────────────────────────────────────────────── */
+  var legEls = $$('[data-leg]', mapEl);
+  var legOvEls = $$('[data-legov]', mapEl);
+  var legLens = legEls.map(function (p) { return p.getTotalLength(); });
+  legOvEls.forEach(function (p, i) {
+    p.style.strokeDasharray = legLens[i];
+    p.style.strokeDashoffset = legLens[i];
+  });
+
+  var shipEl = $('#pwShip');
+  var wakeEl = $('#pwWake');
+  var flagsEl = $('#pwFlags');
+  var shipS = 0;              /* continuous position: leg index + t, 0..4 */
+  var activeStop = 0;
+  var travelRaf = null;
+  var lastWake = 0;
+
+  function pointAt(s) {
+    s = clamp(s, 0, LEGS.length);
+    var leg = clamp(Math.floor(s), 0, LEGS.length - 1);
+    var t = s - leg;
+    if (s >= LEGS.length) { leg = LEGS.length - 1; t = 1; }
+    return legEls[leg].getPointAtLength(t * legLens[leg]);
+  }
+
+  function setShip(s, dir) {
+    var p = pointAt(s);
+    var q = pointAt(clamp(s + (dir < 0 ? -0.015 : 0.015), 0, LEGS.length));
+    var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+    if (dir < 0) ang += 180;
+    shipEl.setAttribute('transform', 'translate(' + F(p.x) + ' ' + F(p.y) + ') rotate(' + F(ang) + ')');
+    /* traveled overlay follows the ship */
+    for (var i = 0; i < legLens.length; i++) {
+      var off;
+      if (s >= i + 1) off = 0;
+      else if (s <= i) off = legLens[i];
+      else off = legLens[i] * (1 - (s - i));
+      legOvEls[i].style.strokeDashoffset = off;
+    }
+    return p;
+  }
+
+  function dropWake(p) {
+    var now = performance.now();
+    if (now - lastWake < 90) return;
+    lastWake = now;
+    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', F(p.x)); c.setAttribute('cy', F(p.y)); c.setAttribute('r', 3);
+    c.setAttribute('class', 'pw-wake-dot');
+    wakeEl.appendChild(c);
+    setTimeout(function () { c.remove(); }, 1100);
+  }
+
+  function plantFlag(stopIdx) {
+    if (flagsEl.querySelector('[data-flag="' + stopIdx + '"]')) return;
+    var h = STOPS[stopIdx].harbor;
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'pw-flag');
+    g.setAttribute('data-flag', stopIdx);
+    g.innerHTML = '<line class="pw-flag-pole" x1="' + (h[0] + 8) + '" y1="' + (h[1] - 2) + '" x2="' + (h[0] + 8) + '" y2="' + (h[1] - 16) + '"/>' +
+      '<path class="pw-flag-cloth" d="M ' + (h[0] + 8) + ' ' + (h[1] - 16) + ' l 9 3 l -9 3 Z"/>';
+    flagsEl.appendChild(g);
+  }
+
+  var easeIO = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+
+  function travelTo(targetStop, done) {
+    var target = clamp(targetStop, 0, LEGS.length);
+    if (travelRaf) { cancelAnimationFrame(travelRaf); travelRaf = null; }
+    if (isReduced() || Math.abs(target - shipS) < 0.001) {
+      shipS = target; setShip(shipS, 1);
+      if (done) done();
+      return;
+    }
+    var from = shipS;
+    var dist = target - from;
+    var dur = clamp(Math.abs(dist) * 850, 500, 2100);
+    var t0 = performance.now();
+    var step = function (now) {
+      var t = clamp((now - t0) / dur, 0, 1);
+      shipS = from + dist * easeIO(t);
+      var p = setShip(shipS, dist >= 0 ? 1 : -1);
+      if (t > 0.04 && t < 0.96) dropWake(p);
+      if (t < 1) travelRaf = requestAnimationFrame(step);
+      else { travelRaf = null; shipS = target; setShip(shipS, 1); if (done) done(); }
+    };
+    travelRaf = requestAnimationFrame(step);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     Journey state (desktop)
+     ──────────────────────────────────────────────────────── */
+  var stageEl = $('#pwStage');
+  var liveEl = $('#pwLive');
+  var isles = $$('.pw-isle[data-stop]', mapEl);
+
+  function setActive(band, announce) {
+    activeStop = band;
+    var overview = band === OVERVIEW;
+    stageEl.classList.toggle('pw-ov', overview);
+
+    isles.forEach(function (el) {
+      var i = +el.getAttribute('data-stop');
+      var act = !overview && i === band;
+      el.classList.toggle('active', act);
+      el.classList.toggle('visited', overview || i < band || (i === band));
+      el.setAttribute('aria-pressed', act ? 'true' : 'false');
+    });
+
+    if (overview) {
+      legOvEls.forEach(function (p) { p.style.strokeDashoffset = 0; });
+      STOPS.forEach(function (_, i) { plantFlag(i); });
+    } else {
+      for (var i = 0; i < band; i++) plantFlag(i);
+    }
+
+    $$('.pw-card', cardsEl).forEach(function (c) {
+      c.classList.toggle('active', +c.getAttribute('data-card') === band);
+    });
+    $$('.pw-dot', dotsEl).forEach(function (d) {
+      var i = +d.getAttribute('data-goto');
+      d.setAttribute('aria-current', i === band ? 'true' : 'false');
+      d.classList.toggle('done', i < band);
+    });
+
+    $('#pwStopLabel').textContent = overview
+      ? 'WORLD OVERVIEW — JOURNEY COMPLETE'
+      : 'STOP 0' + (band + 1) + ' / 0' + STOPS.length + ' — ' + STOPS[band].name;
+    $('#pwPrev').disabled = band === 0;
+    var next = $('#pwNext');
+    next.disabled = band === OVERVIEW;
+    next.textContent = band === OVERVIEW - 1 ? 'Pull back — overview →' : 'Next port →';
+
+    if (announce) {
+      liveEl.textContent = overview
+        ? 'World overview: the full traveled route with all five destinations.'
+        : 'Arrived at ' + STOPS[band].name + ', stop ' + (band + 1) + ' of ' + STOPS.length + '.';
+    }
+  }
+
+  /* Scroll banding over the tall track */
+  var trackEl = $('#pwTrack');
+  var desktopEl = $('.pw-desktop');
+  var navLockTarget = -1;
+
+  function desktopVisible() { return desktopEl.offsetParent !== null; }
+
+  function bandFromScroll() {
+    var rect = trackEl.getBoundingClientRect();
+    var total = trackEl.offsetHeight - stageEl.offsetHeight;
+    if (total <= 0) return 0;
+    var y = clamp(-rect.top + 0.001, 0, total);
+    return clamp(Math.floor((y / total) * BANDS), 0, BANDS - 1);
+  }
+
+  function scrollToBand(band) {
+    var total = trackEl.offsetHeight - stageEl.offsetHeight;
+    var top = window.scrollY + trackEl.getBoundingClientRect().top;
+    var target = top + (band / BANDS) * total + total / BANDS * 0.5;
+    navLockTarget = band;
+    goTo(band, true);
+    window.scrollTo({ top: target, behavior: isReduced() ? 'auto' : 'smooth' });
+    setTimeout(function () { navLockTarget = -1; }, 900);
+  }
+
+  function goTo(band, announce) {
+    band = clamp(band, 0, OVERVIEW);
+    if (band === activeStop) { setActive(band, false); return; }
+    var shipTarget = band === OVERVIEW ? LEGS.length : band;
+    setActive(band, false);
+    travelTo(shipTarget, function () {
+      setActive(band, !!announce);
+    });
+  }
+
+  var scrollTick = false;
+  window.addEventListener('scroll', function () {
+    if (scrollTick) return;
+    scrollTick = true;
+    requestAnimationFrame(function () {
+      scrollTick = false;
+      if (desktopVisible()) {
+        var band = bandFromScroll();
+        if (navLockTarget !== -1 && band !== navLockTarget) return;
+        if (navLockTarget === band) navLockTarget = -1;
+        if (band !== activeStop) goTo(band, true);
+      }
+      mobileScroll();
+      mobileBtnVis();
+    });
+  }, { passive: true });
+
+  /* Controls */
+  $('#pwPrev').addEventListener('click', function () { scrollToBand(activeStop - 1); });
+  $('#pwNext').addEventListener('click', function () { scrollToBand(activeStop + 1); });
+  dotsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-goto]');
+    if (b) scrollToBand(+b.getAttribute('data-goto'));
+  });
+  cardsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sail]');
+    if (b) scrollToBand(+b.getAttribute('data-sail'));
+  });
+
+  /* Keyboard travel with arrow keys while the stage has focus */
+  stageEl.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') { e.preventDefault(); scrollToBand(activeStop + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToBand(activeStop - 1); }
+  });
+
+  /* Island interaction (click / keyboard) + Parcel Engine popover */
+  function isleActivate(el) {
+    if (el.hasAttribute('data-side')) {
+      var pop = $('#parcelPop');
+      pop.hidden = !pop.hidden;
+      return;
+    }
+    scrollToBand(+el.getAttribute('data-stop'));
+  }
+  mapEl.addEventListener('click', function (e) {
+    var isle = e.target.closest('.pw-isle');
+    if (isle) isleActivate(isle);
+  });
+  mapEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var isle = e.target.closest('.pw-isle');
+    if (isle) { e.preventDefault(); isleActivate(isle); }
+  });
+  $('#parcelClose').addEventListener('click', function () { $('#parcelPop').hidden = true; });
+
+  /* initial state */
+  setShip(0, 1);
+  setActive(0, false);
+
+  /* ────────────────────────────────────────────────────────
+     Mobile journey
+     ──────────────────────────────────────────────────────── */
+  var pwmStops = $('#pwmStops');
+  pwmStops.innerHTML = STOPS.map(function (s, i) {
+    var pad = 150;
+    var vb = (s.cx - pad) + ' ' + (s.cy - 135) + ' ' + (pad * 2) + ' 290';
+    return '<li class="pwm-stop" data-stop="' + i + '" id="pwm-stop-' + i + '">' +
+      '<div class="pwm-stopnum">' + (i === 0 ? 'HOME PORT' : 'STOP 0' + (i + 1)) + ' · 0' + (i + 1) + ' / 0' + STOPS.length + '</div>' +
+      '<div class="pwm-vig"><svg viewBox="' + vb + '" role="img" aria-label="Island of ' + s.name + '">' +
+      '<rect class="pw-seabg" x="' + (s.cx - pad) + '" y="' + (s.cy - 135) + '" width="' + (pad * 2) + '" height="290"/>' +
+      '<defs><clipPath id="grClipM"><path d="' + coastFor(STOPS[4]) + '"/></clipPath>' +
+      '<pattern id="hazHatchM" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></pattern></defs>' +
+      islandSVG(s, i, false).replace(/grClip\)/g, 'grClipM)').replace(/hazHatch\)/g, 'hazHatchM)') +
+      '</svg></div>' +
+      '<article class="pr-card">' + cardHTML(s) + '</article>' +
+      '</li>';
+  }).join('');
+
+  /* activate mobile islands + cards as they scroll into view */
+  var mobIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var li = en.target;
+      li.classList.add('active');
+      var isle = li.querySelector('.pw-isle');
+      if (isle) isle.classList.add('active');
+    });
+  }, { rootMargin: '-25% 0px -25% 0px', threshold: 0.05 });
+  $$('.pwm-stop', pwmStops).forEach(function (li) { mobIO.observe(li); });
+
+  /* vertical route rail + ship scrub */
+  var pwmMobile = $('#pwMobile');
+  var pwmRail = $('#pwmRail');
+  var railPathEl = null, railGoneEl = null, railShipEl = null, railLen = 0;
+
+  function buildMobileRail() {
+    if (pwmMobile.offsetParent === null) return;
+    var contTop = pwmMobile.getBoundingClientRect().top + window.scrollY;
+    var pts = $$('.pwm-stop', pwmStops).map(function (li) {
+      var r = li.getBoundingClientRect();
+      return (r.top + window.scrollY - contTop) + r.height * 0.32;
+    });
+    var endY = pwmMobile.offsetHeight - 60;
+    var d = 'M 28 0';
+    var xs = [28, 12, 44, 12, 44];
+    for (var i = 0; i < pts.length; i++) {
+      var x = xs[i % xs.length];
+      d += ' C 28 ' + F(pts[i] - 120) + ', ' + x + ' ' + F(pts[i] - 80) + ', ' + x + ' ' + F(pts[i]);
+      d += ' C ' + x + ' ' + F(pts[i] + 60) + ', 28 ' + F(pts[i] + 110) + ', 28 ' + F(pts[i] + 150);
+    }
+    d += ' L 28 ' + F(endY);
+    pwmRail.setAttribute('viewBox', '0 0 64 ' + Math.ceil(pwmMobile.offsetHeight));
+    pwmRail.setAttribute('height', pwmMobile.offsetHeight);
+    pwmRail.innerHTML =
+      '<path class="pwm-rail-path" d="' + d + '"/>' +
+      '<path class="pwm-rail-gone" d="' + d + '"/>' +
+      '<g id="pwmShip"><g class="pw-ship-inner">' +
+      '<path class="pw-ship-hull" d="M -11 2 C -8 7 8 7 11 2 L 7 2 L -9 2 Z"/>' +
+      '<line class="pw-ship-mast" x1="0" y1="1" x2="0" y2="-12"/>' +
+      '<path class="pw-ship-sail" d="M 1 -3 L 1 -11 C 6 -8 7 -5 2 -3 Z"/>' +
+      '<path class="pw-ship-flag" d="M 0 -12 L 5 -10.5 L 0 -9 Z"/>' +
+      '</g></g>';
+    railPathEl = pwmRail.querySelector('.pwm-rail-path');
+    railGoneEl = pwmRail.querySelector('.pwm-rail-gone');
+    railShipEl = pwmRail.querySelector('#pwmShip');
+    railLen = railPathEl.getTotalLength();
+    railGoneEl.style.strokeDasharray = railLen;
+    railGoneEl.style.strokeDashoffset = railLen;
+    mobileScroll();
+  }
+
+  function mobileScroll() {
+    if (!railPathEl || pwmMobile.offsetParent === null) return;
+    var r = pwmMobile.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var prog = clamp((vh * 0.55 - r.top) / (r.height - vh * 0.1), 0, 1);
+    var L = prog * railLen;
+    var p = railPathEl.getPointAtLength(L);
+    var q = railPathEl.getPointAtLength(clamp(L + 4, 0, railLen));
+    var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+    railShipEl.setAttribute('transform', 'translate(' + F(p.x) + ' ' + F(p.y) + ') rotate(' + F(ang) + ')');
+    railGoneEl.style.strokeDashoffset = railLen - L;
+  }
+
+  /* closing mini world map (mobile) */
+  var mini = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  mini.setAttribute('viewBox', '0 0 1040 820');
+  mini.innerHTML = mapInner({ ship: false, interactive: false })
+    .replace(/grClip/g, 'grClipMini').replace(/hazHatch/g, 'hazHatchMini').replace(/paperNoise/g, 'paperNoiseMini');
+  $('#pwmWorldMini').appendChild(mini);
+  $$('.pw-isle', mini).forEach(function (el) { el.classList.add('visited'); });
+  $$('[data-legov]', mini).forEach(function (p) { p.style.strokeDasharray = 'none'; });
+
+  /* mobile world-map button visibility */
+  var mapBtn = $('#pwmMapBtn');
+  function mobileBtnVis() {
+    if (pwmMobile.offsetParent === null) { mapBtn.classList.remove('show'); return; }
+    var r = pwmMobile.getBoundingClientRect();
+    mapBtn.classList.toggle('show', r.top < window.innerHeight * 0.6 && r.bottom > window.innerHeight * 0.4);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     World map overlay (desktop button + mobile button)
+     ──────────────────────────────────────────────────────── */
+  var overlay = $('#pwOverlay');
+  var overlayBuilt = false;
+  var lastFocus = null;
+
+  function buildOverlay() {
+    if (overlayBuilt) return;
+    overlayBuilt = true;
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 1040 820');
+    svg.innerHTML = mapInner({ ship: false, interactive: true })
+      .replace(/grClip/g, 'grClipOv').replace(/hazHatch/g, 'hazHatchOv').replace(/paperNoise/g, 'paperNoiseOv');
+    $('#overlayMapWrap').appendChild(svg);
+    $$('.pw-isle', svg).forEach(function (el) { el.classList.add('visited'); });
+    $$('[data-legov]', svg).forEach(function (p) { p.style.strokeDasharray = 'none'; });
+    svg.addEventListener('click', function (e) {
+      var isle = e.target.closest('.pw-isle[data-stop]');
+      if (isle) overlayGo(+isle.getAttribute('data-stop'));
+    });
+    svg.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var isle = e.target.closest('.pw-isle[data-stop]');
+      if (isle) { e.preventDefault(); overlayGo(+isle.getAttribute('data-stop')); }
+    });
+    $('#overlayList').innerHTML = STOPS.map(function (s, i) {
+      return '<li><button class="pwbtn" data-ovgo="' + i + '"><span class="n">0' + (i + 1) + '</span> ' + s.name + '</button></li>';
+    }).join('') + '<li><button class="pwbtn" data-ovgo="' + OVERVIEW + '"><span class="n">▣</span> FULL OVERVIEW</button></li>';
+    $('#overlayList').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-ovgo]');
+      if (b) overlayGo(+b.getAttribute('data-ovgo'));
+    });
+  }
+
+  function overlayGo(stop) {
+    closeOverlay();
+    if (desktopVisible()) {
+      scrollToBand(stop);
+    } else {
+      var target = stop >= STOPS.length ? $('#pwmClosing') : $('#pwm-stop-' + stop);
+      if (target) target.scrollIntoView({ behavior: isReduced() ? 'auto' : 'smooth', block: 'start' });
+    }
+  }
+
+  function openOverlay() {
+    buildOverlay();
+    lastFocus = document.activeElement;
+    overlay.hidden = false;
+    $('#overlayClose').focus();
+  }
+  function closeOverlay() {
+    overlay.hidden = true;
+    if (lastFocus) lastFocus.focus();
+  }
+  $('#overviewOpen').addEventListener('click', openOverlay);
+  mapBtn.addEventListener('click', openOverlay);
+  $('#overlayClose').addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
+  });
+
+  /* ────────────────────────────────────────────────────────
+     Hero command center (existing animation, compact rebuild)
+     ──────────────────────────────────────────────────────── */
+  var MODES = [
+    { key: 'support', tab: 'SUPPORT', accent: 'var(--olive)',
+      caption: 'Ticket → Evidence → Draft → Human approval',
+      steps: ['Ticket', 'Evidence', 'Draft', 'Human approval'] },
+    { key: 'ai-ops', tab: 'AI OPERATIONS', accent: 'var(--plum)',
+      caption: 'Request → Proposed action → Permission gate → Execution → Verification',
+      steps: ['Request', 'Proposed', 'Permission', 'Execution', 'Verified'] },
+    { key: 'gis', tab: 'GIS SYSTEMS', accent: 'var(--parcel-green)',
+      caption: 'Legal description → COGO calls → Geometry → Closure check',
+      steps: ['Legal desc.', 'COGO calls', 'Geometry', 'Closure'] }
+  ];
+  var hccActive = 0, hccUser = false;
+  var hccTabs = $('.hcc-tabs');
+  hccTabs.innerHTML = MODES.map(function (m, i) {
+    return '<button class="hcc-tab" role="tab" aria-selected="false" data-hcc="' + i + '">' + m.tab + '</button>';
+  }).join('');
+
+  function renderHcc() {
+    var m = MODES[hccActive];
+    $('#hcc').style.setProperty('--hcc-accent', m.accent);
+    $$('.hcc-tab', hccTabs).forEach(function (t, i) {
+      t.classList.toggle('hcc-tab--active', i === hccActive);
+      t.setAttribute('aria-selected', i === hccActive ? 'true' : 'false');
+    });
+    $('#hccCaption').textContent = m.caption;
+    var n = m.steps.length, margin = 34, w = 600;
+    var xs = m.steps.map(function (_, i) { return margin + (i * (w - margin * 2)) / (n - 1); });
+    var d = 'M ' + xs.map(function (x) { return x + ' 26'; }).join(' L ');
+    $('#hccRail').innerHTML =
+      '<path d="' + d + '" class="hcc-rail-base" fill="none"/>' +
+      '<path d="' + d + '" class="hcc-rail-active hcc-draw" fill="none" style="stroke:' + m.accent + '"/>' +
+      xs.map(function (x, i) {
+        return '<circle class="hcc-node" style="animation-delay:' + (i * 0.22) + 's" cx="' + x + '" cy="26" r="5.5" fill="' + m.accent + '"/>';
+      }).join('') +
+      xs.map(function (x, i) {
+        var anchor = i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle');
+        return '<text class="hcc-rail-label" x="' + x + '" y="52" text-anchor="' + anchor + '">' + m.steps[i] + '</text>';
+      }).join('');
+  }
+  hccTabs.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-hcc]');
+    if (!t) return;
+    hccUser = true;
+    hccActive = +t.getAttribute('data-hcc');
+    renderHcc();
+  });
+  renderHcc();
+  setInterval(function () {
+    if (hccUser || isReduced()) return;
+    hccActive = (hccActive + 1) % MODES.length;
+    renderHcc();
+  }, 6500);
+
+  /* ────────────────────────────────────────────────────────
+     Layout settling
+     ──────────────────────────────────────────────────────── */
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      buildMobileRail();
+      mobileBtnVis();
+    }, 120);
+  });
+  setTimeout(buildMobileRail, 60);
+  setTimeout(buildMobileRail, 500);
+})();
+</script>
