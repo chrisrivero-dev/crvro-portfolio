@@ -90,7 +90,7 @@ function PortPulse({ x, y, accent, reduced }) {
  * through the gutters between cards — never through card interiors.
  * `cards` = [{ ref, accent, ports: { in?: {ref, side}, out?: {ref, side} } }]
  */
-export default function RouteRail({ containerRef, cards }) {
+export default function RouteRail({ containerRef, cards, layoutVersion = 0 }) {
   const reduced = useReducedMotion();
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [segs, setSegs] = useState([]);
@@ -150,16 +150,37 @@ export default function RouteRail({ containerRef, cards }) {
 
   useEffect(() => {
     measure();
-    const ro = new ResizeObserver(measure);
+    let settleTimer;
+    const onResize = () => {
+      measure();
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(measure, 80);
+    };
+    const ro = new ResizeObserver(onResize);
     if (containerRef.current) ro.observe(containerRef.current);
+    cards.forEach((card) => {
+      if (card.ref.current) ro.observe(card.ref.current);
+    });
     window.addEventListener('resize', measure);
     const t = setTimeout(measure, 300);
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', measure);
       clearTimeout(t);
+      clearTimeout(settleTimer);
     };
   }, [measure]);
+
+  useEffect(() => {
+    let secondFrame;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(measure);
+    });
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
+    };
+  }, [layoutVersion, measure]);
 
   if (dims.w === 0 || segs.length === 0) return null;
 

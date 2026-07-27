@@ -679,6 +679,7 @@ section.contact .grid > * {
    ───────────────────────────────────────────────────────── */
 .project-map {
   position: relative;
+  overflow-anchor: none;
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 56px;
@@ -784,7 +785,48 @@ section.contact .grid > * {
   margin-bottom: 18px;
 }
 
-.pr-demo { margin-bottom: 16px; }
+.pr-process-rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.pr-process-rail::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: var(--rule-strong);
+}
+.pr-process-rail li {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 0 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: var(--graphite);
+}
+.pr-process-node {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  background: var(--accent-gold);
+  box-shadow: 0 0 0 1px var(--rule-strong);
+}
 
 .pr-cta-link {
   display: inline-flex;
