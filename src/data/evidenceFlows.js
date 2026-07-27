@@ -67,7 +67,7 @@ export const FLOWS = {
         n: '02',
         label: 'PERMISSION',
         state: 'permission',
-        detail: 'Read-only repository access — no write scope granted.',
+        detail: 'Read-only repository access. No write scope granted.',
         short: 'Scope is fixed to read-only.',
       },
       {
@@ -120,7 +120,7 @@ export const FLOWS = {
         label: 'LOCATION INPUT',
         state: 'incoming',
         tag: 'EXAMPLE WORKFLOW',
-        detail: 'ZIP code entered to start the search — no account required.',
+        detail: 'ZIP code entered to start the search. No account required.',
         short: 'A ZIP code starts the search.',
       },
       {
@@ -150,7 +150,7 @@ export const FLOWS = {
         label: 'VERIFICATION',
         state: 'warning',
         tag: 'CONFIRM BEFORE VISITING',
-        detail: 'Public resource data goes stale quickly — hours and availability are not yet date-verified.',
+        detail: 'Public resource data goes stale quickly. Hours and availability are not yet date-verified.',
         short: 'Confirm hours before visiting.',
         last: true,
       },

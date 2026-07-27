@@ -87,9 +87,9 @@ function parseRoute(path) {
 
 const SITE_URL = "https://crvro.com";
 const DEFAULT_META = {
-  title: "crvro.com — Christopher Rivero",
+  title: "crvro.com: Christopher Rivero",
   description:
-    "Christopher Rivero — a builder of small, useful systems. Automation, AI support tooling, GIS / CAD pipelines.",
+    "Christopher Rivero, a builder of small, useful systems. Automation, AI support tooling, GIS / CAD pipelines.",
 };
 
 function setMetaTag(attr, key, content) {
@@ -121,7 +121,7 @@ function useRouteMeta(route) {
     const p = isCase ? route.project : null;
 
     const title = isCase
-      ? `${p.title} — Christopher Rivero`
+      ? `${p.title}: Christopher Rivero`
       : DEFAULT_META.title;
     const description = isCase ? p.desc : DEFAULT_META.description;
     const path = isCase ? `/projects/${p.slug}` : "/";

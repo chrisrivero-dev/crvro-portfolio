@@ -68,7 +68,7 @@ export default function WorldOverlay({ open, onClose, onSelect }) {
     >
       <div className="pw-overlay-panel" ref={panelRef}>
         <div className="pw-overlay-head">
-          <span className="t">Project World — full chart</span>
+          <span className="t">Project World: full chart</span>
           <button type="button" className="pwbtn" onClick={onClose} ref={closeRef}>
             ✕ Close
           </button>
@@ -79,7 +79,7 @@ export default function WorldOverlay({ open, onClose, onSelect }) {
           interactive
           onSelectStop={onSelect}
           onSelectSide={() => onSelect(null)}
-          title="Project World — the complete chart. Select any destination to travel there."
+          title="Project World: the complete chart. Select any destination to travel there."
         />
 
         <ol className="pw-ov-list">

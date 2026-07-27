@@ -14,7 +14,7 @@ export default function Skills() {
     <section className="skills" id="skills" data-screen-label="04 Skills">
       <div className="container-wide">
         <div className="section-head reveal">
-          <div className="index">§ 04 — Skills &amp; tools</div>
+          <div className="index">§ 04: Skills &amp; tools</div>
           <div className="h">Stacks I reach for <em>when I'm building something real.</em></div>
         </div>
         <div className="grid">

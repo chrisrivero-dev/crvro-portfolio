@@ -69,7 +69,7 @@ export default function HomeEvidenceDemo({ slug }) {
   const flow = FLOWS[slug];
   if (!flow) return null;
   return (
-    <div className="hd-demo" role="group" aria-label={`${flow.console} — compact demonstration`}>
+    <div className="hd-demo" role="group" aria-label={`${flow.console}, compact demonstration`}>
       <div className="hd-demo-bar">
         <span className="hd-demo-dots" aria-hidden="true"><i /><i /><i /></span>
         <span className="hd-demo-title">{flow.console}</span>

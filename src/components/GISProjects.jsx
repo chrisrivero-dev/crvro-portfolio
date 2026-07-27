@@ -8,7 +8,7 @@ export default function GISProjects() {
     <section className="work" id="gis-tools" data-screen-label="03 GIS Tools">
       <div className="container-wide">
         <div className="section-head reveal">
-          <div className="index">§ 03 — Mapping &amp; GIS Tools</div>
+          <div className="index">§ 03: Mapping &amp; GIS Tools</div>
           <div className="h">
             GIS and CAD tools built from <em>real mapping workflows.</em>
           </div>

@@ -132,7 +132,7 @@ export default function ParcelPreview({ compact = false }) {
         ref={rootRef}
         className="parcel-preview parcel-preview--compact"
         role="img"
-        aria-label="Animated parcel boundary — metes-and-bounds geometry drawn from bearing and distance calls"
+        aria-label="Animated parcel boundary: metes-and-bounds geometry drawn from bearing and distance calls"
       >
         <svg
           viewBox="0 0 380 210"
@@ -230,7 +230,7 @@ export default function ParcelPreview({ compact = false }) {
       ref={rootRef}
       className="parcel-preview"
       role="img"
-      aria-label="Animated parcel geometry preview — metes-and-bounds boundary constructed segment by segment"
+      aria-label="Animated parcel geometry preview: metes-and-bounds boundary constructed segment by segment"
     >
       <svg
         viewBox="0 0 760 427"

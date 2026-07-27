@@ -90,14 +90,14 @@ export const STOPS = [
       shape: "circle",
       accent: "var(--accent-gold)",
       title: "Daventry One",
-      em: "— my local AI workstation and the home of Hermes.",
+      em: "My local AI workstation and the home of Hermes.",
       desc: "It helps me research, build, test, troubleshoot, and coordinate projects. I still make the final calls.",
       tags: "local models · hermes · telegram",
       process: ["Request", "Model", "Tools", "Approval", "Verification"],
       slug: null,
-      ctaText: "Set sail — begin the journey",
+      ctaText: "Set sail and begin the journey",
       ctaStop: 1,
-      foot: "Origin — not a standard project card",
+      foot: "Origin: not a standard project card",
     },
     landmarks: () => [
       <>
@@ -365,7 +365,7 @@ export const SIDE_ISLAND = {
   labelY: 706,
   slug: "parcel-engine",
   title: "Parcel Engine",
-  em: "— optional side quest.",
+  em: "Optional side quest.",
   desc: "A local metes-and-bounds parser and parcel geometry validator. Off the main route, but on the same map.",
 };
 

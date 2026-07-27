@@ -8,7 +8,7 @@ export default function Hero() {
         <div className="grid">
           <div className="marker">
             <span>§ crvro.com</span>
-            <span className="yr">2024 — 2026</span>
+            <span className="yr">2024 to 2026</span>
             <span>Lakewood, CA</span>
           </div>
           <div>
@@ -24,16 +24,16 @@ export default function Hero() {
             </p>
             <div className="meta-row">
               <span>
-                <span className="lab">Focus —</span>AI Support Systems · Workflow Automation ·
+                <span className="lab">Focus</span>AI Support Systems · Workflow Automation ·
                 GIS / CAD Tooling
               </span>
               <span className="dot">·</span>
               <span>
-                <span className="lab">Status —</span>Open to new work
+                <span className="lab">Status</span>Open to new work
               </span>
             </div>
             <a href="#work" className="scroll-cue">
-              <span>01 — see the work</span>
+              <span>01: see the work</span>
               <span className="ar">↓</span>
             </a>
           </div>

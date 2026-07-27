@@ -56,7 +56,7 @@ function WorkflowFlowMockup() {
           </React.Fragment>
         ))}
       </div>
-      <div className="flow-trace">Every step logged — traceable from request to deployment.</div>
+      <div className="flow-trace">Every step logged: traceable from request to deployment.</div>
     </div>
   );
 }
@@ -178,7 +178,7 @@ function ImageBlock({
             <div className="tg-slideshow" aria-label={label}>
               {images.map((src, i) => (
                 <div key={i} className="tg-slide">
-                  <img src={src} alt={`${label} — frame ${i + 1}`} />
+                  <img src={src} alt={`${label}, frame ${i + 1}`} />
                 </div>
               ))}
             </div>
@@ -223,7 +223,7 @@ function Section({ index, label, title, children }) {
     <section className="case-section">
       <div className="case-section-head">
         <div className="idx">
-          {index} — {label}
+          {index}: {label}
         </div>
         <h2 className="title">{title}</h2>
       </div>
@@ -579,7 +579,7 @@ export default function CaseStudy({ project: p }) {
         title="Where it goes from here."
       >
         <p className="status-line">
-          <span className="lab">Status —</span>
+          <span className="lab">Status</span>
           <span>{p.status}</span>
         </p>
 

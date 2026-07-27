@@ -5,7 +5,7 @@ export default function Contact() {
     <section className="contact" id="contact" data-screen-label="05 Contact">
       <div className="container-wide">
         <div className="section-head reveal">
-          <div className="index">§ 04 — Contact</div>
+          <div className="index">§ 04: Contact</div>
           <div className="h">
             Want to talk about AI, GIS/CAD, support systems, <em>or
             something you’re trying to build?</em> Let me know.

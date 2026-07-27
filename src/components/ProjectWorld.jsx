@@ -132,7 +132,7 @@ export default function ProjectWorld() {
     <section className="work" id="work" data-screen-label="02 Work">
       <div className="container-wide">
         <div className="section-head reveal">
-          <div className="index">§ 01 — Selected Work · Project World</div>
+          <div className="index">§ 01: Selected Work · Project World</div>
           <div className="h">
             Come take a journey through <em>the systems I build.</em>
           </div>
@@ -204,8 +204,8 @@ export default function ProjectWorld() {
                 <div className="pw-progress">
                   <span>
                     {overview
-                      ? "WORLD OVERVIEW — JOURNEY COMPLETE"
-                      : `STOP 0${band + 1} / 0${STOPS.length} — ${STOPS[band].name}`}
+                      ? "WORLD OVERVIEW: JOURNEY COMPLETE"
+                      : `STOP 0${band + 1} / 0${STOPS.length}: ${STOPS[band].name}`}
                   </span>
                   <div className="pw-dots" role="group" aria-label="Jump to stop">
                     {STOPS.map((s, i) => (
@@ -285,7 +285,7 @@ export default function ProjectWorld() {
                     onClick={() => scrollToBand(band + 1)}
                     disabled={overview}
                   >
-                    {band === OVERVIEW - 1 ? "Pull back — overview →" : "Next port →"}
+                    {band === OVERVIEW - 1 ? "Pull back: overview →" : "Next port →"}
                   </button>
                 </div>
 
@@ -304,7 +304,7 @@ export default function ProjectWorld() {
       </div>
 
       <div className="pw-landfall" aria-hidden="true">
-        <span className="lab">MAKE LANDFALL — § 02 ABOUT</span>
+        <span className="lab">MAKE LANDFALL: § 02 ABOUT</span>
         <div className="line" />
       </div>
 

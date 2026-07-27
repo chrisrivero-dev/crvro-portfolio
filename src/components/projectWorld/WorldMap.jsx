@@ -73,7 +73,7 @@ function Decorations({ ids }) {
       <rect className="pw-cart-rect" x="41" y="35" width="238" height="86" rx="1" fill="none" />
       <text className="pw-cart-title" x="56" y="66">Project World</text>
       <text className="pw-cart-sub" x="56" y="84">CHART № 01 · THE SYSTEMS I BUILD</text>
-      <text className="pw-cart-sub2" x="56" y="98">surveyed 2024 — 2026 · drawn at Daventry One</text>
+      <text className="pw-cart-sub2" x="56" y="98">surveyed 2024 to 2026 · drawn at Daventry One</text>
       <line className="pw-route" x1="56" y1="106" x2="86" y2="106" />
       <text className="pw-cart-sub2" x="92" y="109">planned</text>
       <line className="pw-route-gone" x1="140" y1="106" x2="170" y2="106" />
@@ -115,7 +115,7 @@ function Island({ stop, index, state, interactive, onSelect, ids }) {
         role: "button",
         tabIndex: 0,
         "aria-pressed": state === "active",
-        "aria-label": `${stop.name} — stop ${index + 1} of ${STOPS.length}. Activate to sail here.`,
+        "aria-label": `${stop.name}, stop ${index + 1} of ${STOPS.length}. Activate to sail here.`,
         onClick: () => onSelect(index),
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -194,7 +194,7 @@ export default function WorldMap({
     ? {
         role: "button",
         tabIndex: 0,
-        "aria-label": "Parcel Engine — optional side island. Activate for details.",
+        "aria-label": "Parcel Engine, optional side island. Activate for details.",
         onClick: onSelectSide,
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {

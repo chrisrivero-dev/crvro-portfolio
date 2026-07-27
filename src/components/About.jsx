@@ -51,7 +51,7 @@ export default function About() {
     <section className="about" id="about" data-screen-label="03 About">
       <div className="container-wide">
         <div className="section-head reveal">
-          <div className="index">§ 02 — About</div>
+          <div className="index">§ 02: About</div>
           <div className="h">
             Support ops, GIS work, and <em>the tools that came out of both.</em>
           </div>

@@ -194,7 +194,7 @@ export default function MobileJourney({ onOpenOverview, reduced }) {
         <div className="pwm-worldmini">
           <WorldMap
             allRoutesGone
-            title="Project World — the complete chart with every destination and the full traveled route."
+            title="Project World: the complete chart with every destination and the full traveled route."
           />
         </div>
         <article className="pr-card">

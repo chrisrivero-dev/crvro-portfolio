@@ -97,7 +97,7 @@ function HermesPanel({ reduced }) {
         <Flow stages={f.stages} reduced={reduced} />
 
         <div className="ep-audit">
-          <div className="ep-audit-label">Sanitized audit-style excerpt — ordered events, not timestamps</div>
+          <div className="ep-audit-label">Sanitized audit-style excerpt: ordered events, not timestamps</div>
           <ol className="ep-audit-list">
             {f.audit.map((line) => <li key={line}>{line}</li>)}
           </ol>
@@ -140,7 +140,7 @@ function GroundRulesPanel() {
       title="groundrules · screening packet (representative)"
       ariaLabel="GroundRules representative screening report with source and verification labels"
     >
-      <div className="ep-packet-note">REPRESENTATIVE OUTPUT — sample screening packet, not a live lookup</div>
+      <div className="ep-packet-note">REPRESENTATIVE OUTPUT: sample screening packet, not a live lookup</div>
       <dl className="ep-packet">
         {FLOWS.groundrules.rows.map((r) => (
           <div className="ep-packet-row" key={r.k}>
@@ -165,7 +165,7 @@ function ParcelEnginePanel({ reduced }) {
       title="parcel-engine · parse-to-export (representative)"
       ariaLabel="Parcel Engine representative workflow from legal description to export"
     >
-      <div className="ep-packet-note">REPRESENTATIVE OUTPUT — illustrative parcel, not real APN or legal description</div>
+      <div className="ep-packet-note">REPRESENTATIVE OUTPUT: illustrative parcel, not real APN or legal description</div>
       <svg
         className="ep-parcel-diagram"
         viewBox="0 0 320 170"
@@ -202,7 +202,7 @@ const COPY = {
   sidecar: {
     heading: 'How a draft actually gets built.',
     body:
-      'This is a sanitized walkthrough of the Sidecar drafting loop — the same stages every ticket goes through, shown with example content instead of real customer data. Nothing here calls a live service.',
+      'This is a sanitized walkthrough of the Sidecar drafting loop: the same stages every ticket goes through, shown with example content instead of real customer data. Nothing here calls a live service.',
   },
   openclaw: {
     heading: 'What a supervised action looks like.',
@@ -212,12 +212,12 @@ const COPY = {
   'help-nearby': {
     heading: 'From a ZIP code to a next step.',
     body:
-      'A representative walkthrough of the Help Nearby search flow — the same category structure the live prototype uses, ending with an honest reminder that resource data is not yet date-verified.',
+      'A representative walkthrough of the Help Nearby search flow: the same category structure the live prototype uses, ending with an honest reminder that resource data is not yet date-verified.',
   },
   groundrules: {
     heading: 'What a first-pass report actually shows.',
     body:
-      'A representative screening packet — the same category structure GroundRules produces for a real address, with source and verification labels so it is clear what is confirmed, what is a signal, and what still needs a human to check.',
+      'A representative screening packet: the same category structure GroundRules produces for a real address, with source and verification labels so it is clear what is confirmed, what is a signal, and what still needs a human to check.',
   },
   'parcel-engine': {
     heading: 'From legal description to exportable geometry.',
@@ -244,7 +244,7 @@ export default function EvidencePanel({ project }) {
           animate={show ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, ease: EASE }}
         >
-          <div className="idx">§ Evidence — how it actually works</div>
+          <div className="idx">§ Evidence: how it actually works</div>
           <h2>{copy.heading}</h2>
           <p>{copy.body}</p>
           <div className="evidence-cta">
