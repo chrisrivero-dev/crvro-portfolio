@@ -6,10 +6,8 @@ const EASE = [0.16, 1, 0.3, 1];
 const OPERATOR_POINTS = [
   'Builds practical AI systems and internal tools.',
   'Focused on support operations, workflow automation, and GIS/CAD.',
-  'Built and configured a local AI workstation.',
-  'Uses Hermes as a daily AI assistant and coordination system.',
-  'Maintains final authority over important actions and approvals.',
-  'Interested in making difficult work easier for people.',
+  'Uses Hermes daily to coordinate projects, investigate problems, and troubleshoot workflows.',
+  'Keeps human review, evidence, and final approval central to important actions.',
 ];
 
 function OperatorProfile() {
@@ -97,14 +95,6 @@ export default function About() {
               firsthand.
             </p>
             <p>
-              I also built and configured my own local AI workstation and use
-              Hermes as a second brain and daily AI assistant. It helps me
-              organize workflows, investigate problems, troubleshoot bugs,
-              coordinate projects, and keep work moving more efficiently,
-              while I remain responsible for the final decisions and
-              approvals.
-            </p>
-            <p>
               My background started in GIS/CAD support, where I worked across
               technical troubleshooting, mapping workflows, procedural
               documentation, and customer support. That experience pushed me
@@ -112,22 +102,22 @@ export default function About() {
               systems built around real operational needs.
             </p>
             <p>
-              I focus on tools that use approved sources, show their
-              evidence, require human review before important actions, and
-              keep a clear record of what happened. The goal is not just to
-              automate more. It is to help people move faster without losing
-              accuracy, accountability, or control.
+              I built and configured my own local AI workstation and use
+              Hermes as a second brain and daily AI assistant. It helps me
+              coordinate projects, investigate problems, troubleshoot bugs,
+              and keep work moving, while I remain responsible for final
+              decisions and approvals.
             </p>
             <p>
-              I’ve spent enough time inside these workflows to recognize
-              where systems usually break down: an AI that guesses when it
-              has no match, automation that acts without showing its work, or
-              a process where nobody clearly owns the approved answer. I
-              build systems that make those boundaries visible and testable.
+              I focus on systems that use approved sources, show their
+              evidence, require human review before important actions, and
+              keep a clear record of what happened. I’ve seen where workflows
+              break down — AI that guesses, automation that acts without
+              showing its work, and processes with no clear ownership.
             </p>
             <p>
               I like to think about the big picture, but I also like to make
-              things real. I’m constantly evolving the systems I’ve built,
+              things real. I’m constantly improving what I’ve built,
               exploring new projects, and looking for practical ways AI and
               technology can make difficult work easier for people.
             </p>
