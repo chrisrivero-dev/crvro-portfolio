@@ -112,8 +112,9 @@ export default function Projects() {
         </div>
 
         <p className="prm-closing">
-          Each project solves a different problem, but the pattern is the same:
-          reduce friction, show the work, and keep the user in control.
+          The projects are different. In each one, I try to make the work
+          easier to follow and leave important decisions with the person
+          using it.
         </p>
       </div>
     </section>

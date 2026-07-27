@@ -31,7 +31,7 @@ export const FLOWS = {
         state: 'processing',
         tag: 'REPRESENTATIVE OUTPUT',
         detail: 'Troubleshooting steps assembled from approved material only.',
-        short: 'A grounded draft is assembled.',
+        short: 'Sidecar builds a draft from the matched article.',
       },
       {
         n: '04',
@@ -90,7 +90,7 @@ export const FLOWS = {
         state: 'verified',
         tag: 'HUMAN REVIEW REQUIRED',
         detail: 'Evidence returned. No external action performed.',
-        short: 'Evidence returns; no side effect ran.',
+        short: 'Hermes returns the evidence without changing anything.',
         last: true,
       },
     ],
@@ -136,7 +136,7 @@ export const FLOWS = {
         state: 'evidence',
         tag: 'REPRESENTATIVE OUTPUT',
         detail: 'Eligibility, how-to-apply, and what-to-bring guidance shown for the selected resource.',
-        short: 'Eligibility and how-to-apply appear.',
+        short: 'The selected resource shows eligibility and application steps.',
       },
       {
         n: '04',

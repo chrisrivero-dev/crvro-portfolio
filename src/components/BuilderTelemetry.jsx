@@ -3,9 +3,9 @@ import BuilderLog from "./BuilderLog.jsx";
 
 const INVESTIGATING = [
   "support AI reliability",
-  "local-first automation workflows",
-  "operational dashboards and diagnostics",
-  "evidence-based decision systems",
+  "local-first automation",
+  "dashboards that make system problems easier to see",
+  "decision tools that show the evidence behind an answer",
 ];
 
 export default function BuilderTelemetry() {

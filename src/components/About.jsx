@@ -5,9 +5,9 @@ const EASE = [0.16, 1, 0.3, 1];
 
 const OPERATOR_POINTS = [
   'Builds practical AI systems and internal tools.',
-  'Focused on support operations, workflow automation, and GIS/CAD.',
-  'Uses Hermes daily to coordinate projects, investigate problems, and troubleshoot workflows.',
-  'Keeps human review, evidence, and final approval central to important actions.',
+  'Works across support operations, workflow automation, and GIS/CAD.',
+  'Uses Hermes daily to coordinate projects and troubleshoot problems.',
+  'Approves important actions before they run.',
 ];
 
 function OperatorProfile() {
@@ -91,35 +91,36 @@ export default function About() {
             <p>
               <em>I’m Christopher.</em> I build practical AI systems and
               internal tools for support teams, workflow automation, and
-              GIS/CAD operations — usually from problems I’ve worked with
-              firsthand.
+              GIS/CAD operations. Most of them start with problems I’ve
+              worked with firsthand.
             </p>
             <p>
-              My background started in GIS/CAD support, where I worked across
-              technical troubleshooting, mapping workflows, procedural
-              documentation, and customer support. That experience pushed me
-              deeper into practical automation and human-supervised AI
-              systems built around real operational needs.
+              My background started in GIS/CAD support, where I handled
+              technical problems, mapping workflows, documentation, and
+              customer support. That work led me to build automation and AI
+              tools for the same kinds of day-to-day problems.
             </p>
             <p>
-              I built and configured my own local AI workstation and use
-              Hermes as a second brain and daily AI assistant. It helps me
-              coordinate projects, investigate problems, troubleshoot bugs,
-              and keep work moving, while I remain responsible for final
-              decisions and approvals.
+              I built and configured my own local AI workstation, where I use
+              Hermes as a second brain and daily assistant. It helps me
+              organize projects, investigate problems, and troubleshoot bugs.
+              I still make the final calls.
             </p>
             <p>
-              I focus on systems that use approved sources, show their
-              evidence, require human review before important actions, and
-              keep a clear record of what happened. I’ve seen where workflows
-              break down — AI that guesses, automation that acts without
-              showing its work, and processes with no clear ownership.
+              I build tools that show where an answer came from and pause
+              before important actions. Automation should save time without
+              hiding what happened or who approved it.
             </p>
             <p>
-              I like to think about the big picture, but I also like to make
-              things real. I’m constantly improving what I’ve built,
-              exploring new projects, and looking for practical ways AI and
-              technology can make difficult work easier for people.
+              I’ve seen AI guess when it has no match. I’ve also seen
+              automation make changes without leaving a clear record. I build
+              around those failures so the person using the tool can see what
+              happened.
+            </p>
+            <p>
+              I usually have more ideas than time. I keep improving the
+              systems I already use, and I start new projects when I see a
+              problem worth solving.
             </p>
             <p>
               If the work involves applied AI, AI operations, support

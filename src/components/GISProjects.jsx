@@ -24,9 +24,9 @@ export default function GISProjects() {
             maxWidth: '640px',
           }}
         >
-          My professional background includes several years working directly in
-          GIS/CAD support and mapping operations. These tools come from workflows
-          I know firsthand — parcel processing, procedural documentation,
+          My professional background includes several years in GIS/CAD
+          support and mapping operations. These tools come from work I know
+          firsthand, including parcel processing, procedural documentation,
           assessment records, and local QA.
         </p>
         <ul className="project-list" data-stagger>
