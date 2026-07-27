@@ -4,7 +4,6 @@ import Hero from "./components/Hero.jsx";
 import BuilderTelemetry from "./components/BuilderTelemetry.jsx";
 import ProjectWorld from "./components/ProjectWorld.jsx";
 import About from "./components/About.jsx";
-import GISProjects from "./components/GISProjects.jsx";
 import Skills from "./components/Skills.jsx";
 import Contact from "./components/Contact.jsx";
 import Footer from "./components/Footer.jsx";
@@ -249,7 +248,6 @@ export default function App() {
         <BuilderTelemetry />
         <ProjectWorld />
         <About />
-        <GISProjects />
         <Skills />
         <Contact />
       </main>
