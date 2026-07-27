@@ -1,4 +1,64 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+
+const EASE = [0.16, 1, 0.3, 1];
+
+const OPERATOR_POINTS = [
+  'Builds practical AI systems and internal tools.',
+  'Focused on support operations, workflow automation, and GIS/CAD.',
+  'Built and configured a local AI workstation.',
+  'Uses Hermes as a daily AI assistant and coordination system.',
+  'Maintains final authority over important actions and approvals.',
+  'Interested in making difficult work easier for people.',
+];
+
+function OperatorProfile() {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      className="operator-profile"
+      initial={reduced ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.55, ease: EASE }}
+    >
+      <div className="operator-portrait-frame">
+        <div className="operator-portrait-bar">
+          <span className="operator-portrait-dots" aria-hidden="true"><i /><i /><i /></span>
+          <span className="operator-portrait-label">operator · profile</span>
+        </div>
+        <div className="operator-portrait-img-wrap">
+          <span className="operator-tick operator-tick--tl" aria-hidden="true" />
+          <span className="operator-tick operator-tick--tr" aria-hidden="true" />
+          <span className="operator-tick operator-tick--bl" aria-hidden="true" />
+          <span className="operator-tick operator-tick--br" aria-hidden="true" />
+          <img
+            className="operator-portrait-img"
+            src="/images/6B4B95A1-EA8E-4643-B494-D08EB3979D57.JPG"
+            alt="Portrait of Christopher Rivero."
+            width="600"
+            height="667"
+            loading="lazy"
+          />
+        </div>
+        <span className="operator-tag">OPERATOR</span>
+      </div>
+
+      <div className="operator-copy">
+        <p className="operator-quote">
+          “I tend to get a little obsessed with building. I’m always
+          improving one system, starting another, or looking for practical
+          ways AI can make difficult work easier for people.”
+        </p>
+        <ul className="operator-list">
+          {OPERATOR_POINTS.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function About() {
   return (
@@ -10,6 +70,9 @@ export default function About() {
             Support ops, GIS work, and <em>the tools that came out of both.</em>
           </div>
         </div>
+
+        <OperatorProfile />
+
         <div className="grid">
           <div className="marker">
             <div

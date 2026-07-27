@@ -6,7 +6,11 @@ export default function Contact() {
       <div className="container-wide">
         <div className="section-head reveal">
           <div className="index">§ 04 — Contact</div>
-          <div className="h">Want to work together, <em>or just talk shop?</em></div>
+          <div className="h">
+            Want to work together or talk about AI, GIS/CAD, support
+            systems, <em>or an idea you’re trying to bring to life?</em> Let
+            me know.
+          </div>
         </div>
         <div className="grid">
           <div></div>
