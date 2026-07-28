@@ -172,7 +172,7 @@ export const PROJECTS = [
     statusBadge: 'Active development',
     outcome: 'A human-supervised workflow system that routes local and cloud models across research, development, testing, and deployment, with approval checkpoints on consequential actions.',
     disclaimer:
-      'OpenClaw is built around Hermes Agent, Ollama, and a mix of local and cloud models. Hermes Agent and Ollama are open-source foundations Christopher did not author. Everything else described here (the workflow architecture, model registry, routing policies, development and testing tooling, deployment verification, approval gates, audit trail, and the Telegram and local-service integrations) is the operating system Christopher designed, configured, and runs around them.',
+      'OpenClaw is built around Hermes Agent, Ollama, and a mix of local and cloud models. I did not create Hermes Agent or Ollama; they are open-source foundations. I designed, configured, and run the workflow architecture around them, including the model registry, routing policies, development and testing tools, deployment verification, approval gates, audit trail, and Telegram and local-service integrations.',
     repo: null,
     demo: null,
     overview: [
