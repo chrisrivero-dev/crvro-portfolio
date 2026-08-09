@@ -74,6 +74,16 @@
   --state-fallback:    var(--olive);
   --state-export:      var(--success);
 
+  /* ─── Hermes Replay phase colors ─────────────────────── */
+  --cyan:          #06b6d4;   /* incoming */
+  --blue:          #3b82f6;   /* investigation */
+  --purple:        #a855f7;   /* analysis */
+  --amber:         #f59e0b;   /* proposal */
+  --rose:          #f43f5e;   /* approval */
+  --emerald:       #10b981;   /* execution */
+  --green:         #22c55e;   /* verification */
+  --sky:           #0ea5e9;   /* deployment */
+
   /* ─── Type families ─────────────────────────────────── */
   --font-display: "Inter Tight", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif:   "Newsreader", Georgia, "Times New Roman", serif;
@@ -122,6 +132,15 @@
   --amber:       #8faab8;   /* slightly brighter in dark */
   --amber-deep:  #7b9aaa;
   --accent-gold: #c09455;   /* warmer brass on dark */
+
+  /* Hermes Replay phase colors lightened for AA contrast on dark paper */
+  --cyan:        #22d3ee;   /* incoming */
+  --blue:        #60a5fa;   /* investigation */
+  --purple:      #c084fc;   /* analysis */
+  --rose:        #fb7185;   /* approval */
+  --emerald:     #34d399;   /* execution */
+  --green:       #4ade80;   /* verification */
+  --sky:         #38bdf8;   /* deployment */
 
   /* Semantic + project-accent colors lightened for AA contrast on dark
      paper — the light-mode values (~1.5–3:1 here) were never adjusted

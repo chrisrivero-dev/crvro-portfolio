@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import ProjectMark from './ProjectMark.jsx';
 import ParcelPreview from './ParcelPreview.jsx';
 import EvidencePanel from './EvidencePanel.jsx';
+import HermesIncidentReplay from './HermesIncidentReplay.jsx';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 
 function ToolRouterMockup() {
@@ -330,6 +331,20 @@ export default function CaseStudy({ project: p }) {
 
       {/* ── evidence panel ───────────────────────────────── */}
       <EvidencePanel project={p} />
+
+      {/* ── hermes incident replay (openclaw only) ──────── */}
+      {p.slug === 'openclaw' && (
+        <Section index="03a" label="Hermes Replay" title="A real supervised Hermes run.">
+          <div className="hermes-replay-intro">
+            <p>
+              This replay shows how Hermes handled a synthetic coding incident from 
+              investigation through verified repair. The task used test data and contained 
+              no private customer information.
+            </p>
+          </div>
+          <HermesIncidentReplay />
+        </Section>
+      )}
 
       {/* ── overview ─────────────────────────────────────── */}
       <Section index="01" label="Overview" title="What it is.">

@@ -5,6 +5,7 @@ import BuilderTelemetry from "./components/BuilderTelemetry.jsx";
 import ProjectWorld from "./components/ProjectWorld.jsx";
 import About from "./components/About.jsx";
 import Skills from "./components/Skills.jsx";
+import AIConsultation from "./components/AIConsultation.jsx";
 import Contact from "./components/Contact.jsx";
 import Footer from "./components/Footer.jsx";
 import CaseStudy from "./components/CaseStudy.jsx";
@@ -249,6 +250,7 @@ export default function App() {
         <ProjectWorld />
         <About />
         <Skills />
+        <AIConsultation />
         <Contact />
       </main>
       <Footer />
