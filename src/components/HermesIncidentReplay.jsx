@@ -169,14 +169,14 @@ export default function HermesIncidentReplay() {
   // Phase-based styling classes
   const getPhaseClasses = (phase) => {
     switch (phase) {
-      case 'incoming': return ['text-cyan', 'bg-cyan/10'];
-      case 'investigation': return ['text-blue', 'bg-blue/10'];
-      case 'analysis': return ['text-purple', 'bg-purple/10'];
-      case 'proposal': return ['text-amber', 'bg-amber/10'];
-      case 'approval': return ['text-rose', 'bg-rose/10'];
-      case 'execution': return ['text-emerald', 'bg-emerald/10'];
-      case 'verification': return ['text-green', 'bg-green/10'];
-      case 'deployment': return ['text-sky', 'bg-sky/10'];
+      case 'incoming': return ['text-replay-cyan', 'background-replay-cyan'];
+      case 'investigation': return ['text-replay-blue', 'background-replay-blue'];
+      case 'analysis': return ['text-replay-purple', 'background-replay-purple'];
+      case 'proposal': return ['text-replay-amber', 'background-replay-amber'];
+      case 'approval': return ['text-replay-rose', 'background-replay-rose'];
+      case 'execution': return ['text-replay-emerald', 'background-replay-emerald'];
+      case 'verification': return ['text-replay-green', 'background-replay-green'];
+      case 'deployment': return ['text-replay-sky', 'background-replay-sky'];
       default: return ['text-gray', 'bg-gray/10'];
     }
   };

@@ -1327,7 +1327,7 @@ section.contact .grid > * {
   position: absolute;
   left: 50%; top: 50%;
   width: 36px; height: 36px;
-  border: 1px solid var(--purple);
+  border: 1px solid var(--consultation-signal);
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }

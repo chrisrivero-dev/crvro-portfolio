@@ -30,19 +30,7 @@
   --olive:       #6B6B3E;   /* sidecar (calm/AI) */
   --indigo:      #2D3960;   /* prediction-market (data) */
   --plum:        #5B2A3A;   /* openclaw (local/private) */
-  /* Theme-aware twins of the two greens hard-coded in projects.js.
-     The case studies keep their hex; the Project World chart uses
-     these so both greens stay legible on the dark ground. */
-  --gr-green:     #3B6B55;  /* groundrules */
-  --parcel-green: #4A6B3F;  /* parcel engine */
-
-  /* ─── Project World chart surfaces ──────────────────── */
-  --sea:       color-mix(in oklab, var(--amber) 9%, var(--paper-2));
-  --land:      var(--paper-3);
-  --coast:     color-mix(in oklab, var(--ink) 78%, var(--paper-3));
-  --map-line:  var(--rule-strong);
-  --map-faint: color-mix(in oklab, var(--rule-strong) 55%, transparent);
-
+  --consultation-signal: #a855f7;
   /* ─── Color: foreground/background tokens ───────────── */
   --fg-1:        var(--ink);
   --fg-2:        var(--graphite);
@@ -74,15 +62,15 @@
   --state-fallback:    var(--olive);
   --state-export:      var(--success);
 
-  /* ─── Hermes Replay phase colors ─────────────────────── */
-  --cyan:          #06b6d4;   /* incoming */
-  --blue:          #3b82f6;   /* investigation */
-  --purple:        #a855f7;   /* analysis */
-  --amber:         #f59e0b;   /* proposal */
-  --rose:          #f43f5e;   /* approval */
-  --emerald:       #10b981;   /* execution */
-  --green:         #22c55e;   /* verification */
-  --sky:           #0ea5e9;   /* deployment */
+  /* ─── Hermes Replay phase colors (namespaced) ────────── */
+  --replay-cyan:    #06b6d4;   /* incoming */
+  --replay-blue:    #3b82f6;   /* investigation */
+  --replay-purple:  #a855f7;   /* analysis */
+  --replay-amber:   #f59e0b;   /* proposal */
+  --replay-rose:    #f43f5e;   /* approval */
+  --replay-emerald: #10b981;   /* execution */
+  --replay-green:   #22c55e;   /* verification */
+  --replay-sky:     #0ea5e9;   /* deployment */
 
   /* ─── Type families ─────────────────────────────────── */
   --font-display: "Inter Tight", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -132,33 +120,22 @@
   --amber:       #8faab8;   /* slightly brighter in dark */
   --amber-deep:  #7b9aaa;
   --accent-gold: #c09455;   /* warmer brass on dark */
+  --consultation-signal: #c084fc;
 
   /* Hermes Replay phase colors lightened for AA contrast on dark paper */
-  --cyan:        #22d3ee;   /* incoming */
-  --blue:        #60a5fa;   /* investigation */
-  --purple:      #c084fc;   /* analysis */
-  --rose:        #fb7185;   /* approval */
-  --emerald:     #34d399;   /* execution */
-  --green:       #4ade80;   /* verification */
-  --sky:         #38bdf8;   /* deployment */
+  --replay-cyan:        #22d3ee;   /* incoming */
+  --replay-blue:        #60a5fa;   /* investigation */
+  --replay-purple:      #c084fc;   /* analysis */
+  --replay-rose:        #fb7185;   /* approval */
+  --replay-emerald:     #34d399;   /* execution */
+  --replay-green:       #4ade80;   /* verification */
+  --replay-sky:         #38bdf8;   /* deployment */
 
-  /* Semantic + project-accent colors lightened for AA contrast on dark
-     paper — the light-mode values (~1.5–3:1 here) were never adjusted
-     for dark mode before this pass. */
+  /* Semantic colors lightened for AA contrast on dark paper. */
   --success:     #718b69;
   --warn:        #aa7b2a;
   --error:       #b27575;
-  --terracotta:  #c06d51;
-  --olive:       #858560;
   --indigo:      #7c849c;
-  --plum:        #9c7f88;
-  --gr-green:     #7ba38d;
-  --parcel-green: #718b69;
-
-  /* Chart goes from warm parchment to a night blueprint in dark mode */
-  --sea:   color-mix(in oklab, #8faab8 7%, #16191d);
-  --land:  #262420;
-  --coast: color-mix(in oklab, var(--ink) 66%, var(--paper-3));
 
   --fg-1:        var(--ink);
   --fg-2:        var(--graphite);

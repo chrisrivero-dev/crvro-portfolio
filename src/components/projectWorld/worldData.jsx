@@ -153,9 +153,9 @@ export const STOPS = [
     ry: 70,
     seed: 23,
     labelDY: 26,
-    accent: "var(--plum)",
+    accent: "var(--pw-hermes)",
     harbor: [318, 314],
-    card: cardFor("openclaw", "№ 01"),
+    card: cardFor("openclaw", "№ 01", "var(--pw-hermes)"),
     landmarks: () => [
       <>
         <Tower x={340} y={214} h={38} />
@@ -201,9 +201,9 @@ export const STOPS = [
     rx: 82,
     ry: 58,
     seed: 37,
-    accent: "var(--olive)",
+    accent: "var(--pw-sidecar)",
     harbor: [612, 186],
-    card: cardFor("sidecar", "№ 02"),
+    card: cardFor("sidecar", "№ 02", "var(--pw-sidecar)"),
     landmarks: () => [
       <>
         <Lighthouse x={668} y={112} />
@@ -247,9 +247,9 @@ export const STOPS = [
     rx: 88,
     ry: 72,
     seed: 53,
-    accent: "var(--terracotta)",
+    accent: "var(--pw-help-nearby)",
     harbor: [795, 362],
-    card: cardFor("help-nearby", "№ 03"),
+    card: cardFor("help-nearby", "№ 03", "var(--pw-help-nearby)"),
     landmarks: () => [
       <>
         <Hut x={852} y={400} w={16} h={11} />
@@ -297,9 +297,9 @@ export const STOPS = [
     ry: 66,
     seed: 71,
     parcel: true,
-    accent: "var(--gr-green)",
+    accent: "var(--pw-groundrules)",
     harbor: [640, 616],
-    card: cardFor("groundrules", "№ 04", "var(--gr-green)"),
+    card: cardFor("groundrules", "№ 04", "var(--pw-groundrules)"),
     landmarks: (clipId, hatchId) => [
       <>
         <g clipPath={`url(#${clipId})`}>
@@ -358,7 +358,7 @@ export const LEGS = [
 export const SIDE_ISLAND = {
   id: "parcel-engine",
   path: "M 918 646 L 962 634 L 992 654 L 984 680 L 934 686 Z",
-  accent: "var(--parcel-green)",
+  accent: "var(--pw-parcel)",
   name: "PARCEL ENGINE",
   sub: "SIDE ISLAND · OPTIONAL",
   labelX: 954,

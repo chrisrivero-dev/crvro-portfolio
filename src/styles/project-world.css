@@ -1,9 +1,33 @@
 /* ============================================================
    crvro.com — Project World (§ 01 Selected Work)
-   Illustrated journey map. Colors come from tokens.css; the
+   Illustrated journey map. Project colors are scoped here; the
    destination cards deliberately reuse .pr-card and friends
    from portfolio.css so they match the rest of the site.
    ============================================================ */
+
+.project-world {
+  --pw-hermes:      #5B2A3A;
+  --pw-sidecar:     #6B6B3E;
+  --pw-help-nearby: #B85A3A;
+  --pw-groundrules: #3B6B55;
+  --pw-parcel:      #4A6B3F;
+  --pw-sea:         color-mix(in oklab, var(--amber) 9%, var(--paper-2));
+  --pw-land:        var(--paper-3);
+  --pw-coast:       color-mix(in oklab, var(--ink) 78%, var(--paper-3));
+  --pw-map-line:    var(--rule-strong);
+  --pw-map-faint:   color-mix(in oklab, var(--rule-strong) 55%, transparent);
+}
+
+[data-theme="dark"] .project-world {
+  --pw-hermes:      #9c7f88;
+  --pw-sidecar:     #858560;
+  --pw-help-nearby: #c06d51;
+  --pw-groundrules: #7ba38d;
+  --pw-parcel:      #718b69;
+  --pw-sea:         color-mix(in oklab, #8faab8 7%, #16191d);
+  --pw-land:        #262420;
+  --pw-coast:       color-mix(in oklab, var(--ink) 66%, var(--paper-3));
+}
 
 /* ─────────────────────────────────────────────────────────
    INTRO + CONTROLS
@@ -167,11 +191,11 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
    THE CHART
    ───────────────────────────────────────────────────────── */
 .pw-map { width: 100%; height: auto; }
-.pw-seabg { fill: var(--sea); }
-.pw-frame { fill: none; stroke: var(--map-line); stroke-width: 1.2; }
-.pw-frame-tick { stroke: var(--map-line); stroke-width: 1; }
-.pw-grat { stroke: var(--map-faint); stroke-width: 0.6; }
-.pw-wave { stroke: var(--map-line); stroke-width: 1; fill: none; opacity: 0.7; }
+.pw-seabg { fill: var(--pw-sea); }
+.pw-frame { fill: none; stroke: var(--pw-map-line); stroke-width: 1.2; }
+.pw-frame-tick { stroke: var(--pw-map-line); stroke-width: 1; }
+.pw-grat { stroke: var(--pw-map-faint); stroke-width: 0.6; }
+.pw-wave { stroke: var(--pw-map-line); stroke-width: 1; fill: none; opacity: 0.7; }
 .pw-sealabel {
   font-family: var(--font-serif);
   font-style: italic;
@@ -180,7 +204,7 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
   opacity: 0.85;
   letter-spacing: 0.22em;
 }
-.pw-cart-rect { fill: var(--paper); stroke: var(--map-line); opacity: 0.94; }
+.pw-cart-rect { fill: var(--paper); stroke: var(--pw-map-line); opacity: 0.94; }
 .pw-cart-title { font-family: var(--font-serif); font-size: 21px; fill: var(--ink); letter-spacing: 0.02em; }
 .pw-cart-sub { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; fill: var(--graphite); }
 .pw-cart-sub2 { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.08em; fill: var(--pencil); }
@@ -192,20 +216,20 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
 .pw-compass-needle { fill: var(--accent-gold); stroke: var(--graphite); stroke-width: 0.6; }
 .pw-compass-t { font-family: var(--font-mono); font-size: 9px; fill: var(--graphite); }
 
-.pw-route { fill: none; stroke: var(--map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
+.pw-route { fill: none; stroke: var(--pw-map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
 .pw-route-gone { fill: none; stroke: var(--accent-gold); stroke-width: 2; stroke-linecap: round; }
 
 /* ─── Islands ─────────────────────────────────────────── */
 .isle-coast {
-  fill: var(--land);
-  stroke: var(--coast);
+  fill: var(--pw-land);
+  stroke: var(--pw-coast);
   stroke-width: 1.6;
   transition: fill var(--dur-slow) var(--ease-out), stroke var(--dur-slow) var(--ease-out);
 }
-.isle-contour { fill: none; stroke: var(--map-line); stroke-width: 0.8; stroke-dasharray: 1 5; opacity: 0.8; }
+.isle-contour { fill: none; stroke: var(--pw-map-line); stroke-width: 0.8; stroke-dasharray: 1 5; opacity: 0.8; }
 .isle-lms { color: var(--graphite); opacity: 0.62; transition: opacity var(--dur-slow) var(--ease-out); }
 .lm-line { stroke: currentColor; stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.lm-fill { fill: color-mix(in oklab, currentColor 14%, var(--land)); stroke: currentColor; stroke-width: 1.2; }
+.lm-fill { fill: color-mix(in oklab, currentColor 14%, var(--pw-land)); stroke: currentColor; stroke-width: 1.2; }
 .lm-dash { stroke: currentColor; stroke-width: 1.1; fill: none; stroke-dasharray: 3 4; stroke-linecap: round; }
 .lm-dot { fill: var(--accent-gold); }
 .lm-t {
@@ -239,7 +263,7 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
 .pw-isle:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
 
 .pw-isle.active .isle-coast {
-  fill: color-mix(in oklab, var(--isle) 12%, var(--land));
+  fill: color-mix(in oklab, var(--isle) 12%, var(--pw-land));
   stroke: var(--isle);
   stroke-width: 2.4;
 }
@@ -319,7 +343,7 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
   overflow: visible;
   pointer-events: none;
 }
-.pwm-rail-path { fill: none; stroke: var(--map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
+.pwm-rail-path { fill: none; stroke: var(--pw-map-line); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
 .pwm-rail-gone { fill: none; stroke: var(--accent-gold); stroke-width: 2; stroke-linecap: round; }
 .pwm-stops { list-style: none; margin: 0; padding: 0; }
 .pwm-stop { position: relative; padding: 34px 0 34px 56px; }
@@ -337,7 +361,7 @@ button.pr-cta-link { background: none; border: 0; border-bottom: 1px solid var(-
   border-radius: var(--r-3);
   overflow: hidden;
   margin-bottom: 16px;
-  background: var(--sea);
+  background: var(--pw-sea);
 }
 .pwm-stop .pr-card {
   opacity: 0;

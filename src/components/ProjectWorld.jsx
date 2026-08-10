@@ -129,7 +129,7 @@ export default function ProjectWorld() {
   const activeStop = overview ? null : band;
 
   return (
-    <section className="work" id="work" data-screen-label="02 Work">
+    <section className="work project-world" id="work" data-screen-label="02 Work">
       <div className="container-wide">
         <div className="section-head reveal">
           <div className="index">§ 01: Selected Work · Project World</div>
