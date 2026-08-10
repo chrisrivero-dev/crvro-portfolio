@@ -1246,13 +1246,17 @@ section.contact .grid > * {
 .site-footer a:hover { color: var(--amber); }
 
 /* ─────────────────────────────────────────────────────────
-   AI CONSULTATION CALLOUT
+   AI CONSULTATION — live workflow demonstration
+   Scoped entirely to .ai-consultation / .aic-*. Colors are
+   drawn from the existing state vocabulary in tokens.css.
    ───────────────────────────────────────────────────────── */
 .ai-consultation {
   position: relative;
   padding: 80px 0;
 }
-.ai-consultation .body { max-width: 640px; }
+/* Full container measure, so the panel's left edge lines up with every other
+   section on the page. Only the headline runs to a prose width. */
+.aic-inner { max-width: var(--w-canvas); }
 .ai-consultation h3 {
   font-family: var(--font-display);
   font-size: clamp(20px, 2.4vw, 24px);
@@ -1260,49 +1264,12 @@ section.contact .grid > * {
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--ink);
-  margin: 0 0 16px;
+  max-width: 640px;
+  margin: 0 0 32px;
 }
 .ai-consultation h3 em {
   font-style: normal; font-weight: 700;
   color: var(--graphite);
-}
-.ai-consultation > .container-wide > .grid > .body > p {
-  font-family: var(--font-body);
-  font-size: clamp(17px, 2vw, 19px);
-  line-height: 1.6;
-  color: var(--graphite);
-  margin: 0 auto 48px;
-  max-width: 560px;
-}
-
-/* Workflow diagram */
-.workflow-diagram {
-  display: flex; align-items: center; justify-content: center;
-  gap: 24px;
-  padding: 32px 0;
-}
-.workflow-node {
-  position: relative;
-  min-width: 110px;
-}
-.workflow-node span {
-  font-family: var(--font-mono);
-  font-size: 13px; font-weight: 500;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--graphite);
-  line-height: 1.4;
-}
-.workflow-node::before,
-.workflow-node::after {
-  content: "";
-  position: absolute;
-  left: 50%; bottom: -2px; width: 1px; height: 16px;
-  background: var(--rule);
-}
-.workflow-node:last-of-type::after { display: none; }
-.workflow-node.signal-active .arrow-pulse {
-  animation: signal-arc 1.4s ease-out forwards;
-  pointer-events: none;
 }
 
 .arrow {
@@ -1310,29 +1277,434 @@ section.contact .grid > * {
 }
 .ar-small { margin-left: 6px; }
 
-/* Signal pulse animation */
-@keyframes signal-arc {
-  0% {
-    opacity: 0; transform: translateX(-50%) translateY(12px);
-  }
-  30% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0; transform: translateX(-50%) translateY(-42px);
-  }
-}
+/* ── Figure shell ─────────────────────────────────────────── */
+.aic-figure { margin: 0 0 40px; }
 
-.signal-arc {
+/* Text equivalent of the animation for assistive tech — the animated
+   panel itself is aria-hidden, so this carries the semantic content. */
+.aic-sr {
   position: absolute;
-  left: 50%; top: 50%;
-  width: 36px; height: 36px;
-  border: 1px solid var(--consultation-signal);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* CTA button */
+.aic-demo {
+  --aic-tone: var(--fg-2);
+  border: 1px solid var(--border-1);
+  background: color-mix(in oklab, var(--bg-2) 55%, var(--bg-1));
+  transition: opacity var(--dur-slow) var(--ease-smooth);
+}
+/* The reset beat — the whole board relaxes for a moment before the
+   next item arrives, so the loop reads as a rewind rather than a cut. */
+.aic-demo.is-resetting { opacity: 0.55; }
+
+/* ── Panel bar / system state readout ─────────────────────── */
+.aic-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-1);
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.aic-bar-title { color: var(--fg-3); }
+.aic-state {
+  display: inline-flex; align-items: center; gap: 8px;
+  letter-spacing: 0.1em;
+  color: var(--fg-2);
+  text-align: right;
+}
+.aic-state-dot {
+  flex: 0 0 auto;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--aic-tone);
+  transition: background var(--dur-slow) var(--ease-smooth);
+}
+.aic-state[data-tone="incoming"] { --aic-tone: var(--state-incoming); }
+.aic-state[data-tone="friction"] { --aic-tone: var(--state-warning); }
+.aic-state[data-tone="auto"]     { --aic-tone: var(--state-evidence); }
+.aic-state[data-tone="human"]    { --aic-tone: var(--fg-1); }
+
+/* ── Track ────────────────────────────────────────────────── */
+.aic-track {
+  display: flex;
+  align-items: stretch;
+  padding: 18px 14px;
+}
+
+.aic-station {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 11px 12px 13px;
+  border: 1px solid var(--border-1);
+  background: var(--bg-1);
+  transition:
+    border-color var(--dur-slow) var(--ease-smooth),
+    background var(--dur-slow) var(--ease-smooth);
+}
+.aic-station--incoming { --aic-tone: var(--state-incoming); }
+.aic-station--friction { --aic-tone: var(--state-warning); }
+.aic-station--auto     { --aic-tone: var(--state-evidence); }
+/* The gate station carries the most: a lane wide enough to hold the item on
+   both sides of the gate, plus the review row. It gets a wider track. */
+.aic-station--human    { --aic-tone: var(--fg-1); flex-grow: 1.4; }
+
+.aic-station.is-done { border-color: var(--border-2); }
+.aic-station.is-active {
+  border-color: var(--aic-tone);
+  background: color-mix(in oklab, var(--aic-tone) 7%, var(--bg-1));
+}
+
+.aic-st-head {
+  display: flex; align-items: baseline; gap: 8px;
+  padding-bottom: 8px; margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-1);
+}
+.aic-st-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-3);
+}
+.aic-st-label {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--fg-2);
+  transition: color var(--dur-slow) var(--ease-smooth);
+}
+.aic-station.is-active .aic-st-label { color: var(--aic-tone); }
+
+.aic-st-body { display: flex; flex-direction: column; gap: 10px; }
+
+/* Lanes reserve their height whether or not the item is present, so a
+   travelling item never shifts the layout of the stations around it. The
+   dashed hairline is the rail the item runs on — it keeps an empty lane
+   legible as a piece of track rather than as blank space. */
+.aic-lane {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 28px;
+}
+.aic-lane::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  border-top: 1px dashed var(--border-1);
+}
+
+/* ── The travelling work item ─────────────────────────────── */
+.aic-item {
+  position: relative;
+  z-index: 3;
+  flex: 0 1 150px;
+  min-width: 0;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 7px;
+  border: 1px solid var(--aic-tone);
+  background: color-mix(in oklab, var(--aic-tone) 12%, var(--bg-1));
+  font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fg-1);
+  white-space: nowrap;
+  transition:
+    border-color 0.45s var(--ease-smooth),
+    background 0.45s var(--ease-smooth);
+}
+.aic-item-dot {
+  flex: 0 0 auto;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--aic-tone);
+}
+.aic-item-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aic-item-badge {
+  flex: 0 0 auto;
+  padding: 2px 5px;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  border: 1px solid color-mix(in oklab, var(--aic-tone) 45%, transparent);
+  background: var(--bg-1);
+  color: var(--aic-tone);
+}
+/* Uses the standalone `translate` property rather than `transform`, so the
+   stall jitter composes with the transform framer-motion writes for travel
+   instead of overwriting it. */
+.aic-item.is-stalled { animation: aic-stall 1.3s var(--ease-smooth) infinite; }
+@keyframes aic-stall {
+  0%, 26%, 100% { translate: 0; }
+  34% { translate: 3px; }
+  42% { translate: 0; }
+  50% { translate: 3px; }
+  58% { translate: 0; }
+}
+
+/* ── 01 Your work — the rest of the queue ─────────────────── */
+.aic-queue {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.aic-queue li {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--fg-3);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aic-queue li i {
+  flex: 0 0 auto;
+  width: 5px; height: 5px;
+  border: 1px solid var(--border-2);
+}
+
+/* ── 02 Friction — the manual step that keeps repeating ───── */
+/* Fixed at the end of the lane — the item runs up against it and stops. */
+.aic-barrier {
+  flex: 0 0 12px;
+  margin-left: auto;
+  align-self: stretch;
+  min-height: 26px;
+  border-left: 1px solid var(--aic-tone);
+  border-right: 1px solid var(--aic-tone);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--aic-tone) 0 1.5px,
+    transparent 1.5px 5px
+  );
+  opacity: 0.45;
+  transition: opacity var(--dur-slow) var(--ease-smooth);
+}
+.aic-station.is-active .aic-barrier,
+.aic-demo.is-static .aic-barrier { opacity: 1; }
+
+.aic-tally { display: flex; align-items: center; gap: 5px; }
+.aic-tally-lab {
+  margin-right: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--fg-3);
+}
+.aic-tally i {
+  width: 2px; height: 11px;
+  background: var(--aic-tone);
+  opacity: 0.16;
+  transition: opacity var(--dur-slow) var(--ease-smooth);
+}
+.aic-tally.is-counting i:nth-of-type(1) { opacity: 1; transition-delay: 0.35s; }
+.aic-tally.is-counting i:nth-of-type(2) { opacity: 1; transition-delay: 1.15s; }
+.aic-tally.is-counting i:nth-of-type(3) { opacity: 1; transition-delay: 1.95s; }
+.aic-tally.is-full i { opacity: 0.5; transition-delay: 0s; }
+
+.aic-readout {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg-3);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-smooth);
+}
+.aic-station.is-active .aic-readout,
+.aic-station.is-done .aic-readout,
+.aic-demo.is-static .aic-readout { opacity: 1; }
+
+/* ── 03 AI / automation — inspect, classify, draft ────────── */
+.aic-steps {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.aic-step {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--fg-3);
+  transition: color var(--dur-slow) var(--ease-smooth);
+}
+.aic-step-mark {
+  flex: 0 0 auto;
+  width: 7px; height: 7px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  transition:
+    background var(--dur-slow) var(--ease-smooth),
+    border-color var(--dur-slow) var(--ease-smooth),
+    box-shadow var(--dur-slow) var(--ease-smooth);
+}
+.aic-step.is-active { color: var(--fg-1); }
+.aic-step.is-active .aic-step-mark {
+  border-color: var(--aic-tone);
+  background: var(--aic-tone);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--aic-tone) 20%, transparent);
+}
+.aic-step.is-done { color: var(--fg-2); }
+.aic-step.is-done .aic-step-mark {
+  border-color: var(--aic-tone);
+  background: color-mix(in oklab, var(--aic-tone) 45%, transparent);
+}
+
+/* ── 04 Human decision — the gate the system cannot open ──── */
+.aic-lane--gate { align-items: center; }
+/* Equal slots on either side hold the gate at a fixed point in the lane,
+   so approval reads as the item crossing it — not as the gate moving. */
+.aic-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.aic-slot--out { justify-content: flex-end; }
+.aic-lane--gate .aic-item { flex: 1 1 auto; max-width: 100%; }
+.aic-gate {
+  position: relative;
+  flex: 0 0 12px;
+  height: 28px;
+  overflow: hidden;
+}
+.aic-gate::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-left: 1px solid var(--border-2);
+  border-right: 1px solid var(--border-2);
+}
+.aic-gate i {
+  position: absolute;
+  left: 0; right: 0;
+  height: 50%;
+  background: var(--aic-tone);
+  transition: transform 0.5s var(--ease-out);
+}
+.aic-gate i:nth-child(1) { top: 0; }
+.aic-gate i:nth-child(2) { bottom: 0; }
+.aic-gate.is-open i:nth-child(1) { transform: translateY(-100%); }
+.aic-gate.is-open i:nth-child(2) { transform: translateY(100%); }
+
+.aic-review {
+  display: flex; flex-direction: column; gap: 8px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--border-1);
+}
+.aic-review-head {
+  min-height: 11px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aic-review-actions { display: flex; gap: 6px; }
+.aic-btn {
+  padding: 4px 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-1);
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--fg-2);
+  transition:
+    background var(--dur-slow) var(--ease-smooth),
+    border-color var(--dur-slow) var(--ease-smooth),
+    color var(--dur-slow) var(--ease-smooth);
+}
+.aic-btn.is-pressed {
+  background: var(--fg-1);
+  border-color: var(--fg-1);
+  color: var(--bg-1);
+}
+.aic-btn--ghost { color: var(--fg-3); border-style: dashed; }
+
+/* ── Connectors between stations ──────────────────────────── */
+.aic-link {
+  position: relative;
+  flex: 0 0 26px;
+  display: flex; align-items: center; justify-content: center;
+}
+.aic-link-line {
+  position: relative;
+  width: 100%; height: 1px;
+  background: var(--border-2);
+}
+.aic-link-fill {
+  position: absolute; inset: 0;
+  background: var(--fg-2);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.55s var(--ease-out);
+}
+.aic-link.is-live .aic-link-fill { transform: scaleX(1); }
+.aic-link::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 50%;
+  width: 0; height: 0;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+  border-left: 5px solid var(--border-2);
+  transform: translateY(-50%);
+  transition: border-left-color var(--dur-slow) var(--ease-smooth);
+}
+.aic-link.is-live::after { border-left-color: var(--fg-2); }
+
+/* ── Narrow: an intentional vertical journey, not a squeezed row ──
+   The horizontal track needs ~1000px to keep station 04 wide enough for the
+   item to sit either side of the gate. Below that the whole thing turns and
+   the item travels downward instead, at a width that suits a column. */
+@media (max-width: 1000px) {
+  .aic-demo { max-width: 560px; }
+  .aic-track { flex-direction: column; padding: 14px; }
+  .aic-station { flex: 0 0 auto; padding: 12px 14px 14px; }
+  .aic-station--human { flex-grow: 0; }
+  .aic-st-body { gap: 11px; }
+
+  .aic-link { flex: 0 0 28px; width: 100%; }
+  .aic-link-line { width: 1px; height: 100%; margin: 0 auto; }
+  .aic-link-fill {
+    transform: scaleY(0);
+    transform-origin: center top;
+  }
+  .aic-link.is-live .aic-link-fill { transform: scaleY(1); }
+  .aic-link::after {
+    right: auto; top: auto;
+    left: 50%; bottom: -1px;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 5px solid var(--border-2);
+    border-bottom: 0;
+    transform: translateX(-50%);
+    transition: border-top-color var(--dur-slow) var(--ease-smooth);
+  }
+  .aic-link.is-live::after {
+    border-left-color: transparent;
+    border-top-color: var(--fg-2);
+  }
+
+  /* Full-width stations give the lane far more room than the item needs, so
+     the item stretches to fill it rather than leaving the rail looking bare. */
+  .aic-item { flex: 1 1 auto; max-width: 240px; font-size: 10px; }
+  .aic-queue li, .aic-step, .aic-st-label, .aic-st-n { font-size: 10px; }
+}
+
+@media (max-width: 420px) {
+  .aic-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .aic-state { text-align: left; }
+}
+
+/* ── CTA ──────────────────────────────────────────────────── */
 .ai-consultation .cta-btn {
   display: inline-flex; align-items: baseline; justify-content: center;
   gap: 6px;
@@ -1349,10 +1721,13 @@ section.contact .grid > * {
   padding-left: 28px; padding-right: 20px;
 }
 
-/* Reduced motion */
+/* ── Reduced motion: the same diagram, held still ─────────── */
 @media (prefers-reduced-motion: reduce) {
-  .workflow-diagram { animation-duration: 1ms !important; }
-  .signal-arc { display: none; }
+  .aic-demo,
+  .aic-demo * {
+    animation: none !important;
+    transition: none !important;
+  }
   .ai-consultation .cta-btn:hover { padding-left: 24px !important; }
 }
 
