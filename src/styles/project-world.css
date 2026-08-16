@@ -87,7 +87,11 @@ a.pw-skip { padding-bottom: 2px; }
 .pw-stage {
   position: sticky;
   top: 64px;
-  height: calc(100vh - 72px);
+  /* Capped so it can't balloon on a tall/narrow window (or the
+     equivalent effect of zooming out): uncapped 100vh centered the
+     map/card content inside a box far taller than the content itself,
+     leaving hundreds of pixels of dead space above and below it. */
+  height: min(calc(100vh - 72px), 820px);
   min-height: 540px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 392px;

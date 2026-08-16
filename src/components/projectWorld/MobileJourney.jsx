@@ -23,7 +23,6 @@ export default function MobileJourney({ onOpenOverview, reduced }) {
   const railSvgRef = useRef(null);
   const railPathRef = useRef(null);
   const railGoneRef = useRef(null);
-  const railShipRef = useRef(null);
   const railLenRef = useRef(0);
   const [railHeight, setRailHeight] = useState(0);
   const [railD, setRailD] = useState("");
@@ -52,13 +51,12 @@ export default function MobileJourney({ onOpenOverview, reduced }) {
     setRailHeight(root.offsetHeight);
   }, []);
 
-  /** Move the ship to match scroll position along the rail. */
+  /** Reveal the traveled portion of the rail to match scroll position. */
   const scrub = useCallback(() => {
     const root = rootRef.current;
     const path = railPathRef.current;
     const gone = railGoneRef.current;
-    const ship = railShipRef.current;
-    if (!root || !path || !gone || !ship || root.offsetParent === null) return;
+    if (!root || !path || !gone || root.offsetParent === null) return;
 
     const r = root.getBoundingClientRect();
     const vh = window.innerHeight;
@@ -67,10 +65,6 @@ export default function MobileJourney({ onOpenOverview, reduced }) {
     const prog = clamp((vh * 0.55 - r.top) / span, 0, 1);
     const len = railLenRef.current;
     const at = prog * len;
-    const p = path.getPointAtLength(at);
-    const q = path.getPointAtLength(clamp(at + 4, 0, len));
-    const ang = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI;
-    ship.setAttribute("transform", `translate(${F(p.x)} ${F(p.y)}) rotate(${F(ang)})`);
     gone.style.strokeDashoffset = len - at;
   }, []);
 
@@ -142,14 +136,6 @@ export default function MobileJourney({ onOpenOverview, reduced }) {
           <>
             <path className="pwm-rail-path" d={railD} ref={railPathRef} />
             <path className="pwm-rail-gone" d={railD} ref={railGoneRef} />
-            <g ref={railShipRef}>
-              <g className="pw-ship-inner">
-                <path className="pw-ship-hull" d="M -11 2 C -8 7 8 7 11 2 L 7 2 L -9 2 Z" />
-                <line className="pw-ship-mast" x1="0" y1="1" x2="0" y2="-12" />
-                <path className="pw-ship-sail" d="M 1 -3 L 1 -11 C 6 -8 7 -5 2 -3 Z" />
-                <path className="pw-ship-flag" d="M 0 -12 L 5 -10.5 L 0 -9 Z" />
-              </g>
-            </g>
           </>
         )}
       </svg>
