@@ -68,6 +68,32 @@ export async function updateJob(id, patch) {
   return next;
 }
 
+// ---- validated-answer cache (Tier 0.5: skip the model pipeline
+// entirely for a question already answered against the current
+// corpus). Only Redis-backed -- the in-memory fallback doesn't bother,
+// since it's already local-only and doesn't need this. Keys are
+// computed by the caller (server/handlers.mjs) from a hash of the
+// normalized question + corpus version, so a corpus update naturally
+// invalidates every old entry (the version changes, so old keys are
+// simply never looked up again -- no explicit purge needed). ----
+const CACHE_PREFIX = 'publiccaptain:cache:';
+// Generous but bounded -- long enough to be worth it for repeat
+// questions, short enough that a stale answer (however unlikely, since
+// the corpus version is baked into the key) can't linger indefinitely.
+const CACHE_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+export async function getCachedAnswer(key) {
+  if (!redis) return null;
+  const raw = await redis.get(CACHE_PREFIX + key);
+  if (raw == null) return null;
+  return typeof raw === 'string' ? JSON.parse(raw) : raw;
+}
+
+export async function setCachedAnswer(key, result) {
+  if (!redis) return;
+  await redis.set(CACHE_PREFIX + key, JSON.stringify(result), { ex: CACHE_TTL_SECONDS });
+}
+
 // Best-effort in-flight count -- exact under the in-memory fallback,
 // approximate (skipped) under Redis, where a distributed count would
 // need a separate counter structure. Documented limitation, not a

@@ -115,6 +115,24 @@ const RULES = [
     return null;
   },
 
+  // ── Support-operations hiring intent — Sidecar ──────────────
+  // Common, predetermined-safe intent: someone evaluating Christopher
+  // for support-ops work and asking what to look at. NEMO and Captain
+  // both independently land on Sidecar for this class of question, so
+  // it's safe to resolve it instantly instead of round-tripping to a
+  // model every time -- this is exactly a Tier 0 case, a grounded
+  // answer that can safely be predetermined.
+  (q) => {
+    if (has(q, 'hiring for support', 'hire for support ops', 'hiring support staff', 'support operations. what should i look at')) {
+      return {
+        kind: 'single',
+        lines: ['hiring intent detected', 'closest system: SIDECAR'],
+        results: [{ ...DESTINATIONS.sidecar, cta: 'OPEN SIDECAR →' }],
+      };
+    }
+    return null;
+  },
+
   // ── Repetitive mapping / GIS automation — Parcel Engine ─────
   (q) => {
     const repetitiveMapping =

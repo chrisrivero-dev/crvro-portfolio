@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { WORKER_SECRET, LIMITS } from './config.mjs';
 import { isValidQuestion, validateResult } from './validate.mjs';
-import { createJob, getJob, updateJob, usingRedis, approximateInFlight } from './store.mjs';
+import { createJob, getJob, updateJob, usingRedis, approximateInFlight, getCachedAnswer, setCachedAnswer } from './store.mjs';
 import { sendJob, JOBS_TOPIC, WORKER_CONSUMER_GROUP, QUEUE_REGION } from './queue.mjs';
 import { claimMessage, ackMessage, extendMessage } from './queue-lease.mjs';
 
@@ -24,6 +24,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const corpus = JSON.parse(readFileSync(path.join(__dirname, 'corpus.json'), 'utf8'));
 export const DESTINATION_ALLOWLIST = new Set(Object.keys(corpus.destinations));
 export const EVIDENCE_ID_SET = new Set(corpus.entries.map((e) => e.id));
+
+// Baked from the corpus content itself, so it changes automatically
+// whenever the corpus does (a new build/deploy) -- every cache key
+// incorporates it, which is the entire invalidation mechanism: an old
+// key from a previous corpus version is simply never looked up again.
+const CORPUS_VERSION = crypto.createHash('sha256').update(JSON.stringify(corpus)).digest('hex').slice(0, 12);
+console.log(`[handlers] corpus version: ${CORPUS_VERSION}`);
+
+function normalizeForCache(question) {
+  return question.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[?.!]+$/, '');
+}
+
+export function computeCacheKey(question) {
+  return crypto.createHash('sha256').update(`${CORPUS_VERSION}|${normalizeForCache(question)}`).digest('hex').slice(0, 32);
+}
 
 console.log(`[handlers] loaded corpus: ${corpus.entries.length} entries, ${DESTINATION_ALLOWLIST.size} destinations`);
 console.log(`[handlers] result store: ${usingRedis ? 'Upstash Redis (durable)' : 'in-memory Map (local only, not yet durable -- provision Upstash to change this)'}`);
@@ -104,6 +119,20 @@ export async function handleAsk({ question: rawQuestion, ip }) {
   const dup = recentQuestions.get(dupKey);
   if (dup && now() - dup.ts < LIMITS.DUPLICATE_WINDOW_MS) {
     return { status: 202, body: { request_id: dup.jobId, status: 'queued' } };
+  }
+
+  // Tier 0.5: a validated answer for this exact question already
+  // exists against the current corpus -- skip the queue and the model
+  // pipeline entirely. The job record is created already-answered, so
+  // the browser's very first poll resolves it.
+  const cacheKey = computeCacheKey(question);
+  const cached = await getCachedAnswer(cacheKey);
+  if (cached) {
+    const id = crypto.randomUUID();
+    await createJob(id, question, { ip, status: 'answered', result: cached, cacheHit: true });
+    recentQuestions.set(dupKey, { jobId: id, ts: now() });
+    console.log(`[handlers] cache hit for question (key ${cacheKey.slice(0, 8)}...)`);
+    return { status: 202, body: { request_id: id, status: 'queued' } };
   }
 
   const inFlight = approximateInFlight();
@@ -266,10 +295,17 @@ export async function handleWorkerSubmit({ authHeader, body }) {
     // The worker genuinely tried and is honestly reporting failure
     // (e.g. every model call timed out) -- persist that so the browser
     // doesn't hang, but let the lease expire so Vercel Queues retries
-    // the job rather than treating one failed attempt as final.
+    // the job rather than treating one failed attempt as final. Never
+    // cached -- an error is not a validated grounded answer.
     console.warn(`[handlers] worker reported processing failure for ${job.id}`);
     return { status: 200, body: { ok: true } };
   }
+  // Cache both terminal outcomes that are safe to reuse verbatim:
+  // 'answered' (a real grounded answer) and 'unresolved' (an honest
+  // "no evidence for this" -- deterministic given the same corpus, so
+  // just as safe to serve again as a real answer). Never an error or
+  // anything that failed validateResult above.
+  await setCachedAnswer(computeCacheKey(job.question), result);
   await tryAck(updated);
   return { status: 200, body: { ok: true } };
 }
