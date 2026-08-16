@@ -213,13 +213,30 @@ export default function PortfolioNavigator() {
     pollCount.current = 0;
   }, []);
 
+  // The visible "offline" state can be reached for several genuinely
+  // different reasons (client gave up waiting while the backend was
+  // still working, the backend explicitly reported a failure, the
+  // result expired before it was ever fetched, or the network/fetch
+  // itself failed) -- collapsing all of them into one silent state
+  // makes a false negative (backend actually succeeded a bit late)
+  // indistinguishable from a real outage. The user-facing text stays
+  // the same either way; this only makes the real cause visible in
+  // the console for diagnosis.
+  const setOffline = useCallback((reason, detail) => {
+    console.warn(`[navigator] showing offline fallback -- reason: ${reason}${detail ? ` (${detail})` : ''}`);
+    setState('offline');
+  }, []);
+
   const poll = useCallback(
     (requestId) => {
       pollTimer.current = setTimeout(async () => {
         pollCount.current += 1;
         try {
           const res = await fetch(`${BROKER_URL}/api/result/${requestId}`);
-          if (!res.ok && res.status !== 404) throw new Error('bad_status');
+          if (!res.ok && res.status !== 404) {
+            setOffline('request_unavailable', `HTTP ${res.status}`);
+            return;
+          }
           const data = await res.json();
           // 'answered' and 'unresolved' are both legitimate terminal
           // outcomes from the pipeline -- 'unresolved' is what Captain
@@ -230,22 +247,26 @@ export default function PortfolioNavigator() {
             setState('done');
             return;
           }
-          if (data.status === 'error' || data.status === 'expired' || res.status === 404) {
-            setState('offline');
+          if (data.status === 'error') {
+            setOffline('service_temporarily_unavailable', `job ${requestId} reported by backend`);
+            return;
+          }
+          if (data.status === 'expired' || res.status === 404) {
+            setOffline('result_expired', `job ${requestId}`);
             return;
           }
           // queued | processing -- keep polling, bounded.
           if (pollCount.current >= MAX_POLLS) {
-            setState('offline');
+            setOffline('processing_timeout', `gave up after ${pollCount.current} polls (~${Math.round((pollCount.current * POLL_INTERVAL_MS) / 1000)}s) -- backend may still complete the job`);
             return;
           }
           poll(requestId);
-        } catch {
-          setState('offline');
+        } catch (err) {
+          setOffline('request_unavailable', err?.message);
         }
       }, POLL_INTERVAL_MS);
     },
-    []
+    [setOffline]
   );
 
   const runQuery = useCallback(
@@ -271,15 +292,15 @@ export default function PortfolioNavigator() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: q }),
         });
-        if (!res.ok) throw new Error('ask_failed');
+        if (!res.ok) throw new Error(`ask_failed: HTTP ${res.status}`);
         const data = await res.json();
-        if (!data.request_id) throw new Error('no_request_id');
+        if (!data.request_id) throw new Error('ask_failed: no request_id in response');
         poll(data.request_id);
-      } catch {
-        setState('offline');
+      } catch (err) {
+        setOffline('request_unavailable', err?.message);
       }
     },
-    [poll, stopPolling]
+    [poll, stopPolling, setOffline]
   );
 
   const handleSubmit = useCallback(
