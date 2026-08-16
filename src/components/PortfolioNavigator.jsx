@@ -86,11 +86,17 @@ function OfflineBlock({ onCategory }) {
   );
 }
 
-function ResultBlock({ state, result, onCategory }) {
+const THINKING_LINES = {
+  queued: 'request queued',
+  processing: 'consulting portfolio intelligence…',
+  processing_long: 'still working — local model response pending',
+};
+
+function ResultBlock({ state, stage, result, onCategory }) {
   if (state === 'thinking') {
     return (
       <div className="retro-term-result">
-        <span className="retro-term-line retro-term-dim">&gt; consulting portfolio intelligence…</span>
+        <span className="retro-term-line retro-term-dim">&gt; {THINKING_LINES[stage] || THINKING_LINES.queued}</span>
       </div>
     );
   }
@@ -151,7 +157,7 @@ function ResultBlock({ state, result, onCategory }) {
   );
 }
 
-function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample, state, result }) {
+function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample, state, stage, result }) {
   const inputId = useId();
   if (!awake) return null;
 
@@ -194,23 +200,33 @@ function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample,
       </div>
 
       <div aria-live="polite" className="retro-term-result-region">
-        <ResultBlock state={state} result={result} onCategory={onExample} />
+        <ResultBlock state={state} stage={stage} result={result} onCategory={onExample} />
       </div>
     </>
   );
 }
 
+// How many consecutive polls the backend has reported 'processing'
+// (a local model is genuinely running, not just queued) before the
+// UI admits this one is taking a while. Truthful, not a timeout --
+// the poll loop keeps going exactly as before up to MAX_POLLS either
+// way; this only changes which honest sentence is shown meanwhile.
+const STILL_WORKING_AFTER_POLLS = 10; // ~15s of actual processing
+
 export default function PortfolioNavigator() {
   const [value, setValue] = useState('');
   const [state, setState] = useState('idle'); // idle | thinking | done | offline
+  const [stage, setStage] = useState('queued'); // queued | processing | processing_long (only meaningful while state === 'thinking')
   const [result, setResult] = useState(null);
   const pollTimer = useRef(null);
   const pollCount = useRef(0);
+  const processingPollCount = useRef(0);
 
   const stopPolling = useCallback(() => {
     if (pollTimer.current) clearTimeout(pollTimer.current);
     pollTimer.current = null;
     pollCount.current = 0;
+    processingPollCount.current = 0;
   }, []);
 
   // The visible "offline" state can be reached for several genuinely
@@ -255,7 +271,16 @@ export default function PortfolioNavigator() {
             setOffline('result_expired', `job ${requestId}`);
             return;
           }
-          // queued | processing -- keep polling, bounded.
+          // queued | processing -- keep polling, bounded. Reflect the
+          // backend's real status, not a guess: 'processing' means the
+          // worker has actually claimed the job and a local model is
+          // running.
+          if (data.status === 'processing') {
+            processingPollCount.current += 1;
+            setStage(processingPollCount.current >= STILL_WORKING_AFTER_POLLS ? 'processing_long' : 'processing');
+          } else {
+            setStage('queued');
+          }
           if (pollCount.current >= MAX_POLLS) {
             setOffline('processing_timeout', `gave up after ${pollCount.current} polls (~${Math.round((pollCount.current * POLL_INTERVAL_MS) / 1000)}s) -- backend may still complete the job`);
             return;
@@ -285,6 +310,7 @@ export default function PortfolioNavigator() {
       }
 
       setState('thinking');
+      setStage('queued');
       setResult(null);
       try {
         const res = await fetch(`${BROKER_URL}/api/ask`, {
@@ -333,6 +359,7 @@ export default function PortfolioNavigator() {
               onSubmit={handleSubmit}
               onExample={handleExample}
               state={state}
+              stage={stage}
               result={result}
             />
           )}
