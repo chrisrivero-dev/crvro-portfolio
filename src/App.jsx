@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Header from "./components/Header.jsx";
 import Hero from "./components/Hero.jsx";
-import BuilderTelemetry from "./components/BuilderTelemetry.jsx";
 import ProjectWorld from "./components/ProjectWorld.jsx";
+import PortfolioNavigator from "./components/PortfolioNavigator.jsx";
 import About from "./components/About.jsx";
 import Skills from "./components/Skills.jsx";
 import AIConsultation from "./components/AIConsultation.jsx";
@@ -246,8 +246,8 @@ export default function App() {
       <Header activeId={activeId} theme={theme} onToggleTheme={toggleTheme} />
       <main>
         <Hero />
-        <BuilderTelemetry />
         <ProjectWorld />
+        <PortfolioNavigator />
         <About />
         <Skills />
         <AIConsultation />

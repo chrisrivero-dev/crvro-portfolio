@@ -6,9 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "corpus:build": "node scripts/build-corpus.mjs",
+    "broker": "node server/broker.mjs",
+    "worker": "node worker/public-captain.mjs",
+    "captain:test": "node worker/adversarial-tests.mjs"
   },
   "dependencies": {
+    "@upstash/redis": "^1.38.2",
+    "@vercel/queue": "^0.4.0",
     "framer-motion": "^11.18.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

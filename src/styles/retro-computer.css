@@ -1,0 +1,686 @@
+/* ============================================================
+   Retro Computer — restrained 1970s CRT hardware shell
+   Two instances share this file: the hero intro unit and the
+   post-journey navigator unit. Editorial portfolio stays the
+   visual priority; this is secondary, controlled, quiet.
+   ============================================================ */
+
+.retro-crt {
+  --crt-shell: #e4ddd0;
+  --crt-shell-2: #d8cfc0;
+  --crt-shell-3: #ccc0aa;
+  --crt-shell-shadow: rgba(32, 28, 20, 0.22);
+  --crt-bezel: #c3b79f;
+  --crt-bezel-2: #ab9d84;
+  --crt-screen-bg: #17140f;
+  --crt-screen-edge: #0d0b08;
+  --crt-text: #ece4d3;
+  --crt-text-dim: #8b8271;
+  --crt-amber: #c99a4a;
+  --crt-amber-dim: #8a6b38;
+  --crt-power-off: #6b6252;
+  width: 100%;
+  max-width: 460px;
+}
+[data-theme='dark'] .retro-crt {
+  --crt-shell: #2a2620;
+  --crt-shell-2: #221f1a;
+  --crt-shell-3: #1a1712;
+  --crt-shell-shadow: rgba(0, 0, 0, 0.45);
+  --crt-bezel: #1c1a15;
+  --crt-bezel-2: #131210;
+  --crt-text: #ece4d3;
+  --crt-amber: #d9ab5c;
+}
+
+.retro-crt--navigator {
+  max-width: 620px;
+}
+
+.retro-crt--dominant {
+  max-width: 800px;
+}
+
+.retro-crt__shell {
+  position: relative;
+  background:
+    radial-gradient(140% 90% at 15% 0%, rgba(255, 255, 255, 0.42) 0%, transparent 40%),
+    linear-gradient(165deg, var(--crt-shell) 0%, var(--crt-shell-2) 55%, var(--crt-shell-3) 100%);
+  border-radius: 18px;
+  padding: 20px 20px 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.42) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.14) inset,
+    0 30px 60px -22px var(--crt-shell-shadow),
+    0 3px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid color-mix(in oklab, var(--crt-bezel) 65%, black 12%);
+}
+.retro-crt--dominant .retro-crt__shell { border-radius: 22px; padding: 26px 26px 0; }
+/* Faint plastic grain + soft mottling — cheap, static, no texture assets */
+.retro-crt__shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(0, 0, 0, 0.055) 0.5px, transparent 0.5px),
+    radial-gradient(120% 70% at 85% 100%, rgba(0, 0, 0, 0.05) 0%, transparent 55%),
+    radial-gradient(90% 60% at 8% 12%, rgba(0, 0, 0, 0.04) 0%, transparent 50%);
+  background-size: 3px 3px, auto, auto;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+}
+[data-theme='dark'] .retro-crt__shell::before { mix-blend-mode: overlay; opacity: 0.3; }
+/* Corner screws — restrained manufacturing detail, slot suggested by a hairline */
+.retro-crt__shell::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 14px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, rgba(0, 0, 0, 0.32) 0 1.1px, transparent 1.6px) 0 0,
+    linear-gradient(100deg, transparent 47%, rgba(0, 0, 0, 0.4) 47%, rgba(0, 0, 0, 0.4) 53%, transparent 53%) 0 0,
+    radial-gradient(circle, rgba(0, 0, 0, 0.32) 0 1.1px, transparent 1.6px) 100% 0,
+    linear-gradient(100deg, transparent 47%, rgba(0, 0, 0, 0.4) 47%, rgba(0, 0, 0, 0.4) 53%, transparent 53%) 100% 0,
+    radial-gradient(circle, rgba(0, 0, 0, 0.32) 0 1.1px, transparent 1.6px) 0 100%,
+    linear-gradient(100deg, transparent 47%, rgba(0, 0, 0, 0.4) 47%, rgba(0, 0, 0, 0.4) 53%, transparent 53%) 0 100%,
+    radial-gradient(circle, rgba(0, 0, 0, 0.32) 0 1.1px, transparent 1.6px) 100% 100%,
+    linear-gradient(100deg, transparent 47%, rgba(0, 0, 0, 0.4) 47%, rgba(0, 0, 0, 0.4) 53%, transparent 53%) 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 3.4px 3.4px;
+}
+
+.retro-crt__bezel {
+  position: relative;
+  background:
+    linear-gradient(160deg, var(--crt-bezel) 0%, var(--crt-bezel-2) 100%);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.22) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.retro-crt--dominant .retro-crt__bezel { padding: 20px; border-radius: 15px; }
+
+.retro-crt__screen {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 75% at 50% 38%, #262219 0%, var(--crt-screen-bg) 60%, var(--crt-screen-edge) 100%);
+  border-radius: 10px;
+  min-height: 220px;
+  padding: 18px 18px 16px;
+  filter: brightness(0.3) saturate(0.65);
+  transition: filter 0.5s ease;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55) inset,
+    0 3px 14px rgba(0, 0, 0, 0.5) inset,
+    0 0 46px rgba(0, 0, 0, 0.4) inset;
+}
+.retro-crt--navigator .retro-crt__screen { min-height: 260px; }
+.retro-crt--dominant .retro-crt__screen { min-height: 340px; padding: 30px 32px 26px; border-radius: 13px; }
+/* Curved-glass vignette — darkens the four corners like light falling
+   off a convex surface, without a texture asset */
+.retro-crt__screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(0, 0, 0, 0.38) 100%);
+}
+
+@keyframes retro-screen-warm {
+  0%   { filter: brightness(0.3) saturate(0.65); }
+  45%  { filter: brightness(1.2) saturate(1.05); }
+  100% { filter: brightness(1) saturate(1); }
+}
+.retro-crt[data-phase='on'] .retro-crt__screen {
+  animation: retro-screen-warm 0.55s cubic-bezier(0.3, 0.8, 0.4, 1) forwards;
+}
+
+/* Glass thickness — a soft diagonal highlight sitting above the content */
+.retro-crt__screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.07) 0%, transparent 22%, transparent 78%, rgba(0, 0, 0, 0.12) 100%);
+  border-radius: inherit;
+}
+
+.retro-crt__scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+.retro-crt__screen-content {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--crt-text);
+  min-height: 1em;
+}
+
+/* ── Light chrome — post-journey navigator console ───────────
+   Same terminal language (dark field, mono type, amber accents)
+   as the hero, but no physical hardware object: no shell texture,
+   no rivets, no knob, no power light, no vents. Just a thin
+   cream/beige frame reference around the screen. ── */
+.retro-crt--chrome-light .retro-crt__shell {
+  background: none;
+  border-radius: 13px;
+  padding: 4px;
+  box-shadow: none;
+  border: 1px solid var(--crt-bezel);
+}
+.retro-crt--chrome-light .retro-crt__shell::before,
+.retro-crt--chrome-light .retro-crt__shell::after {
+  content: none;
+}
+.retro-crt--chrome-light .retro-crt__bezel {
+  background: none;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 10px;
+}
+.retro-crt--chrome-light .retro-crt__screen {
+  border-radius: 9px;
+}
+
+/* ── Hardware strip: recessed control panel — label + power +
+   rotary switch + vents. Reads as its own physical piece, seamed
+   off from the screen bezel above it. ── */
+.retro-crt__hardware {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 14px 8px;
+  flex-wrap: wrap;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--crt-shell-3) 55%, black 6%) 0%, transparent 100%);
+  border-top: 1px solid color-mix(in oklab, var(--crt-bezel) 60%, black 18%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+}
+.retro-crt--dominant .retro-crt__hardware { margin-top: 20px; padding: 18px 10px 20px; }
+
+.retro-crt__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.3;
+}
+.retro-crt__label-name {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #4a4436;
+}
+[data-theme='dark'] .retro-crt__label-name { color: #b8ad96; }
+.retro-crt__label-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: #7a715e;
+}
+.retro-crt__label-model {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: color-mix(in oklab, var(--crt-bezel-2) 70%, black 30%);
+  margin-top: 2px;
+}
+[data-theme='dark'] .retro-crt__label-model { color: #6a6357; }
+[data-theme='dark'] .retro-crt__label-sub { color: #8a806b; }
+
+.retro-crt__controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.retro-crt__power {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.retro-crt__power-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--crt-power-off);
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--crt-bezel) 60%, black 15%),
+    0 1px 1px rgba(0, 0, 0, 0.3) inset;
+  transition: background 0.35s ease, box-shadow 0.5s ease;
+}
+.retro-crt[data-phase='power'] .retro-crt__power-dot,
+.retro-crt[data-phase='on'] .retro-crt__power-dot {
+  background: var(--crt-amber);
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--crt-bezel) 60%, black 15%),
+    0 0 7px 2px color-mix(in oklab, var(--crt-amber) 70%, transparent);
+}
+.retro-crt__power-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #7a715e;
+}
+[data-theme='dark'] .retro-crt__power-text { color: #8a806b; }
+
+.retro-crt__switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+.retro-crt--dominant .retro-crt__switch { width: 44px; height: 44px; }
+
+.retro-crt__switch-track {
+  position: absolute;
+  inset: -9px;
+  pointer-events: none;
+  opacity: 0;
+}
+.retro-crt--dominant .retro-crt__switch-track { opacity: 1; }
+.retro-crt__switch-off,
+.retro-crt__switch-on {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #7a715e;
+}
+[data-theme='dark'] .retro-crt__switch-off,
+[data-theme='dark'] .retro-crt__switch-on { color: #766f60; }
+.retro-crt__switch-off { bottom: -2px; left: -6px; }
+.retro-crt__switch-on { bottom: -2px; right: -6px; }
+
+.retro-crt__knob {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.06) 0deg 3deg, transparent 3deg 12deg),
+    radial-gradient(circle at 35% 30%, #f2ece0, #b8ad96 70%, #948a72 100%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 -1px 0 rgba(255, 255, 255, 0.3) inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.retro-crt__knob--button {
+  appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.retro-crt__knob--button:hover { filter: brightness(1.04); }
+.retro-crt__knob--button:focus-visible {
+  outline: 2px solid var(--crt-amber, #c99a4a);
+  outline-offset: 3px;
+}
+.retro-crt__knob--button:active .retro-crt__knob-dial { transition-duration: 0.15s; }
+.retro-crt--dominant .retro-crt__knob {
+  width: 44px;
+  height: 44px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.32),
+    0 0 0 1.5px rgba(0, 0, 0, 0.12),
+    0 -1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 0 0 5px color-mix(in oklab, var(--crt-bezel) 55%, black 10%);
+}
+[data-theme='dark'] .retro-crt__knob {
+  background:
+    repeating-conic-gradient(rgba(0, 0, 0, 0.2) 0deg 3deg, transparent 3deg 12deg),
+    radial-gradient(circle at 35% 30%, #4a4436, #2c2820 70%, #1c1a15 100%);
+}
+.retro-crt__knob-dial {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  transform: rotate(-38deg);
+  transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.4, 1);
+}
+.retro-crt[data-phase='off'] .retro-crt__knob-dial {
+  transform: rotate(-38deg);
+}
+.retro-crt[data-phase='waking'] .retro-crt__knob-dial,
+.retro-crt[data-phase='power'] .retro-crt__knob-dial,
+.retro-crt[data-phase='on'] .retro-crt__knob-dial {
+  transform: rotate(-8deg);
+}
+.retro-crt__knob-mark {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: #6b6252;
+  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.4);
+}
+.retro-crt--dominant .retro-crt__knob-mark { width: 3px; height: 15px; top: 4px; }
+[data-theme='dark'] .retro-crt__knob-mark { background: #d9ab5c; }
+
+.retro-crt__vents {
+  width: 26px;
+  height: 20px;
+  border-radius: 3px;
+  background-image: radial-gradient(color-mix(in oklab, var(--crt-bezel) 30%, black 30%) 0.7px, transparent 0.7px);
+  background-size: 4px 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12) inset;
+}
+.retro-crt--dominant .retro-crt__vents {
+  width: 54px;
+  height: 34px;
+  border-radius: 4px;
+  background-size: 5px 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16) inset, 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+}
+
+/* ── Terminal typography shared by intro + navigator content ─ */
+.retro-term-line {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  min-height: 1.65em;
+}
+.retro-term-line + .retro-term-line { margin-top: 1px; }
+.retro-term-prompt { color: var(--crt-text-dim); margin-right: 6px; }
+.retro-term-dim { color: var(--crt-text-dim); }
+.retro-term-amber { color: var(--crt-amber); }
+.retro-term-gap { height: 10px; }
+
+.retro-term-heading {
+  color: var(--crt-amber);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.retro-term-divider {
+  border: 0;
+  height: 1px;
+  margin: 10px 0;
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--crt-amber) 45%, transparent) 0,
+    color-mix(in oklab, var(--crt-amber) 45%, transparent) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.retro-term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--crt-text);
+  vertical-align: -2px;
+  animation: retro-cursor-blink 1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .retro-term-cursor { animation: none; opacity: 1; }
+  .retro-crt__screen { animation: none !important; transition: none !important; }
+  .retro-crt__knob-dial { transition: none !important; }
+  .retro-reveal { transition: none !important; }
+}
+@keyframes retro-cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Real link/button inside the screen, styled as terminal text */
+.retro-term-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  padding: 2px 0 3px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--crt-amber);
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in oklab, var(--crt-amber) 55%, transparent);
+  background-image: none;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.4s ease;
+}
+.retro-term-link:hover,
+.retro-term-link:focus-visible {
+  color: #f1c983;
+  border-color: #f1c983;
+  transform: translateX(2px);
+}
+.retro-term-link:focus-visible {
+  outline: 1px solid var(--crt-amber);
+  outline-offset: 3px;
+}
+
+.retro-term-result-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Navigator input row ──────────────────────────────────── */
+.retro-term-form {
+  display: block;
+  margin-top: 4px;
+}
+.retro-term-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.retro-term-input-label {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.retro-term-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--crt-text-dim) 55%, transparent);
+  padding: 4px 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--crt-text);
+  caret-color: var(--crt-amber);
+}
+.retro-term-input::placeholder { color: var(--crt-text-dim); }
+.retro-term-input:focus {
+  outline: none;
+  border-bottom-color: var(--crt-amber);
+}
+.retro-term-input:focus-visible {
+  outline: 1px solid var(--crt-amber);
+  outline-offset: 3px;
+}
+
+.retro-term-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 14px;
+}
+.retro-term-suggestion {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  background: none;
+  border: none;
+  padding: 1px 0;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--crt-text-dim);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.retro-term-suggestion:hover,
+.retro-term-suggestion:focus-visible {
+  color: var(--crt-amber);
+}
+.retro-term-suggestion:focus-visible {
+  outline: 1px solid var(--crt-amber);
+  outline-offset: 2px;
+}
+
+.retro-term-routing {
+  font-style: italic;
+  opacity: 0.75;
+  margin-top: 8px;
+}
+
+.retro-term-offline-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+}
+.retro-term-offline-categories .retro-term-suggestion {
+  padding: 2px 0;
+}
+
+.retro-term-result {
+  margin-top: 14px;
+}
+
+/* ── Terminal-embedded identity block (hero only) — the machine
+   is the hero, so Christopher's name, headline, and CTA are typed
+   inside the screen rather than sitting beside it in a competing
+   editorial block. Boot lines still type character by character;
+   everything after that reveals as a quick chunk, not a slow
+   character crawl through an entire headline. ── */
+.retro-reveal {
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.retro-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.retro-term-eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--crt-amber-dim);
+  margin-top: 14px;
+}
+[data-theme='dark'] .retro-term-eyebrow { color: var(--crt-amber); }
+
+.retro-term-headline {
+  font-family: var(--font-mono) !important;
+  font-weight: 600;
+  font-size: clamp(19px, 2.6vw, 27px) !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.005em;
+  color: var(--crt-text) !important;
+  margin: 12px 0 0 !important;
+  animation: none !important;
+  text-wrap: pretty;
+}
+.retro-term-headline::after { content: none; }
+
+.retro-term-sub {
+  font-family: var(--font-mono) !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+  color: var(--crt-text-dim) !important;
+  margin: 14px 0 0 !important;
+}
+
+.retro-term-link--cta {
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+/* ── Hero placement — the CRT stage is now the whole hero. No
+   editorial column beside it: identity and message live on the
+   screen; outside the machine there's only the global header and
+   its own chassis labeling. ── */
+.hero--crt-only {
+  padding: 56px 0 72px;
+}
+.hero-crt-stage {
+  display: flex;
+  justify-content: center;
+}
+.hero-crt-stage .retro-crt { width: 100%; }
+
+@media (max-width: 720px) {
+  .hero--crt-only { padding: 40px 0 56px; }
+}
+@media (max-width: 420px) {
+  .retro-crt__hardware { gap: 10px; }
+  .retro-crt__vents { display: none; }
+  .retro-crt--dominant .retro-crt__screen { min-height: 240px; padding: 16px; }
+  .retro-crt__screen-content { font-size: 12px; }
+}
+
+/* ── Navigator placement (between Project World and About) ── */
+.portfolio-navigator {
+  padding: 72px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.portfolio-navigator .container-wide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.portfolio-navigator-eyebrow {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .portfolio-navigator { padding: 48px 0; }
+}

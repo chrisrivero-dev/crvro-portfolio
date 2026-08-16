@@ -5,6 +5,7 @@ import "./styles/tokens.css";
 import "./styles/portfolio.css";
 import "./styles/project-world.css";
 import "./styles/case-study.css";
+import "./styles/retro-computer.css";
 
 ReactDOM.createRoot(document.getElementById("app")).render(
   <React.StrictMode>
