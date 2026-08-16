@@ -4,14 +4,21 @@
 //
 // Runs on this Mac, started manually or supervised by launchd
 // (see worker/run-worker.sh and com.crvro.publiccaptain.plist).
-// Makes only OUTBOUND connections:
-//   - Vercel Queues, poll mode (server/queue.mjs) -- to RECEIVE jobs.
-//     The worker initiates every poll; Vercel Queues never opens a
-//     connection to this machine.
-//   - the broker's /api/worker/submit -- to post results back.
+// Makes only OUTBOUND connections, all to the broker (deployed as
+// Vercel Functions -- see api/worker/):
+//   - POST /api/worker/claim   -- lease one queued job
+//   - POST /api/worker/extend  -- keep a lease alive while processing
+//   - POST /api/worker/submit  -- post the validated result back
 //   - localhost Ollama -- to run the three allowlisted models.
-// It never listens on a port and is never reachable from the
-// Internet.
+// The worker never talks to Vercel Queues directly (see
+// server/queue.mjs and docs/PUBLIC_CAPTAIN.md for why: Vercel Queues
+// authenticates via OIDC scoped to the caller's environment, and a
+// token obtained off-platform is always development-scoped, so it can
+// never see messages a real Preview/Production deployment sent). The
+// three endpoints above run AS Vercel Functions and so always get a
+// correctly-scoped token automatically; this process only ever makes
+// plain outbound HTTPS calls to them. It never listens on a port and
+// is never reachable from the Internet.
 //
 // This process has no shell-exec, no arbitrary fetch, no filesystem
 // write, no GitHub/Gmail/Discord/Telegram/cron access, and no import
@@ -25,7 +32,6 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { WORKER_SECRET, BROKER_PORT, LIMITS } from '../server/config.mjs';
 import { validateResult } from '../server/validate.mjs';
-import { receiveJob } from '../server/queue.mjs';
 import { answerQuestion } from './orchestrate.mjs';
 import { callOllamaChat } from './ollama.mjs';
 
@@ -90,21 +96,72 @@ const corpus = JSON.parse(readFileSync(path.join(__dirname, '..', 'server', 'cor
 const DESTINATION_ALLOWLIST = new Set(Object.keys(corpus.destinations));
 const EVIDENCE_ID_SET = new Set(corpus.entries.map((e) => e.id));
 
+// Push the lease's visibility timeout out again well before the
+// broker's own CLAIM_VISIBILITY_TIMEOUT_SECONDS would expire it --
+// belt-and-suspenders on top of that already-generous window, for a
+// legitimately slow pipeline under real GPU contention.
+const LEASE_EXTEND_INTERVAL_MS = 60_000;
+
 console.log(`[worker] Public Captain starting`);
-console.log(`[worker] broker (results only): ${BROKER_URL}`);
-console.log(`[worker] jobs source: Vercel Queues (poll mode)`);
+console.log(`[worker] broker: ${BROKER_URL}`);
+console.log(`[worker] jobs source: /api/worker/claim (Vercel Queues lease, bridged)`);
 console.log(`[worker] corpus: ${corpus.entries.length} entries`);
 
-// Handler for a single received job. Return value becomes the ack'd
-// result; throwing causes Vercel Queues to redeliver the message
-// (used only for "we couldn't even tell the broker" failures --
-// pipeline failures are caught and reported as a graceful error
-// result instead, so a slow/contended model doesn't cause the same
-// question to be reprocessed and pile on more GPU load).
-async function handleJob(job) {
-  const { id, question } = job;
-  console.log(`[worker] received job ${id}: "${String(question).slice(0, 80)}"`);
+function authHeaders(extra = {}) {
+  return {
+    Authorization: `Bearer ${WORKER_SECRET}`,
+    // Only set during Preview end-to-end testing, when Vercel's own
+    // Deployment Protection SSO wall would otherwise block this
+    // outbound call before it ever reaches our own worker-secret
+    // check. Never set in the real launchd config -- a real production
+    // deployment has no Deployment Protection in front of it, so this
+    // header is simply absent there.
+    ...(process.env.VERCEL_PREVIEW_BYPASS_SECRET
+      ? { 'x-vercel-protection-bypass': process.env.VERCEL_PREVIEW_BYPASS_SECRET }
+      : {}),
+    ...extra,
+  };
+}
 
+async function claimJob() {
+  const res = await fetch(`${BROKER_URL}/api/worker/claim`, { method: 'POST', headers: authHeaders() });
+  if (!res.ok) throw new Error(`claim failed with ${res.status}`);
+  return res.json(); // { ok: true, job: {id, question} } | { ok: false, reason: 'empty' }
+}
+
+async function extendJob(id) {
+  try {
+    const res = await fetch(`${BROKER_URL}/api/worker/extend`, {
+      method: 'POST',
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ id }),
+    });
+    if (!res.ok) console.warn(`[worker] lease extend failed for ${id}: ${res.status}`);
+  } catch (err) {
+    console.warn(`[worker] lease extend error for ${id}:`, err.message);
+  }
+}
+
+async function submitResult(id, result) {
+  const res = await fetch(`${BROKER_URL}/api/worker/submit`, {
+    method: 'POST',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ id, result }),
+  });
+  return res;
+}
+
+// Processes exactly one already-claimed job: runs the pipeline (with a
+// keepalive that extends the Queue lease periodically), validates the
+// result, and submits it. The broker (server/handlers.mjs) is the one
+// that actually acknowledges the Vercel Queue message -- only after it
+// has durably persisted the result -- so a crash or kill anywhere in
+// this function before submit succeeds just leaves the lease to expire
+// and the job gets redelivered, not lost.
+async function processJob({ id, question }) {
+  console.log(`[worker] claimed job ${id}: "${String(question).slice(0, 80)}"`);
+
+  const keepalive = setInterval(() => extendJob(id), LEASE_EXTEND_INTERVAL_MS);
   let outcome;
   try {
     const { draft, routing } = await withOverallBudget(
@@ -115,6 +172,8 @@ async function handleJob(job) {
   } catch (err) {
     console.error(`[worker] pipeline error for ${id}:`, err.message);
     outcome = { status: 'error', answer: '', destinations: [], evidence_ids: [], routing: [], confidence: 'low' };
+  } finally {
+    clearInterval(keepalive);
   }
 
   const { ok, result, reason } = validateResult(outcome, DESTINATION_ALLOWLIST, EVIDENCE_ID_SET);
@@ -123,29 +182,12 @@ async function handleJob(job) {
     : { status: 'error', answer: '', destinations: [], evidence_ids: [], routing: [], confidence: 'low' };
   if (!ok) console.warn(`[worker] own output failed validation (${reason}) -- submitting error instead`);
 
-  const submitRes = await fetch(`${BROKER_URL}/api/worker/submit`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${WORKER_SECRET}` },
-    body: JSON.stringify({ id, result: finalResult }),
-  });
+  const submitRes = await submitResult(id, finalResult);
   if (!submitRes.ok) {
     console.warn(`[worker] submit failed for ${id}: ${submitRes.status}`);
-    // Only retry (by throwing, which Vercel Queues treats as "redeliver
-    // this message") for failures that might actually succeed next time
-    // -- a transient broker/network problem (5xx). A 4xx means the
-    // broker has already made a final decision about this specific job
-    // (unauthorized, malformed, unknown/stale, already-expired) that
-    // will be identical on every future attempt -- retrying forever
-    // would just tie up worker capacity on a message that can never
-    // succeed. Acknowledge those instead of retrying.
-    if (submitRes.status >= 500) {
-      throw new Error(`submit failed with ${submitRes.status} (retryable)`);
-    }
-    console.warn(`[worker] not retrying ${id} -- ${submitRes.status} will never succeed on redelivery`);
-    return finalResult;
+    return;
   }
   console.log(`[worker] answered ${id} (status=${finalResult.status}, confidence=${finalResult.confidence}, routing=${JSON.stringify(finalResult.routing)})`);
-  return finalResult;
 }
 
 let running = true;
@@ -158,11 +200,13 @@ process.on('SIGINT', () => {
 async function loop() {
   while (running) {
     try {
-      const result = await receiveJob(handleJob);
-      if (!result.ok && result.reason === 'empty') {
+      const claim = await claimJob();
+      if (!claim.ok) {
         await new Promise((r) => setTimeout(r, EMPTY_QUEUE_WAIT_MS));
+        continue;
       }
-      // otherwise a message was processed -- loop immediately to check for more
+      await processJob(claim.job);
+      // loop immediately to check for more
     } catch (err) {
       console.error('[worker] loop error:', err.message);
       await new Promise((r) => setTimeout(r, EMPTY_QUEUE_WAIT_MS));

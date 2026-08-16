@@ -34,7 +34,7 @@
 
 import http from 'node:http';
 import { BROKER_PORT, ALLOWED_ORIGINS, LIMITS } from './config.mjs';
-import { handleAsk, handleResult, handleWorkerSubmit } from './handlers.mjs';
+import { handleAsk, handleResult, handleWorkerClaim, handleWorkerExtend, handleWorkerSubmit } from './handlers.mjs';
 
 // Crash handlers log a fixed string only -- never the error object's
 // full contents, never req/headers -- so an unexpected crash can't
@@ -130,6 +130,22 @@ const server = http.createServer(async (req, res) => {
       const id = url.pathname.slice('/api/result/'.length);
       const { status, body: resBody } = await handleResult({ id, ip });
       return sendJsonRes(res, status, resBody, allowOrigin);
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/worker/claim') {
+      const { status, body: resBody } = await handleWorkerClaim({ authHeader: req.headers['authorization'] });
+      return sendJsonRes(res, status, resBody);
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/worker/extend') {
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (e) {
+        return sendJsonRes(res, 400, { error: e.message });
+      }
+      const { status, body: resBody } = await handleWorkerExtend({ authHeader: req.headers['authorization'], body });
+      return sendJsonRes(res, status, resBody);
     }
 
     if (req.method === 'POST' && url.pathname === '/api/worker/submit') {

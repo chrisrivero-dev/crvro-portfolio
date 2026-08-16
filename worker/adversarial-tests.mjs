@@ -47,10 +47,12 @@ const DANGEROUS_PATTERNS = [
   { name: 'Ollama tools field', re: /tools\s*:\s*\[/ },
 ];
 
-// fetch() is allowed only in these two files, only to these two fixed
-// hosts (Ollama on localhost, and the broker) -- flag any OTHER file
-// that calls fetch/http.request to something not obviously fixed.
-const FETCH_ALLOWED_FILES = new Set(['ollama.mjs', 'public-captain.mjs']);
+// fetch() is allowed only in these files, only to fixed, documented
+// hosts (Ollama on localhost, the broker's own Vercel Functions, and
+// Vercel's own Queues API for the explicit lease lifecycle) -- flag
+// any OTHER file that calls fetch/http.request to something not
+// obviously fixed.
+const FETCH_ALLOWED_FILES = new Set(['ollama.mjs', 'public-captain.mjs', 'queue-lease.mjs']);
 
 function listFiles(dir) {
   let out = [];

@@ -39,6 +39,14 @@ export const LIMITS = {
   MAX_IN_FLIGHT: 12, // total queued+processing jobs across all clients
   MAX_CONCURRENT_PROCESSING: 1, // worker is single-flight; broker won't hand out more than this at once
   GC_INTERVAL_MS: 15_000,
+  // Vercel Queues lease (claim) visibility timeout: comfortably above
+  // the worker's own pipeline budget so a legitimate in-progress job
+  // doesn't get redelivered to a second claim while still genuinely
+  // being worked on. The worker also actively extends this lease
+  // periodically while processing (see worker/public-captain.mjs) as
+  // additional headroom under real GPU contention. Must be within
+  // Vercel Queues' documented bounds (30-3600 seconds).
+  CLAIM_VISIBILITY_TIMEOUT_SECONDS: 180,
 };
 
 // Fixed enums — any value outside these is rejected, never passed through.
