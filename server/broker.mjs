@@ -41,6 +41,16 @@ import { isValidQuestion, validateResult } from './validate.mjs';
 import { createJob, getJob, updateJob, usingRedis, approximateInFlight } from './store.mjs';
 import { sendJob } from './queue.mjs';
 
+// Crash handlers log a fixed string only -- never the error object's
+// full contents, never req/headers -- so an unexpected crash can't
+// become a secret-exposure path via a captured log file.
+process.on('uncaughtException', (err) => {
+  console.error('[broker] uncaught exception:', err?.message || 'unknown error');
+});
+process.on('unhandledRejection', (err) => {
+  console.error('[broker] unhandled rejection:', err?.message || 'unknown error');
+});
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const corpus = JSON.parse(readFileSync(path.join(__dirname, 'corpus.json'), 'utf8'));
 const DESTINATION_ALLOWLIST = new Set(Object.keys(corpus.destinations));
@@ -154,6 +164,11 @@ function publicResultView(job) {
   return { status: job.status }; // queued | processing
 }
 
+// SECURITY: never log `req.headers` (or the full `req` object) anywhere
+// below -- the worker-only endpoints carry the bearer secret in the
+// Authorization header. Every log line in this file is deliberately a
+// hand-built string of specific fields, never an object dump, so a
+// future edit can't accidentally start logging it.
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin;
   const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : undefined;
@@ -264,7 +279,7 @@ const server = http.createServer(async (req, res) => {
 
     return sendJsonRes(res, 404, { error: 'not_found' }, allowOrigin);
   } catch (err) {
-    console.error('[broker] unhandled error', err);
+    console.error('[broker] unhandled error:', err?.message || 'unknown error');
     return sendJsonRes(res, 500, { error: 'internal_error' }, allowOrigin);
   }
 });

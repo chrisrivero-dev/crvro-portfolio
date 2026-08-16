@@ -29,6 +29,35 @@ import { receiveJob } from '../server/queue.mjs';
 import { answerQuestion } from './orchestrate.mjs';
 import { callOllamaChat } from './ollama.mjs';
 
+// Environment isolation safety net (addresses independent review finding:
+// nothing prevents this process from silently inheriting a private
+// Captain/Hermes/Discord/Telegram/GitHub credential if the launchd
+// environment or an operator's shell profile were ever misconfigured to
+// export one). This does not rely on the environment already being
+// clean -- it actively checks and refuses to start rather than silently
+// running with unexpected access. Loud crash, not a quiet risk.
+const DENYLISTED_ENV_PATTERNS = [/DISCORD/i, /TELEGRAM/i, /GITHUB/i, /^GH_/i, /HERMES/i, /GMAIL/i, /GOOGLE/i, /CAPTAIN_LOCAL/i, /DAVENTRY/i];
+function assertCleanEnvironment() {
+  const offending = Object.keys(process.env).filter((k) => DENYLISTED_ENV_PATTERNS.some((re) => re.test(k)));
+  if (offending.length) {
+    console.error('[worker] FATAL: unexpected private-service-shaped environment variable(s) present:', offending.join(', '));
+    console.error('[worker] refusing to start -- this worker must never have access to private Captain/Hermes/Discord/Telegram/GitHub credentials.');
+    process.exit(1);
+  }
+}
+assertCleanEnvironment();
+
+// Crash handlers log a fixed string only -- never the error object's
+// full contents or process.env -- so an unexpected crash can't become
+// a secret-exposure path via a launchd-captured log file.
+process.on('uncaughtException', (err) => {
+  console.error('[worker] uncaught exception -- crashing intentionally so the process supervisor restarts cleanly:', err?.message || 'unknown error');
+  process.exit(1);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('[worker] unhandled rejection:', err?.message || 'unknown error');
+});
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BROKER_URL = process.env.BROKER_URL || `http://localhost:${BROKER_PORT}`;
 const EMPTY_QUEUE_WAIT_MS = 1500;
@@ -38,10 +67,19 @@ const EMPTY_QUEUE_WAIT_MS = 1500;
 // still surfaces an error rather than hanging the worker loop.
 const PIPELINE_BUDGET_MS = Math.floor(LIMITS.PROCESSING_TTL_MS * 0.8);
 
-function withOverallBudget(promise, ms) {
+// Runs `factory(signal)` under a real deadline: when the budget expires,
+// `signal` is aborted so the in-flight Ollama call actually stops (see
+// ollama.mjs's external-signal handling), instead of merely being
+// abandoned by this promise while it keeps consuming the GPU in the
+// background and starving whatever job the worker picks up next.
+function withOverallBudget(factory, ms) {
+  const controller = new AbortController();
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`pipeline exceeded ${ms}ms budget`)), ms);
-    promise.then(
+    const timer = setTimeout(() => {
+      controller.abort();
+      reject(new Error(`pipeline exceeded ${ms}ms budget`));
+    }, ms);
+    factory(controller.signal).then(
       (v) => { clearTimeout(timer); resolve(v); },
       (e) => { clearTimeout(timer); reject(e); }
     );
@@ -70,7 +108,7 @@ async function handleJob(job) {
   let outcome;
   try {
     const { draft, routing } = await withOverallBudget(
-      answerQuestion(question, { corpus, callModel: callOllamaChat }),
+      (signal) => answerQuestion(question, { corpus, callModel: callOllamaChat, signal }),
       PIPELINE_BUDGET_MS
     );
     outcome = { ...draft, routing };
@@ -92,7 +130,19 @@ async function handleJob(job) {
   });
   if (!submitRes.ok) {
     console.warn(`[worker] submit failed for ${id}: ${submitRes.status}`);
-    throw new Error(`submit failed with ${submitRes.status}`); // let Queues retry delivery
+    // Only retry (by throwing, which Vercel Queues treats as "redeliver
+    // this message") for failures that might actually succeed next time
+    // -- a transient broker/network problem (5xx). A 4xx means the
+    // broker has already made a final decision about this specific job
+    // (unauthorized, malformed, unknown/stale, already-expired) that
+    // will be identical on every future attempt -- retrying forever
+    // would just tie up worker capacity on a message that can never
+    // succeed. Acknowledge those instead of retrying.
+    if (submitRes.status >= 500) {
+      throw new Error(`submit failed with ${submitRes.status} (retryable)`);
+    }
+    console.warn(`[worker] not retrying ${id} -- ${submitRes.status} will never succeed on redelivery`);
+    return finalResult;
   }
   console.log(`[worker] answered ${id} (status=${finalResult.status}, confidence=${finalResult.confidence}, routing=${JSON.stringify(finalResult.routing)})`);
   return finalResult;

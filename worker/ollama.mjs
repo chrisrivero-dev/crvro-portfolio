@@ -14,12 +14,21 @@ const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 // matter what a caller passes in.
 const ALLOWED_MODELS = new Set(['qwen3.8:27b', 'nemotron-lightning:30b-a3b-q4', 'qwen3-coder:30b']);
 
-export async function callOllamaChat({ model, system, user, timeoutMs = 45_000, temperature = 0.2 }) {
+export async function callOllamaChat({ model, system, user, timeoutMs = 45_000, temperature = 0.2, signal }) {
   if (!ALLOWED_MODELS.has(model)) {
     throw new Error(`model not allowlisted: ${model}`);
   }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  // An external signal (the worker's overall pipeline budget) aborts this
+  // call immediately too -- without this, a call already in flight when
+  // the pipeline gives up keeps running on the GPU regardless, starving
+  // whatever job the worker picks up next.
+  const onExternalAbort = () => controller.abort();
+  if (signal) {
+    if (signal.aborted) controller.abort();
+    else signal.addEventListener('abort', onExternalAbort, { once: true });
+  }
   const started = Date.now();
   try {
     const res = await fetch(`${OLLAMA_HOST}/api/chat`, {
@@ -44,6 +53,7 @@ export async function callOllamaChat({ model, system, user, timeoutMs = 45_000, 
     return { text, ms: Date.now() - started };
   } finally {
     clearTimeout(timer);
+    if (signal) signal.removeEventListener('abort', onExternalAbort);
   }
 }
 

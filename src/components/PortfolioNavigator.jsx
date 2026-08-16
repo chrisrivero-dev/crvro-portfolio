@@ -215,7 +215,11 @@ export default function PortfolioNavigator() {
           const res = await fetch(`${BROKER_URL}/api/result/${requestId}`);
           if (!res.ok && res.status !== 404) throw new Error('bad_status');
           const data = await res.json();
-          if (data.status === 'answered') {
+          // 'answered' and 'unresolved' are both legitimate terminal
+          // outcomes from the pipeline -- 'unresolved' is what Captain
+          // returns when the portfolio genuinely has no evidence for the
+          // question, and it must be shown, not treated as still-loading.
+          if (data.status === 'answered' || data.status === 'unresolved') {
             setResult({ source: 'captain', ...data });
             setState('done');
             return;

@@ -115,7 +115,7 @@ function buildReviewPrompt(question, draft, evidence) {
 // `callModel` is injected so this pipeline is testable without the
 // network, and so production code is the only place a real Ollama
 // call happens.
-export async function answerQuestion(question, { corpus, callModel }) {
+export async function answerQuestion(question, { corpus, callModel, signal }) {
   const routing = [];
 
   const deterministic = tryDeterministic(question, corpus.destinations);
@@ -132,9 +132,13 @@ export async function answerQuestion(question, { corpus, callModel }) {
       model: 'qwen3.8:27b',
       system: CAPTAIN_SYSTEM,
       user: buildCaptainPrompt(question, evidence, corpus.destinations),
+      signal,
     });
     draft = extractJson(raw.text);
   } catch {
+    // Call failed outright -- the routing telemetry must not claim
+    // CAPTAIN ran when it never produced anything.
+    routing[routing.length - 1].status = 'skipped';
     draft = null;
   }
   if (!draft || typeof draft !== 'object') {
@@ -149,6 +153,7 @@ export async function answerQuestion(question, { corpus, callModel }) {
         model: 'nemotron-lightning:30b-a3b-q4',
         system: NEMO_SYSTEM,
         user: buildNemoPrompt(question, draft, evidence),
+        signal,
       });
       const nemo = extractJson(raw.text);
       // Prefer NEMO's answer only if it actually cites evidence and
@@ -157,7 +162,9 @@ export async function answerQuestion(question, { corpus, callModel }) {
         draft = nemo;
       }
     } catch {
-      // Keep the Captain draft; NEMO being unavailable is not fatal.
+      // Keep the Captain draft; NEMO being unavailable is not fatal --
+      // but the routing telemetry must not claim it ran when it didn't.
+      routing[routing.length - 1].status = 'skipped';
     }
   } else {
     routing.push({ role: 'NEMO', status: 'skipped' });
@@ -171,6 +178,7 @@ export async function answerQuestion(question, { corpus, callModel }) {
         model: 'qwen3-coder:30b',
         system: REVIEWER_SYSTEM,
         user: buildReviewPrompt(question, draft, evidence),
+        signal,
       });
       const review = extractJson(raw.text);
       if (review && typeof review === 'object') {

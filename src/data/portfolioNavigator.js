@@ -64,13 +64,21 @@ const has = (q, ...terms) => terms.some((t) => q.includes(t));
 // object or null. The first non-null result is used.
 const RULES = [
   // ── Hermes / OpenClaw — local AI orchestration ──────────────
+  // Proper nouns and short direct-navigation phrases only. The bare
+  // bigram "local ai" used to match here, which swallowed genuinely
+  // open-ended questions that merely use the phrase in passing (e.g.
+  // "...demonstrates Christopher building a real local AI system
+  // rather than simply using an AI product") before they ever reached
+  // the LLM path. A short, direct request ("local models", "your
+  // local ai setup") still resolves instantly here.
   (q) => {
     if (
       has(
         q,
         'hermes',
         'openclaw',
-        'local ai',
+        'local ai setup',
+        'local ai workflow',
         'local model',
         'local models',
         'ollama',
@@ -245,8 +253,15 @@ const RULES = [
   },
 
   // ── Work / project world generally ──────────────────────────
+  // Deliberately specific phrases, not the bare word "work" -- that
+  // was broad enough to swallow genuinely open-ended questions that
+  // merely mention "Christopher's work" in passing (e.g. "which of
+  // Christopher's work should I look at and why"), short-circuiting
+  // them away from the LLM path before they ever got a chance to be
+  // reasoned about. A direct, short navigational request ("see your
+  // work", "show me your projects") still resolves instantly here.
   (q) => {
-    if (has(q, 'work', 'projects', 'portfolio', 'case stud', 'ship', 'journey')) {
+    if (has(q, 'see the work', 'see your work', 'show me your work', 'your projects', 'portfolio', 'case stud', 'ship', 'journey')) {
       return {
         kind: 'single',
         lines: ['destination resolved: PROJECT WORLD'],
