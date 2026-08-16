@@ -173,8 +173,15 @@ export async function answerQuestion(question, { corpus, callModel, signal }) {
     routing.push({ role: 'CAPTAIN', status: 'skipped' });
   }
 
+  // No model ever produced usable output (NEMO failed and either
+  // escalation wasn't warranted or Captain also failed) -- this is a
+  // genuine failure, not a legitimate "no evidence for this" answer.
+  // Must be 'error', never 'unresolved': 'unresolved' is treated as a
+  // safe, cacheable terminal outcome (see server/handlers.mjs), and a
+  // blank answer cached under that status would be served to every
+  // future visitor asking the same question until the corpus changes.
   if (!draft || typeof draft !== 'object') {
-    draft = { status: 'unresolved', answer: '', destinations: [], evidence_ids: [], confidence: 'low' };
+    draft = { status: 'error', answer: '', destinations: [], evidence_ids: [], confidence: 'low' };
   }
 
   // ---- Tier 3: Reviewer, only for Captain's escalated answers ----

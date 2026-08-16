@@ -55,7 +55,15 @@ export function validateResult(raw, destinationAllowlist, evidenceIdSet) {
   if (!status) return { ok: false, reason: 'bad_status' };
 
   const answer = sanitizePlainText(raw.answer, LIMITS.MAX_ANSWER_LEN);
-  if (status === 'answered' && !answer) return { ok: false, reason: 'empty_answer' };
+  // A genuine 'unresolved' always has real explanatory text (the
+  // prompts require it) -- an empty answer under either 'answered' or
+  // 'unresolved' means no model actually produced content, which is a
+  // failure, not a legitimate result (and 'unresolved' is cacheable,
+  // so a blank one would otherwise get served to every future visitor
+  // asking the same question).
+  if ((status === 'answered' || status === 'unresolved') && !answer) {
+    return { ok: false, reason: 'empty_answer' };
+  }
 
   const destinations = Array.isArray(raw.destinations)
     ? [...new Set(raw.destinations.filter((d) => typeof d === 'string' && destinationAllowlist.has(d)))].slice(0, 3)
