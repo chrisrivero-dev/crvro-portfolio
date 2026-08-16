@@ -97,13 +97,43 @@
   background:
     linear-gradient(160deg, var(--crt-bezel) 0%, var(--crt-bezel-2) 100%);
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.22) inset,
+    0 10px 20px rgba(0, 0, 0, 0.16) inset,
     0 -1px 0 rgba(255, 255, 255, 0.16) inset,
     0 1px 0 rgba(255, 255, 255, 0.22);
 }
-.retro-crt--dominant .retro-crt__bezel { padding: 20px; border-radius: 15px; }
+.retro-crt--dominant .retro-crt__bezel { padding: 23px; border-radius: 15px; }
+/* Faint plastic grain on the bezel too -- a subtly different scale
+   from the shell's grain so the two read as separate molded parts,
+   not one continuous surface. */
+.retro-crt__bezel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 0.5px, transparent 0.5px);
+  background-size: 2.4px 2.4px;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+[data-theme='dark'] .retro-crt__bezel::before { mix-blend-mode: overlay; opacity: 0.22; }
+/* The lip the glass sits inside -- a hairline ring right at the
+   screen's outer edge, distinct from the screen's own shadow, so the
+   bezel visibly overlaps the glass rather than just framing it. */
+.retro-crt__bezel::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 11px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.18);
+}
+.retro-crt--dominant .retro-crt__bezel::after { inset: 23px; border-radius: 14px; }
 
 .retro-crt__screen {
   position: relative;
@@ -116,14 +146,16 @@
   filter: brightness(0.3) saturate(0.65);
   transition: filter 0.5s ease;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.55) inset,
-    0 3px 14px rgba(0, 0, 0, 0.5) inset,
-    0 0 46px rgba(0, 0, 0, 0.4) inset;
+    0 0 0 1.5px rgba(0, 0, 0, 0.6) inset,
+    0 6px 22px rgba(0, 0, 0, 0.55) inset,
+    0 0 58px rgba(0, 0, 0, 0.45) inset,
+    0 0 0 3px rgba(255, 255, 255, 0.035) inset;
 }
 .retro-crt--navigator .retro-crt__screen { min-height: 260px; }
 .retro-crt--dominant .retro-crt__screen { min-height: 340px; padding: 30px 32px 26px; border-radius: 13px; }
 /* Curved-glass vignette — darkens the four corners like light falling
-   off a convex surface, without a texture asset */
+   off a convex surface, with a soft hot spot near the upper-left
+   suggesting a single glancing reflection, without a texture asset */
 .retro-crt__screen::before {
   content: '';
   position: absolute;
@@ -131,7 +163,9 @@
   pointer-events: none;
   z-index: 1;
   border-radius: inherit;
-  background: radial-gradient(120% 100% at 50% 42%, transparent 55%, rgba(0, 0, 0, 0.38) 100%);
+  background:
+    radial-gradient(38% 22% at 27% 18%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+    radial-gradient(120% 100% at 50% 42%, transparent 52%, rgba(0, 0, 0, 0.42) 100%);
 }
 
 @keyframes retro-screen-warm {
@@ -177,6 +211,71 @@
   min-height: 1em;
 }
 
+/* ── Hero-only depth pass ─────────────────────────────────────
+   The dominant hero unit is the only chrome="full" instance on the
+   site (the navigator uses chrome="light" and never matches any of
+   these selectors) -- scoped here so a heavier, more physically
+   convincing cabinet only ever applies to the hero, never elsewhere.
+   Meant to read at a glance, not just on close inspection: a
+   noticeably thicker cabinet wall before the bezel, a thicker inner
+   bezel before the glass, a harder line where the glass actually
+   sits (not just a soft shadow), a stronger convex vignette, and a
+   more pronounced "sitting above the page" cast shadow. ── */
+.retro-crt--dominant .retro-crt__shell {
+  padding: 38px 38px 0;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.42) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.14) inset,
+    0 0 0 12px rgba(0, 0, 0, 0.05) inset,
+    0 50px 110px -26px var(--crt-shell-shadow),
+    0 12px 28px rgba(0, 0, 0, 0.24),
+    0 4px 8px rgba(0, 0, 0, 0.18);
+}
+.retro-crt--dominant .retro-crt__bezel {
+  padding: 38px;
+  box-shadow:
+    0 3px 7px rgba(0, 0, 0, 0.28) inset,
+    0 18px 34px rgba(0, 0, 0, 0.24) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 1px 0 rgba(255, 255, 255, 0.24);
+}
+/* The hard edge where plastic bezel actually ends and glass begins --
+   distinct from the bezel's own soft inner shadow above. */
+.retro-crt--dominant .retro-crt__bezel::after {
+  inset: 28px;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.42),
+    0 2px 3px rgba(255, 255, 255, 0.22),
+    0 5px 16px rgba(0, 0, 0, 0.38);
+}
+.retro-crt--dominant .retro-crt__screen {
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.68) inset,
+    0 14px 42px rgba(0, 0, 0, 0.62) inset,
+    0 0 96px rgba(0, 0, 0, 0.5) inset,
+    0 0 0 4px rgba(255, 255, 255, 0.045) inset,
+    0 0 0 2px rgba(0, 0, 0, 0.34);
+}
+.retro-crt--dominant .retro-crt__screen::before {
+  background:
+    radial-gradient(38% 22% at 26% 16%, rgba(255, 255, 255, 0.075) 0%, transparent 70%),
+    radial-gradient(120% 100% at 50% 42%, transparent 44%, rgba(0, 0, 0, 0.52) 100%);
+}
+/* Lower hardware panel: darker, more saturated tone shift (not just a
+   gradient overlay) plus a deeper groove, so it reads unmistakably as
+   its own molded piece under the bezel above it. */
+.retro-crt--dominant .retro-crt__hardware {
+  margin-top: 20px;
+  padding: 22px 14px 24px;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--crt-shell-3) 70%, black 14%) 0%, color-mix(in oklab, var(--crt-shell-3) 30%, transparent) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 3px 4px -1px rgba(0, 0, 0, 0.2) inset,
+    0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
 /* ── Light chrome — post-journey navigator console ───────────
    Same terminal language (dark field, mono type, amber accents)
    as the hero, but no physical hardware object: no shell texture,
@@ -199,6 +298,10 @@
   box-shadow: none;
   border-radius: 10px;
 }
+.retro-crt--chrome-light .retro-crt__bezel::before,
+.retro-crt--chrome-light .retro-crt__bezel::after {
+  content: none;
+}
 .retro-crt--chrome-light .retro-crt__screen {
   border-radius: 9px;
 }
@@ -217,9 +320,14 @@
   flex-wrap: wrap;
   background: linear-gradient(180deg, color-mix(in oklab, var(--crt-shell-3) 55%, black 6%) 0%, transparent 100%);
   border-top: 1px solid color-mix(in oklab, var(--crt-bezel) 60%, black 18%);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+  /* Parting-line seam: a recessed groove (dark line, then a thin
+     highlight catching light on the lower lip) where the lower panel
+     reads as a separately molded piece from the bezel above it. */
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 2px 2px -1px rgba(0, 0, 0, 0.12) inset,
+    0 1px 0 rgba(255, 255, 255, 0.4);
 }
-.retro-crt--dominant .retro-crt__hardware { margin-top: 20px; padding: 18px 10px 20px; }
 
 .retro-crt__label {
   display: flex;
@@ -393,20 +501,45 @@
 .retro-crt--dominant .retro-crt__knob-mark { width: 3px; height: 15px; top: 4px; }
 [data-theme='dark'] .retro-crt__knob-mark { background: #d9ab5c; }
 
+/* The one hardware detail: a small recessed speaker grille, off to
+   one side (asymmetrical against the label on the opposite end of
+   the strip). Real slats with their own tiny drop shadow, not a
+   generic dot pattern, so it reads as an actual stamped/molded part. */
 .retro-crt__vents {
   width: 26px;
   height: 20px;
   border-radius: 3px;
-  background-image: radial-gradient(color-mix(in oklab, var(--crt-bezel) 30%, black 30%) 0.7px, transparent 0.7px);
-  background-size: 4px 4px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12) inset;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--crt-bezel-2) 55%, black 35%) 0px,
+      color-mix(in oklab, var(--crt-bezel-2) 55%, black 35%) 1.5px,
+      transparent 1.5px,
+      transparent 4px
+    ),
+    color-mix(in oklab, var(--crt-bezel) 92%, black 8%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.22) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 .retro-crt--dominant .retro-crt__vents {
   width: 54px;
   height: 34px;
   border-radius: 4px;
-  background-size: 5px 5px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16) inset, 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--crt-bezel-2) 55%, black 35%) 0px,
+      color-mix(in oklab, var(--crt-bezel-2) 55%, black 35%) 2px,
+      transparent 2px,
+      transparent 5.5px
+    ),
+    color-mix(in oklab, var(--crt-bezel) 92%, black 8%);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.26) inset,
+    0 -1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 /* ── Terminal typography shared by intro + navigator content ─ */
