@@ -191,10 +191,14 @@ export async function handleWorkerClaim({ authHeader }) {
   }
 
   const job = await getJob(id);
-  if (!job || job.status === 'answered' || job.status === 'error') {
-    // Either the job record is gone (too late to matter) or this is a
-    // redelivery of a job some earlier attempt already finished --
-    // idempotent by job ID: don't reprocess, just clear the lease.
+  // 'error' is deliberately NOT treated as finished here -- that status
+  // means a previous attempt's own pipeline failed (see the ack policy
+  // in handleWorkerSubmit below), and the whole point of not acking it
+  // then was to let exactly this redelivery retry it for real. Only a
+  // genuine terminal outcome (answered/unresolved) or a job record
+  // that's gone entirely short-circuits reprocessing.
+  const terminalStatuses = new Set(['answered', 'unresolved']);
+  if (!job || terminalStatuses.has(job.status)) {
     console.log(`[handlers] claim ${id}: already finished or unknown -- acking without reprocessing`);
     await ackMessage({ topic: JOBS_TOPIC, consumerGroup: WORKER_CONSUMER_GROUP, region: QUEUE_REGION, receiptHandle }).catch(() => {});
     return { status: 200, body: { ok: false, reason: 'empty' } };
