@@ -97,10 +97,14 @@ const RULES = [
   },
 
   // ── Support knowledge-consistency problem — Sidecar ─────────
+  // Specific proper nouns/direct terms only. The bare combination of
+  // "support" + "different answer"/"conflicting" used to match here,
+  // which swallowed genuinely open-ended questions that describe a
+  // support-consistency problem in their own words (e.g. "our support
+  // staff keep giving customers different answers, how would
+  // Christopher approach that") before they ever reached the LLM path.
   (q) => {
-    const consistencyProblem =
-      (has(q, 'support') && has(q, 'different answer', 'inconsistent', 'consisten', 'conflicting')) ||
-      has(q, 'sidecar', 'knowledge base', 'kb article', 'canned response');
+    const consistencyProblem = has(q, 'sidecar', 'knowledge base', 'kb article', 'canned response');
     if (consistencyProblem) {
       return {
         kind: 'single',
