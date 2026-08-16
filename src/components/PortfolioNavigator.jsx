@@ -30,11 +30,16 @@ const MAX_LEN = 300;
 // somewhere else entirely.
 const BROKER_URL = import.meta.env.VITE_BROKER_URL || (import.meta.env.DEV ? 'http://localhost:8787' : '');
 const POLL_INTERVAL_MS = 1500;
-// A complex question can take a real local model three sequential calls
-// (CAPTAIN -> NEMO -> REVIEWER); this stays a little above the broker's
-// own PROCESSING_TTL so the broker's "expired" status is what resolves
-// the wait, not an arbitrary client-side cutoff.
-const MAX_POLLS = 78; // ~117s before giving up and showing the offline fallback
+// A question that escalates past NEMO can take three sequential local
+// model calls (NEMO -> CAPTAIN -> REVIEWER) with real model-swap
+// overhead between each on this hardware; the worker's own pipeline
+// budget (see PIPELINE_BUDGET_MS in worker/public-captain.mjs) is the
+// authoritative ceiling for that. This stays comfortably above it with
+// headroom for the submit round trip and one poll interval, so a
+// genuinely-completing escalation is actually seen by the browser
+// instead of the client giving up first and forcing a real success
+// into a "timed out" report.
+const MAX_POLLS = 112; // ~168s before giving up and showing the offline fallback
 
 function IntroLines({ reduced }) {
   const { output } = useTypewriter(INTRO_LINES, !reduced);

@@ -67,11 +67,20 @@ process.on('unhandledRejection', (err) => {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BROKER_URL = process.env.BROKER_URL || `http://localhost:${BROKER_PORT}`;
 const EMPTY_QUEUE_WAIT_MS = 1500;
-// Comfortably under the broker's PROCESSING_TTL so a job the worker
-// is actively (if slowly) working on doesn't get marked expired out
-// from under it -- and short enough that a genuinely stuck pipeline
-// still surfaces an error rather than hanging the worker loop.
-const PIPELINE_BUDGET_MS = Math.floor(LIMITS.PROCESSING_TTL_MS * 0.8);
+// Derived from the Queue lease's own visibility timeout (the real
+// ceiling now that claim/extend/submit are lease-based -- see
+// server/handlers.mjs), with headroom under it so a genuinely stuck
+// pipeline still surfaces an error and releases the lease cleanly
+// instead of losing a race against it. This used to be tied to the
+// broker's PROCESSING_TTL (88s), which was tuned before Captain/
+// Reviewer escalation existed -- a legitimate escalation regularly
+// needs more than that just for the model-swap overhead between three
+// different local models, causing genuinely-completing escalations to
+// get killed mid-flight and forced into a doomed retry loop instead of
+// just finishing once. This does not change how OFTEN escalation
+// happens or which questions trigger it -- only how long an
+// escalation that's already happening is allowed to actually finish.
+const PIPELINE_BUDGET_MS = Math.floor(LIMITS.CLAIM_VISIBILITY_TIMEOUT_SECONDS * 1000 * 0.85);
 
 // Runs `factory(signal)` under a real deadline: when the budget expires,
 // `signal` is aborted so the in-flight Ollama call actually stops (see
