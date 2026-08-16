@@ -82,7 +82,11 @@ function stripLineComments(src) {
 }
 
 export function auditCapabilities() {
-  const files = [...listFiles(path.join(ROOT, 'worker')), ...listFiles(path.join(ROOT, 'server'))].filter(
+  const files = [
+    ...listFiles(path.join(ROOT, 'worker')),
+    ...listFiles(path.join(ROOT, 'server')),
+    ...listFiles(path.join(ROOT, 'api')),
+  ].filter(
     (f) => !AUDIT_EXCLUDE.has(path.basename(f))
   );
   const findings = [];
@@ -168,7 +172,7 @@ async function main() {
   console.log('=== Structural capability audit ===');
   const findings = auditCapabilities();
   if (findings.length === 0) {
-    console.log('PASS -- no dangerous primitives found in worker/ or server/ (no exec, no eval, no fs writes, no cron, no credentialed API clients, no Ollama tools field, no stray fetch targets).');
+    console.log('PASS -- no dangerous primitives found in worker/, server/, or api/ (no exec, no eval, no fs writes, no cron, no credentialed API clients, no Ollama tools field, no stray fetch targets).');
   } else {
     console.log('FAIL -- dangerous primitives found:');
     for (const f of findings) console.log(`  ${f.file}: ${f.issue}`);

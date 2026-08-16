@@ -22,7 +22,13 @@ const OFFLINE_CATEGORIES = [
 ];
 
 const MAX_LEN = 300;
-const BROKER_URL = import.meta.env.VITE_BROKER_URL || 'http://localhost:8787';
+// In dev (`vite`), the broker runs standalone on :8787 (`npm run broker`).
+// In a real build, the broker is deployed as Vercel Functions alongside
+// this same site (see api/), so same-origin relative paths are correct
+// -- localhost:8787 would be meaningless in a visitor's own browser.
+// VITE_BROKER_URL overrides either default when the broker is hosted
+// somewhere else entirely.
+const BROKER_URL = import.meta.env.VITE_BROKER_URL || (import.meta.env.DEV ? 'http://localhost:8787' : '');
 const POLL_INTERVAL_MS = 1500;
 // A complex question can take a real local model three sequential calls
 // (CAPTAIN -> NEMO -> REVIEWER); this stays a little above the broker's
