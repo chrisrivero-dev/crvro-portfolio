@@ -485,7 +485,7 @@
 .retro-crt[data-phase='waking'] .retro-crt__knob-dial,
 .retro-crt[data-phase='power'] .retro-crt__knob-dial,
 .retro-crt[data-phase='on'] .retro-crt__knob-dial {
-  transform: rotate(-8deg);
+  transform: rotate(38deg);
 }
 .retro-crt__knob-mark {
   position: absolute;
