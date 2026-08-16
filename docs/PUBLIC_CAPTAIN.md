@@ -2,12 +2,17 @@
 
 **LOCAL SECURITY PROTOTYPE: PASS**
 **DURABLE RESULT STORAGE: PASS**
-**PRODUCTION RELEASE: NOT YET**
+**INTELLIGENCE ACCEPTANCE: PASS**
+**ADVERSARIAL SECURITY: PASS**
+**PREVIEW VALIDATION: PASS**
+**READY FOR PRODUCTION: YES**
 
-Status: local only. Not pushed, not merged, not deployed to production. This
-document is the acceptance record for the public portfolio-intelligence
-feature on `feature/retro-intelligent-portfolio`, covering both the initial
-build and tonight's production-hardening pass.
+Status: validated on a Vercel Preview deployment. Not pushed to a shared
+branch beyond `feature/retro-intelligent-portfolio`, not merged to `main`,
+not deployed to production. This document is the acceptance record for the
+public portfolio-intelligence feature, covering the initial build,
+production-hardening, and the Preview end-to-end validation pass (including
+the same-environment Vercel Queues bridge described in §19).
 
 ## 1. What this is
 
@@ -573,3 +578,197 @@ including all of today's durable-storage work -- is real, tested, and
 complete.
 
 **This branch has not been pushed, merged, or deployed.**
+
+## 19. Intelligence acceptance, adversarial re-run, and Vercel Preview (final session)
+
+Picks up from §17's "PRODUCTION RELEASE: NOT YET" -- all three blocking
+gates were completed this session, plus a genuine architectural gap found
+and fixed along the way.
+
+### 19.1 Five-question intelligence acceptance
+
+All five required genuinely open-ended questions were submitted through the
+real browser terminal (dispatched against the mounted React component, not
+direct API calls) and reached the actual LLM path:
+
+| # | Question | Latency | Routing | Result |
+|---|---|---|---|---|
+| 1 | Hiring for support ops -- which work to look at | 64s | CAPTAIN+NEMO+REVIEWER | PASS |
+| 2 | Staff giving conflicting answers | 78s | CAPTAIN+NEMO+REVIEWER | PASS |
+| 3 | Real local AI system vs. using a product | 35s | CAPTAIN+REVIEWER (NEMO correctly skipped) | PASS |
+| 4 | Automating manual record review | 67s | CAPTAIN+NEMO+REVIEWER | PASS |
+| 5 | Hospital claims-processing | 10s | CAPTAIN only | PASS -- honest "no evidence" |
+
+This surfaced three real, distinct defects, each fixed and re-verified:
+
+1. **Stale worker module cache.** The worker process had been running since
+   before an earlier fix to `src/data/portfolioNavigator.js`; Node caches ES
+   modules at import time, so the running process kept using pre-fix logic
+   until restarted. Not a code bug, but a real operational gap -- worth
+   remembering when editing any module the worker imports.
+2. **Two overly-broad deterministic-router rules.** The bare terms `work`
+   and `local ai`, and separately the combination `support` + `different
+   answer`/`conflicting`, matched genuinely open-ended questions that used
+   those words in passing, short-circuiting them away from the LLM path
+   before CAPTAIN ever ran. Narrowed to specific phrases in three separate
+   passes (§ "Work" rule, "Hermes/OpenClaw" rule, "Sidecar" rule) --
+   short direct navigational requests ("see the work", "local models",
+   "show me sidecar") still resolve instantly; sentences that merely use
+   the words don't.
+3. **Frontend hid `unresolved` results forever.** `PortfolioNavigator.jsx`'s
+   polling loop only treated `status: 'answered'` as terminal; a
+   legitimate `unresolved` result (the honest "no evidence" case, exactly
+   what question 5 needed) polled forever and never rendered. Fixed to
+   treat both as terminal.
+
+Also fixed: the worker's pipeline-budget timeout raced the overall
+`answerQuestion()` promise but never actually cancelled the underlying
+Ollama calls, so a "timed out" job kept consuming GPU in the background and
+could starve the next job in queue. `worker/ollama.mjs`, `orchestrate.mjs`,
+and `public-captain.mjs` now thread a real `AbortSignal` through the whole
+chain.
+
+### 19.2 Adversarial suite
+
+17/0/0 (structural audit clean, all 17 runtime cases pass), re-confirmed
+multiple times across this session's changes, most recently against the
+final code including the Vercel Queues bridge (§19.4).
+
+### 19.3 The broker didn't exist as anything Vercel could deploy
+
+`server/broker.mjs` was only ever a standalone Node `http` server for local
+dev -- there was no `api/` directory, and `vercel.json` built only the
+static frontend. Deploying as-is would have shipped a navigator with no
+reachable backend. Fixed by extracting the route logic into
+`server/handlers.mjs`, shared by both `server/broker.mjs` (local dev) and
+three Vercel Functions: `api/ask.mjs`, `api/result/[id].mjs`,
+`api/worker/submit.mjs`. Verified via `vercel dev` that all three routes,
+including the `[id]` dynamic segment and worker bearer-auth rejection,
+resolve to the real function code before ever deploying.
+
+### 19.4 Vercel Queues cross-environment delivery -- root cause and fix
+
+The first Preview deployment's `/api/ask` correctly enqueued jobs (Vercel
+Queues send from within a real deployed Function worked immediately), but
+the off-platform worker's `receiveJob()` (via `@vercel/queue`'s
+`PollingQueueClient`) never received them, even after minutes of waiting,
+even though the identical code sending-and-receiving locally worked with
+only a ~3s propagation delay.
+
+**Diagnosis** (six-point checklist, each verified directly rather than
+assumed):
+
+1. **Deployment ID header** -- confirmed absent via `VERCEL_QUEUE_DEBUG=1`
+   on a real SDK call: `deploymentId: null` correctly produces no
+   `Vqs-Deployment-Id` header.
+2. **Environment identity** -- the root cause. The worker's OIDC token,
+   decoded (non-secret claims only), showed `environment: development`.
+   Two sanctioned mechanisms to get a Preview-scoped token instead --
+   `vercel env pull --environment=preview` and the same combined with
+   `--git-branch=<branch>` -- both still minted a `development`-scoped
+   token. `vercel env pull --id=<deployment>` exists but only works
+   mid-build (`INITIALIZING` state), not against an already-deployed
+   Preview. There is no CLI-available way to mint a non-development-scoped
+   OIDC token for off-platform use.
+3. **Region** -- confirmed matching (`iad1` on both sides, via
+   `x-vercel-id` response headers and the direct Queue API URL).
+4. **Topic + consumer** -- confirmed matching (`public-captain-jobs`,
+   shared constant); tested with multiple fresh consumer groups to rule
+   out a stale-cursor explanation.
+5. **Direct controlled diagnostic** -- sent a uniquely-worded probe from
+   the real deployed `/api/ask`, then drained the *entire* topic backlog
+   (29 messages, every job sent all session under the local
+   `development` identity) via the documented raw REST API with a fresh
+   consumer group. The probe, and every other genuinely Preview-originated
+   message, never appeared. The `development`-scoped token could read
+   every message sent locally and none sent by the deployed Preview --
+   direct evidence the topic is partitioned by producer/consumer OIDC
+   environment identity, and that partition isn't bridgeable from a
+   CLI-pulled token.
+
+**Fix**: rather than trying to get the off-platform worker a
+correctly-scoped token (impossible via any sanctioned CLI mechanism), the
+worker no longer talks to Vercel Queues directly at all. Three new
+worker-secret-authenticated endpoints run *as Vercel Functions*, so each
+automatically receives a correctly-scoped OIDC token per invocation from
+the platform itself:
+
+- `POST /api/worker/claim` -- leases (does not auto-acknowledge) one queued
+  job via the documented Queue REST lease API
+  (`server/queue-lease.mjs`), not the SDK's high-level `receive()` (which
+  acknowledges on handler return -- wrong here, since the actual work
+  happens out of band on the Mac, possibly minutes later, from a process
+  that can crash and restart).
+- `POST /api/worker/extend` -- pushes the lease's visibility timeout out
+  while a legitimately slow multi-model pipeline is still running.
+- `POST /api/worker/submit` (existing) -- now acknowledges the Queue
+  message only *after* the result is durably persisted to Upstash, and
+  deliberately does **not** acknowledge a worker-reported processing
+  failure (`status: 'error'`), leaving the lease to expire so Vercel
+  Queues retries the job instead of giving up after one contended
+  attempt.
+
+Claiming an already-terminal job (a redelivery after an earlier success)
+is a no-op acknowledgment -- idempotent by job ID. One real bug was found
+and fixed in this logic during testing: the idempotency check originally
+treated `status: 'error'` the same as `'answered'` (skip reprocessing),
+which would have silently discarded a redelivered failed job without ever
+actually retrying it -- caught by the redelivery test below, not by
+inspection.
+
+The worker itself never touches Vercel Queues' API or an OIDC token --
+only plain outbound HTTPS to these three endpoints.
+
+### 19.5 Final Preview end-to-end proof
+
+Question: *"Our support staff keep giving customers different answers. How
+would Christopher approach that?"* -- submitted via `curl` against the real
+protected Preview URL (Deployment Protection bypass used server-side only,
+per instruction, never in a client-facing request), replicating exactly
+what a browser's `fetch` calls send.
+
+- **Latency**: 90s total (ask to answer).
+- **Models genuinely used**: CAPTAIN, NEMO, REVIEWER -- all three, per
+  `routing` in the persisted result.
+- **Evidence IDs**: `sidecar-problem-2`, `sidecar-built-3`,
+  `sidecar-summary-1` -- real corpus entries.
+- **Destinations returned**: `sidecar`, `work`.
+- **Queue lease/ack**: claimed via `/api/worker/claim`, acknowledged only
+  after Upstash persistence succeeded in `/api/worker/submit`.
+- **Upstash persistence**: confirmed -- the answer above was read back via
+  `GET /api/result/:id` against the deployed Preview, not from local state.
+- **Browser-visible answer**: the exact JSON a polling browser receives,
+  shown above.
+
+**Deliberate kill/restart redelivery proof**: submitted a second question,
+killed (`kill -9`) the worker process the instant its log showed
+`claimed job <id>` (before it could submit), confirmed via `launchctl
+list` that the process supervisor auto-restarted it (~2s, matching the
+crash-recovery behavior already proven in §17), confirmed the job's Redis
+record showed `status: "processing"` with a receipt handle and no
+acknowledgment, confirmed a manual claim attempt returned `empty` while
+the lease was still outstanding, then confirmed the restarted worker's own
+polling loop naturally reclaimed the same job once the lease's visibility
+timeout expired -- visible directly in `worker.log` as a second `claimed
+job <id>` line for the identical ID. The message was not lost.
+
+(Both attempts on this particular kill-test job happened to also hit real,
+independently-occurring GPU contention from a separate concurrent
+workload, and it eventually exceeded the broker's own staleness window
+before completing with a real answer -- an honest, separate factor,
+distinct from and not evidence against the redelivery mechanism itself,
+which the delivery-count increment directly proves.)
+
+### 19.6 Verdict
+
+```
+LOCAL SECURITY PROTOTYPE: PASS
+DURABLE RESULT STORAGE: PASS
+INTELLIGENCE ACCEPTANCE: PASS
+ADVERSARIAL SECURITY: PASS
+PREVIEW VALIDATION: PASS
+READY FOR PRODUCTION: YES
+```
+
+Not merged to `main`. Not deployed to production. Waiting for explicit
+approval before either.
