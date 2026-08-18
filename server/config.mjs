@@ -27,10 +27,14 @@ export const LIMITS = {
   MAX_ANSWER_LEN: 1200,
   MAX_BODY_BYTES: 8 * 1024, // reject oversized payloads before parsing
   QUEUE_TTL_MS: 90_000, // job must be claimed by the worker within this window
-  // Generous: a complex question can involve three sequential model calls
-  // (CAPTAIN -> NEMO -> REVIEWER) on a local GPU that may also be busy
-  // with the operator's other work. Observed real runs under contention
-  // took 60-100s; this leaves headroom before the frontend gives up.
+  // Sized generously from the old three-model escalation path (CAPTAIN ->
+  // NEMO -> REVIEWER), observed to take 60-100s under contention. The
+  // current single-shot public path (qwen3:4b, bounded output, no
+  // escalation, and refused outright via the capacity gate rather than
+  // queued behind private GPU work -- see checkPublicCapacity in
+  // worker/ollama.mjs) finishes far under this in practice. Left wide
+  // rather than tightened blind -- see docs/PUBLIC_CAPTAIN.md for real
+  // measured numbers from the isolation pass.
   PROCESSING_TTL_MS: 110_000,
   RATE_LIMIT_WINDOW_MS: 60_000,
   RATE_LIMIT_MAX_ASK: 6, // /api/ask submissions per IP per window
@@ -51,6 +55,18 @@ export const LIMITS = {
 
 // Fixed enums — any value outside these is rejected, never passed through.
 export const CONFIDENCE_LEVELS = ['high', 'medium', 'low'];
-export const ROUTING_ROLES = ['CAPTAIN', 'NEMO', 'REVIEWER'];
+// GROQ_PUBLIC is the preferred cloud provider for the public path
+// (openai/gpt-oss-20b via Groq), tried before the local PUBLIC
+// (qwen3:4b) fallback when enabled. PUBLIC is the local model. Neither
+// ever falls back to CAPTAIN/NEMO/REVIEWER, which only ever appear in
+// routing telemetry from the dormant heavy pipeline (see
+// worker/orchestrate.mjs's answerQuestionHeavy), which normal public
+// traffic never reaches.
+export const ROUTING_ROLES = ['GROQ_PUBLIC', 'PUBLIC', 'CAPTAIN', 'NEMO', 'REVIEWER'];
 export const ROUTING_STATUSES = ['used', 'skipped'];
-export const RESULT_STATUSES = ['answered', 'unresolved', 'error'];
+// 'busy' is a capacity-gate refusal (private/heavy inference active,
+// or the gate couldn't confirm the runtime is safely idle) -- an
+// honest, terminal, never-cached outcome, distinct from 'error' (the
+// pipeline genuinely tried and failed) and 'unresolved' (the pipeline
+// ran and honestly found no evidence).
+export const RESULT_STATUSES = ['answered', 'unresolved', 'busy', 'error'];

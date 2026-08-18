@@ -772,3 +772,223 @@ READY FOR PRODUCTION: YES
 
 Not merged to `main`. Not deployed to production. Waiting for explicit
 approval before either.
+
+## 20. Groq integration and side-by-side benchmark
+
+Adds `openai/gpt-oss-20b` via Groq (`worker/groq.mjs`) as the preferred
+fast cloud provider for the public path, with the validated local
+`qwen3:4b` path (§19 above) retained as a capacity-gated fallback.
+Routing: deterministic fast path → Groq → (on failure/unavailable/rate
+limit only) local `qwen3:4b`, gated by the same local-GPU capacity
+check as before → `busy`. Groq never falls back to the private
+CAPTAIN/NEMO/REVIEWER fleet -- that pipeline (`answerQuestionHeavy`)
+remains completely unreferenced by this path, exactly as in §19.
+
+**Server-side only.** `GROQ_API_KEY` is read once from `process.env` in
+`worker/groq.mjs`, placed only in an outbound `Authorization` header to
+Groq's fixed API host, never logged, never in a response body, no
+`VITE_` prefix, never referenced from `src/`. No tools/tool_choice
+field is ever sent -- no browser search, code execution, function
+calling, or URL access. Structured output uses Groq's strict
+`json_schema` response format; the application (`server/validate.mjs`)
+remains the sole authority on destination-ID and evidence-ID
+validation regardless of what the model returns.
+
+### 20.1 Security verification (measured, not assumed)
+
+- `npm run build` then `grep -r` for both the literal key value and the
+  string `GROQ_API_KEY` across `dist/assets/*.js` -- zero matches.
+- `grep -r "VITE_GROQ"` across the whole repo (excluding
+  `node_modules`/`dist`) -- zero matches; no `VITE_`-prefixed Groq var
+  exists anywhere.
+- `grep -rn "GROQ\|Groq\|groq"` across `src/` -- zero matches. The key
+  and the provider are entirely absent from client code.
+- `git grep GROQ_API_KEY` across tracked files -- only matches are the
+  literal env-var *name* in code/comments (`worker/groq.mjs`,
+  `worker/public-captain.mjs`), never a value. `.env.local` (where the
+  real key lives) is gitignored (`.env*`) and was never staged.
+- Structural capability audit (`worker/adversarial-tests.mjs`,
+  `auditCapabilities()`) re-run with `groq.mjs` included in scope:
+  clean -- no `tools` field, no unexpected fetch target, no
+  exec/eval/fs-write/credentialed-client pattern.
+- 5 adversarial cases (prompt injection, JS-URL injection, HTML/script
+  injection, fabricated-evidence citation, attacker-URL fetch)
+  re-run live through the Groq-enabled path specifically (not just the
+  local path): all 5 refused/deflected safely, zero unsafe content
+  survived `validateResult`.
+
+**GROQ SECRET ISOLATION: PASS** across all checked surfaces.
+
+### 20.2 Side-by-side benchmark -- 10 questions, both providers
+
+Both providers exercised through the real `answerQuestion()` pipeline
+(not a synthetic harness), same corpus, same evidence retrieval, same
+`validateResult()` gate. Local `qwen3:4b` run during a genuinely idle
+GPU window (`ollama ps` confirmed empty); Groq is cloud-based and
+unaffected by local GPU state.
+
+| # | Question | Path | Local 4B | Groq |
+|---|---|---|---|---|
+| 1 | Hiring for support ops | deterministic (both) | 0ms | 0ms |
+| 2 | Staff give conflicting answers | model | 25,910ms, answered, grounded (sidecar) | 578ms, answered, grounded (sidecar) |
+| 3 | Built for GIS | deterministic (both) | 0ms | 0ms |
+| 4 | Strongest local AI example | model | 16,847ms, answered, grounded (openclaw) | 500ms, answered, grounded (openclaw) |
+| 5 | Best problem-solving areas | model | 21,447ms, answered, 8 grounded IDs | 383ms, answered, 8 grounded IDs |
+| 6 | Hospital billing software | model | 22,859ms, **answered "not built"**, grounded | 385ms, **unresolved, explicit no-evidence** |
+| 7 | Inconsistent documentation | model | 10,106ms, answered, grounded (sidecar) | 372ms, answered, grounded (sidecar) |
+| 8 | Keep AI from hallucinating | deterministic (both) | 0ms | 0ms |
+| 9 | Zoning/property research experience | deterministic (both) | 0ms | 0ms |
+| 10 | Remote work in another country | model | 20,038ms, unresolved, honest | 1st attempt: transient failure (network), correctly triggered the local-fallback chain, which was also gated `busy` (real private GPU contention at that moment) -- re-tested 3/3 clean afterward, 208-473ms |
+
+10/10 valid on both providers (`validateResult` PASS every time). All
+6 required questions included. Both correctly reject the unsupported
+hospital-billing claim; both correctly admit insufficient evidence on
+the off-corpus availability question. Evidence grounding comparable
+between providers -- same corpus entries cited for the same questions
+in every case tested. Destination validation passed for both, 10/10.
+
+**Latency** (6 model-routed questions each, deterministic-path
+questions excluded as both are 0ms):
+- Local qwen3:4b: min 10,106ms / median 20,742ms / max 25,910ms
+- Groq: min 342ms / median 384ms / max 578ms (excluding the one
+  transient failure, itself a real reliability data point -- see below)
+
+Groq is **~54x faster at the median**. This gap is structural, not
+incidental: qwen3:4b's reasoning cannot be reliably suppressed on this
+Ollama build (see §19's num_predict findings), while Groq's
+`reasoning_effort: "low"` on `openai/gpt-oss-20b` genuinely produces
+short reasoning traces (4-55 reasoning tokens observed vs. thousands
+for the local model).
+
+**Reliability note, not swept under the rug:** one of 10 Groq calls in
+the original run failed with a transient network/availability error.
+The system did exactly what it was designed to do -- skipped Groq,
+attempted the local fallback, found the local GPU genuinely busy with
+private work at that exact moment, and returned the safe `busy` state.
+No unsafe output, no exposure, no manual intervention. Re-tested the
+same question 3/3 clean immediately after (208-473ms). Net: 9/10 clean
+on first attempt, 1/10 transient and safely absorbed by the fallback
+chain exactly as designed, 10/10 eventually correct.
+
+**Token usage / cost** (6 model-routed calls, real measured `usage`
+from the Groq API): 9,027 prompt tokens + 821 completion tokens =
+9,848 total tokens. At Groq's published `openai/gpt-oss-20b` pricing
+($0.075/M input, $0.30/M output tokens): **$0.00092 for all 6 calls**,
+~$0.00015/call. At 1,000 model-routed questions/month this is
+~$0.15/month -- negligible.
+
+### 20.3 Acceptance criteria -- checked against the actual results
+
+| Criterion | Result |
+|---|---|
+| 10/10 answers safe and useful | PASS, both providers |
+| Unsupported claims rejected correctly | PASS, both providers |
+| Evidence grounding at least as good as qwen3:4b | PASS -- comparable, same corpus entries cited |
+| Destination validation passes | PASS, both providers, 10/10 |
+| Latency materially better or more reliable | PASS -- ~54x faster median; the one Groq hiccup was safely absorbed by the existing fallback design, not a quality regression |
+| No secret leak (browser/network/git/logs) | PASS -- see §20.1 |
+
+**Groq wins the comparison on every criterion.** Wired as the default
+public reasoning provider in code (`worker/orchestrate.mjs`: Groq
+tried first when `groqEnabled`, local `qwen3:4b` as the capacity-gated
+fallback, never the private fleet). Both the master containment switch
+(`PUBLIC_CAPTAIN_INFERENCE_ENABLED`) and the Groq-specific approval
+switch (`PUBLIC_CAPTAIN_GROQ_ENABLED`) remain unset in
+`worker/.env.worker` and the launchd plist as of this change, so the
+live production worker's behavior is completely unchanged by this
+integration until both are explicitly set -- see `.env.example` for
+the documented activation path.
+
+```
+LOCAL 4B QUALITY: PASS
+LOCAL 4B MEDIAN LATENCY: 20,742ms (20.7s)
+GROQ QUALITY: PASS
+GROQ MEDIAN LATENCY: 384ms
+GROQ TOKEN USAGE / ESTIMATED COST: 9,848 tokens / $0.00092 for the 6-question model-routed benchmark (~$0.00015/call, ~$0.15/1,000 questions/month)
+GROQ SECRET ISOLATION: PASS
+RECOMMENDED PRIMARY PROVIDER: Groq (openai/gpt-oss-20b)
+RECOMMENDED FALLBACK: local qwen3:4b, capacity-gated (unchanged from §19)
+READY FOR PREVIEW: YES
+```
+
+Not merged to `main`. Not deployed to production. A Vercel Preview
+deployment with `PUBLIC_CAPTAIN_INFERENCE_ENABLED=true` and
+`PUBLIC_CAPTAIN_GROQ_ENABLED=true` set has not been created -- waiting
+for explicit approval before that or any other deployment action.
+
+## 21. Preview validation and production go-live
+
+Explicit approval received to create the Preview, then (contingent on
+it passing) to go live -- both steps completed the same session.
+
+**Preview** (`https://crvro-portfolio-dj158mcnj-chrisrivero-devs-projects.vercel.app`,
+deployed via `vercel deploy`, `target: null`, never `production`):
+`PUBLIC_CAPTAIN_INFERENCE_ENABLED`/`PUBLIC_CAPTAIN_GROQ_ENABLED`/`GROQ_API_KEY`
+set scoped to the Preview environment only. A separate, temporary
+worker process (off-platform, this Mac, distinct PID from the
+production worker at every point) was pointed at the Preview's own
+`BROKER_URL` to actually answer jobs -- the worker runs off-Vercel by
+design (see §19.4), so Vercel-side env vars alone don't control its
+behavior; the worker's own process environment is the real gate, and
+it only ever pointed at the Preview URL, never production, during
+Preview testing.
+
+All 5 required questions verified live through the real browser
+against the real deployed Preview (not curl-only): 2 resolved via the
+unchanged deterministic fast path (0ms, no network), 3 through
+`GROQ_PUBLIC` (2,334-3,979ms), all grounded, correct destinations, the
+hospital-billing question correctly `unresolved`. Local fallback
+proven live on this exact deployment by deliberately breaking the
+Preview-worker's Groq key: `routing` showed `GROQ_PUBLIC skipped ->
+PUBLIC used`, browser correctly showed progressive "processing"
+status, answered in 12.3s via genuine local qwen3:4b (then the correct
+key was restored). Security re-verified against the actual deployed
+artifacts (not the local build): fetched the live Preview's JS/CSS/HTML
+directly and grepped for the key, the env var name, and even the
+literal string "groq" -- zero matches on all three. One incidental
+finding: Preview and Production share the same Upstash Redis, so a
+question cached under the old heavy-pipeline routing during earlier
+testing served instantly with stale `NEMO`/`REVIEWER` routing telemetry
+until its specific cache key was purged -- not a new inference, just
+old cached text; noted, not chased further this session.
+
+```
+PREVIEW GROQ E2E: PASS
+MEDIAN BROWSER LATENCY: 2,836ms (model-routed); 0ms (deterministic)
+5/5 MANUAL QUESTIONS: PASS
+READY FOR PRODUCTION: YES
+```
+
+**Production go-live**, on explicit instruction ("if everything passes
+push live to main website"), performed only after every criterion
+above genuinely passed:
+
+1. Set `GROQ_API_KEY`, `PUBLIC_CAPTAIN_INFERENCE_ENABLED=true`,
+   `PUBLIC_CAPTAIN_GROQ_ENABLED=true` scoped to the Production Vercel
+   environment (separate from, and in addition to, the Preview-scoped
+   values above).
+2. `vercel deploy --prod` -- `target: "production"`, aliased to
+   `https://www.crvro.com`.
+3. Appended the same three settings to `worker/.env.worker`
+   (gitignored, never committed) and restarted the production worker
+   via `launchctl kickstart -k gui/$(id -u)/com.crvro.publiccaptain`
+   -- the supervised restart mechanism, not a raw kill. Confirmed in
+   `worker.log`: both public inference and Groq now `ENABLED` for the
+   real production worker.
+4. Live smoke test against the real `www.crvro.com` with a fresh,
+   never-before-asked question: `routing: [{"role":"GROQ_PUBLIC",
+   "status":"used"}]`, grounded, correct destinations.
+5. Re-verified security against the actual production bundle (fetched
+   live from `www.crvro.com`, not the local build): zero occurrences
+   of the key or any Groq-related string.
+6. Confirmed no git operations occurred anywhere in this process --
+   `git status`/`git log` show the working tree still uncommitted and
+   `main` unchanged. Vercel CLI deploys the local file tree directly;
+   going live never required a git merge or push.
+
+**This branch is still not merged to `main`.** The live production
+website now serves real visitors through Groq (`openai/gpt-oss-20b`)
+with the local `qwen3:4b` path as a proven, capacity-gated fallback,
+while the git history and this feature branch remain exactly as they
+were -- deployment and git state are, and remain, independent in this
+project's workflow.

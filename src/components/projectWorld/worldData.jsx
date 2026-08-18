@@ -36,7 +36,7 @@ const bySlug = (slug) =>
 /** Homepage one-liners — the approved short form of each case study. */
 const DESCRIPTIONS = {
   openclaw:
-    "The AI workflow system I use every day to route work between local and cloud models under my approval.",
+    "The system I use every day to route work between local and cloud models, under my approval.",
   sidecar:
     "Drafts support replies from approved KB articles and leaves the final response to the agent.",
   "help-nearby":
@@ -91,7 +91,7 @@ export const STOPS = [
       accent: "var(--accent-gold)",
       title: "Daventry One",
       em: "My local AI workstation and the home of Hermes.",
-      desc: "It helps me research, build, test, troubleshoot, and coordinate projects. I still make the final calls.",
+      desc: "It helps me research, build, test, troubleshoot, and coordinate projects.",
       tags: "local models · hermes · telegram",
       process: ["Request", "Model", "Tools", "Approval", "Verification"],
       slug: null,

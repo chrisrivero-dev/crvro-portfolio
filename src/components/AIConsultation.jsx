@@ -326,7 +326,12 @@ export default function AIConsultation() {
             </div>
           </figure>
 
-          <a href="mailto:contact@crvro.com" className="cta-btn reveal">
+          {/* mailto target is the working inbox (christopherarivero@gmail.com),
+              not the public display address -- see Contact.jsx/Footer.jsx for
+              the same pattern. contact@crvro.com has no configured forwarding
+              (see README.md "Contact configuration"), so a direct mailto: to
+              it bounces. */}
+          <a href="mailto:christopherarivero@gmail.com" className="cta-btn reveal">
             Talk about your workflow <span className="ar">→</span>
           </a>
         </div>

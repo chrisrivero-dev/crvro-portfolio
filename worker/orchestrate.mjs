@@ -8,7 +8,7 @@
 // ============================================================
 
 import { matchQuery } from '../src/data/portfolioNavigator.js';
-import { CAPTAIN_SYSTEM, NEMO_SYSTEM, REVIEWER_SYSTEM, formatEvidence, formatDestinations } from './prompts.mjs';
+import { PUBLIC_SYSTEM, CAPTAIN_SYSTEM, NEMO_SYSTEM, REVIEWER_SYSTEM, formatEvidence, formatDestinations } from './prompts.mjs';
 import { extractJson } from './ollama.mjs';
 
 // Explicit comparison language is a direct signal a question needs
@@ -115,6 +115,109 @@ function buildReviewPrompt(question, draft, evidence) {
   ].join('\n\n');
 }
 
+// Normal public path: deterministic fast path first (free, no model
+// call), then Groq (openai/gpt-oss-20b, cloud, fast) if enabled, and
+// only on Groq failure/unavailability/rate-limit does this fall back
+// to the local qwen3:4b model -- never to CAPTAIN/NEMO/REVIEWER, and
+// the local fallback is itself still capacity-gated exactly as before.
+// Gates, checked in order:
+//   1. `inferenceEnabled` -- a containment kill-switch, off by default
+//      (see isPublicInferenceEnabled in ollama.mjs). While off, this
+//      never calls Groq, checkCapacity, or Ollama at all -- it's the
+//      lever for "the public model path(s) exist in code but aren't
+//      approved to run live yet," independent of provider or GPU
+//      state. Gates BOTH providers, not just the local one.
+//   2. `groqEnabled` -- whether Groq is tried at all (see
+//      isGroqPrimaryEnabled in groq.mjs). Off by default until the
+//      side-by-side benchmark is reviewed and approved; with it off,
+//      behavior is identical to the local-only path this replaced.
+//   3. `checkCapacity` -- the local GPU contention gate, only reached
+//      if Groq was skipped, disabled, or failed: even with inference
+//      enabled, a visitor never competes with Christopher's own
+//      private Captain/Hermes workload on the same GPU.
+// Any gate/failure that lands on 'busy' looks identical to the
+// frontend -- "local intelligence busy, cached answers still
+// available." `callModel`, `callGroq`, and `checkCapacity` are all
+// injected so this pipeline is testable without the network, and so
+// production code (worker/public-captain.mjs) is the only place any
+// real call happens.
+export async function answerQuestion(question, { corpus, callModel, callGroq, checkCapacity, inferenceEnabled = true, groqEnabled = false, signal }) {
+  const routing = [];
+
+  const deterministic = tryDeterministic(question, corpus.destinations);
+  if (deterministic) {
+    return { draft: deterministic, routing, evidenceUsed: [] };
+  }
+
+  if (!inferenceEnabled) {
+    routing.push({ role: groqEnabled && callGroq ? 'GROQ_PUBLIC' : 'PUBLIC', status: 'skipped' });
+    const draft = { status: 'busy', answer: '', destinations: [], evidence_ids: [], confidence: 'low' };
+    return { draft: { ...draft, routing }, routing, evidenceUsed: [] };
+  }
+
+  const evidence = retrieveEvidence(question, corpus.entries, 8);
+  const promptUser = buildPrimaryPrompt(question, evidence, corpus.destinations);
+  let draft = null;
+
+  // ---- Groq first, if enabled ----
+  if (groqEnabled && callGroq) {
+    routing.push({ role: 'GROQ_PUBLIC', status: 'used' });
+    try {
+      const raw = await callGroq({ system: PUBLIC_SYSTEM, user: promptUser, signal });
+      const parsed = extractJson(raw.text);
+      if (!parsed || typeof parsed !== 'object') throw new Error('groq returned unparseable output');
+      draft = parsed;
+    } catch {
+      routing[routing.length - 1].status = 'skipped';
+      draft = null;
+    }
+  }
+
+  // ---- Local qwen3:4b fallback, only if Groq didn't produce a usable
+  // draft (disabled, unconfigured, errored, rate-limited, or returned
+  // something that didn't parse) -- and only if the local GPU is
+  // actually safe to use. ----
+  if (!draft) {
+    const capacity = checkCapacity ? await checkCapacity() : { safe: true };
+    if (!capacity.safe) {
+      routing.push({ role: 'PUBLIC', status: 'skipped' });
+      const busyDraft = { status: 'busy', answer: '', destinations: [], evidence_ids: [], confidence: 'low' };
+      return { draft: { ...busyDraft, routing }, routing, evidenceUsed: [] };
+    }
+    routing.push({ role: 'PUBLIC', status: 'used' });
+    try {
+      const raw = await callModel({ system: PUBLIC_SYSTEM, user: promptUser, signal });
+      draft = extractJson(raw.text);
+    } catch {
+      routing[routing.length - 1].status = 'skipped';
+      draft = null;
+    }
+  }
+
+  // No usable output from either provider -- a genuine failure, not a
+  // legitimate "no evidence for this" answer. Must be 'error', never
+  // 'unresolved': 'unresolved' is a safe, cacheable terminal outcome
+  // (see server/handlers.mjs), and a blank answer cached under that
+  // status would be served to every future visitor asking the same
+  // question until the corpus changes.
+  if (!draft || typeof draft !== 'object') {
+    draft = { status: 'error', answer: '', destinations: [], evidence_ids: [], confidence: 'low' };
+  }
+
+  return { draft: { ...draft, routing }, routing, evidenceUsed: evidence.map((e) => e.id) };
+}
+
+// ============================================================
+// Dormant heavy pipeline -- NEMO/CAPTAIN/REVIEWER, the private/heavy
+// model fleet. NOT called by the normal public path above (see
+// worker/public-captain.mjs, which only ever calls answerQuestion).
+// Kept as a separate, clearly-isolated function rather than deleted so
+// it still works if Christopher ever wants to re-enable it as an
+// explicitly separate, separately-rate-limited demo path -- see item 7
+// of the isolation pass in docs/PUBLIC_CAPTAIN.md. Nothing in the
+// current routing (frontend, broker, worker loop) ever invokes this.
+// ============================================================
+
 // Tiered routing: NEMO answers ordinary questions directly (Tier 1).
 // Captain is only invoked when NEMO's own result isn't good enough on
 // its own, or the question structurally needs cross-project synthesis
@@ -123,7 +226,7 @@ function buildReviewPrompt(question, draft, evidence) {
 // for the full rationale. `callModel` is injected so this pipeline is
 // testable without the network, and so production code is the only
 // place a real Ollama call happens.
-export async function answerQuestion(question, { corpus, callModel, signal }) {
+export async function answerQuestionHeavy(question, { corpus, callModel, signal }) {
   const routing = [];
 
   const deterministic = tryDeterministic(question, corpus.destinations);

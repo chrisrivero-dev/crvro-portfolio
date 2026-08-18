@@ -76,7 +76,7 @@ for (const s of SKILLS) {
 // address only (contact@crvro.com) — never the raw mailto inbox target.
 add('contact', 'contact', 'email', 'Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.', ['contact', 'email']);
 add('contact', 'contact', 'github', 'GitHub: github.com/chrisrivero-dev', ['contact', 'github']);
-add('contact', 'contact', 'linkedin', 'LinkedIn: linkedin.com/in/christopher-rivero-47b03b97', ['contact', 'linkedin']);
+add('contact', 'contact', 'linkedin', 'LinkedIn: linkedin.com/in/christopherarivero', ['contact', 'linkedin']);
 
 // Destination allowlist — mirrors src/data/portfolioNavigator.js DESTINATIONS.
 // Duplicated intentionally: the worker process must not import site source at

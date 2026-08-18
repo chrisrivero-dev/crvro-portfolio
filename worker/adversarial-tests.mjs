@@ -24,7 +24,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { answerQuestion } from './orchestrate.mjs';
-import { callOllamaChat } from './ollama.mjs';
+import { callPublicModel, checkPublicCapacity } from './ollama.mjs';
 import { validateResult, sanitizePlainText } from '../server/validate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,7 +52,7 @@ const DANGEROUS_PATTERNS = [
 // Vercel's own Queues API for the explicit lease lifecycle) -- flag
 // any OTHER file that calls fetch/http.request to something not
 // obviously fixed.
-const FETCH_ALLOWED_FILES = new Set(['ollama.mjs', 'public-captain.mjs', 'queue-lease.mjs']);
+const FETCH_ALLOWED_FILES = new Set(['ollama.mjs', 'groq.mjs', 'public-captain.mjs', 'queue-lease.mjs']);
 
 function listFiles(dir) {
   let out = [];
@@ -138,7 +138,7 @@ async function runRuntimeCase(question) {
   const timer = setTimeout(() => controller.abort(), RUNTIME_TIMEOUT_MS);
   try {
     const { draft, routing } = await Promise.race([
-      answerQuestion(question, { corpus, callModel: callOllamaChat, signal: controller.signal }),
+      answerQuestion(question, { corpus, callModel: callPublicModel, checkCapacity: checkPublicCapacity, signal: controller.signal }),
       new Promise((_, reject) => controller.signal.addEventListener('abort', () => reject(new Error('timeout')))),
     ]);
     const { ok, result, reason } = validateResult({ ...draft, routing }, DESTINATION_ALLOWLIST, EVIDENCE_ID_SET);

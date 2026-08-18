@@ -9,7 +9,24 @@
 //   - POST /api/worker/claim   -- lease one queued job
 //   - POST /api/worker/extend  -- keep a lease alive while processing
 //   - POST /api/worker/submit  -- post the validated result back
-//   - localhost Ollama -- to run the three allowlisted models.
+//   - Groq (api.groq.com), when enabled -- openai/gpt-oss-20b, the
+//     preferred fast cloud provider (see worker/groq.mjs). No tools,
+//     no browser/search/code-execution capability. GROQ_API_KEY is
+//     read from this process's own environment, never logged, never
+//     sent anywhere but Groq's fixed API host.
+//   - localhost Ollama -- to run the dedicated local public model
+//     (qwen3:4b), the fallback when Groq is disabled, unconfigured,
+//     errored, or rate-limited -- never the private fleet. This
+//     process is single-flight (the loop below awaits one job at a
+//     time before claiming the next), which is the entire MAX=1
+//     public-concurrency guarantee -- there is no code path that could
+//     start a second generation while one is in flight. Before ever
+//     calling the local model, orchestrate.mjs's capacity gate checks
+//     that nothing else is loaded on the local GPU (see
+//     checkPublicCapacity in ollama.mjs) so a visitor never competes
+//     with Christopher's own private Captain/Hermes/Nemo/Coder work.
+//     Groq calls are not capacity-gated (cloud, not local GPU) but are
+//     gated by the same containment kill-switch as the local path.
 // The worker never talks to Vercel Queues directly (see
 // server/queue.mjs and docs/PUBLIC_CAPTAIN.md for why: Vercel Queues
 // authenticates via OIDC scoped to the caller's environment, and a
@@ -33,7 +50,8 @@ import path from 'node:path';
 import { WORKER_SECRET, BROKER_PORT, LIMITS } from '../server/config.mjs';
 import { validateResult } from '../server/validate.mjs';
 import { answerQuestion } from './orchestrate.mjs';
-import { callOllamaChat } from './ollama.mjs';
+import { callPublicModel, checkPublicCapacity, isPublicInferenceEnabled } from './ollama.mjs';
+import { callGroqPublic, isGroqConfigured, isGroqPrimaryEnabled } from './groq.mjs';
 
 // Environment isolation safety net (addresses independent review finding:
 // nothing prevents this process from silently inheriting a private
@@ -71,15 +89,15 @@ const EMPTY_QUEUE_WAIT_MS = 1500;
 // ceiling now that claim/extend/submit are lease-based -- see
 // server/handlers.mjs), with headroom under it so a genuinely stuck
 // pipeline still surfaces an error and releases the lease cleanly
-// instead of losing a race against it. This used to be tied to the
-// broker's PROCESSING_TTL (88s), which was tuned before Captain/
-// Reviewer escalation existed -- a legitimate escalation regularly
-// needs more than that just for the model-swap overhead between three
-// different local models, causing genuinely-completing escalations to
-// get killed mid-flight and forced into a doomed retry loop instead of
-// just finishing once. This does not change how OFTEN escalation
-// happens or which questions trigger it -- only how long an
-// escalation that's already happening is allowed to actually finish.
+// instead of losing a race against it. Sized generously from the old
+// three-model (NEMO -> CAPTAIN -> REVIEWER) escalation path; the
+// current single-shot qwen3:4b public path (bounded output, no
+// escalation) finishes far under this in practice -- see the isolation
+// pass's latency measurements in docs/PUBLIC_CAPTAIN.md for real
+// numbers. Left unchanged rather than tightened blind: a wide budget
+// costs nothing when the pipeline is actually fast, and still protects
+// against a genuinely slow run (e.g. the model queued behind other
+// requests) instead of killing it prematurely.
 const PIPELINE_BUDGET_MS = Math.floor(LIMITS.CLAIM_VISIBILITY_TIMEOUT_SECONDS * 1000 * 0.85);
 
 // Runs `factory(signal)` under a real deadline: when the budget expires,
@@ -115,6 +133,16 @@ console.log(`[worker] Public Captain starting`);
 console.log(`[worker] broker: ${BROKER_URL}`);
 console.log(`[worker] jobs source: /api/worker/claim (Vercel Queues lease, bridged)`);
 console.log(`[worker] corpus: ${corpus.entries.length} entries`);
+console.log(
+  isPublicInferenceEnabled()
+    ? '[worker] public inference: ENABLED -- deterministic fast path + real model calls, gated by the live capacity check'
+    : '[worker] public inference: DISABLED (containment mode) -- deterministic fast path only; everything else returns "busy". Set PUBLIC_CAPTAIN_INFERENCE_ENABLED=true to enable once the public model path is approved.'
+);
+console.log(
+  isGroqPrimaryEnabled() && isGroqConfigured()
+    ? '[worker] groq (openai/gpt-oss-20b): ENABLED as primary provider -- local qwen3:4b is the capacity-gated fallback'
+    : `[worker] groq: DISABLED as primary provider (configured=${isGroqConfigured()}) -- local qwen3:4b remains the sole public provider. Set PUBLIC_CAPTAIN_GROQ_ENABLED=true to enable once the benchmark is approved.`
+);
 
 function authHeaders(extra = {}) {
   return {
@@ -174,7 +202,16 @@ async function processJob({ id, question }) {
   let outcome;
   try {
     const { draft, routing } = await withOverallBudget(
-      (signal) => answerQuestion(question, { corpus, callModel: callOllamaChat, signal }),
+      (signal) =>
+        answerQuestion(question, {
+          corpus,
+          callModel: callPublicModel,
+          checkCapacity: checkPublicCapacity,
+          inferenceEnabled: isPublicInferenceEnabled(),
+          callGroq: callGroqPublic,
+          groqEnabled: isGroqPrimaryEnabled() && isGroqConfigured(),
+          signal,
+        }),
       PIPELINE_BUDGET_MS
     );
     outcome = { ...draft, routing };

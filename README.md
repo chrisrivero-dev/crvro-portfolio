@@ -116,17 +116,29 @@ site/
 
 ## Contact configuration
 
-The site lists `contact@crvro.com`.
+The site displays `contact@crvro.com`.
 
-> ⚠️  **Email forwarding still needs to be configured.** The address is
-> shown in the Contact section but won't receive mail until you set up
-> forwarding at your domain registrar (or via a service like ImprovMX,
-> Cloudflare Email Routing, or Google Workspace). Until then, mailto:
-> links will compose mail that bounces.
+> ⚠️  **`contact@crvro.com` still has no mailbox or DNS-level
+> forwarding configured** at the domain registrar (or via a service
+> like ImprovMX, Cloudflare Email Routing, or Google Workspace) --
+> that's a registrar/DNS change outside this repo, not something fixed
+> by editing site code. A real visitor's bounce confirmed this
+> directly: a message sent straight to `contact@crvro.com` does not
+> arrive anywhere.
+>
+> Every clickable email link on the site (`Contact.jsx`, `Footer.jsx`,
+> `AIConsultation.jsx`'s "Talk about your workflow" CTA) already routes
+> around that: the visible text stays `contact@crvro.com`, but each
+> `mailto:` target is the real inbox, `christopherarivero@gmail.com`,
+> so clicking any of them reaches Christopher directly. The one case
+> this doesn't cover is a visitor who reads `contact@crvro.com` off the
+> page and manually types it into their own email client instead of
+> clicking a link -- that message still bounces until real forwarding
+> is configured at the registrar.
 
 GitHub and LinkedIn links are live:
 - GitHub: https://github.com/chrisrivero-dev
-- LinkedIn: https://www.linkedin.com/in/christopher-rivero-47b03b97/
+- LinkedIn: https://www.linkedin.com/in/christopherarivero
 
 ---
 

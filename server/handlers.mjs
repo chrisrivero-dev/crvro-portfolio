@@ -300,11 +300,24 @@ export async function handleWorkerSubmit({ authHeader, body }) {
     console.warn(`[handlers] worker reported processing failure for ${job.id}`);
     return { status: 200, body: { ok: true } };
   }
+  if (result.status === 'busy') {
+    // Capacity-gate refusal: the worker deliberately did not run the
+    // model because the public GPU lane wasn't safely idle. This is a
+    // real, terminal, correctly-delivered response (not a pipeline
+    // failure), so it's acked like any other success -- but it must
+    // never be cached. A busy moment is a property of right-now local
+    // runtime state, not of the question or the corpus; caching it
+    // would serve a stale "busy" to a future visitor long after the
+    // GPU freed up.
+    console.log(`[handlers] worker reported capacity-gate busy for ${job.id}`);
+    await tryAck(updated);
+    return { status: 200, body: { ok: true } };
+  }
   // Cache both terminal outcomes that are safe to reuse verbatim:
   // 'answered' (a real grounded answer) and 'unresolved' (an honest
   // "no evidence for this" -- deterministic given the same corpus, so
-  // just as safe to serve again as a real answer). Never an error or
-  // anything that failed validateResult above.
+  // just as safe to serve again as a real answer). Never an error, never
+  // 'busy', and never anything that failed validateResult above.
   await setCachedAnswer(computeCacheKey(job.question), result);
   await tryAck(updated);
   return { status: 200, body: { ok: true } };

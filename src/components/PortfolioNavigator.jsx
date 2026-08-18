@@ -74,19 +74,43 @@ function DestinationLinks({ destinations }) {
   );
 }
 
+function CategoryButtons({ onCategory }) {
+  return (
+    <div className="retro-term-offline-categories">
+      {OFFLINE_CATEGORIES.map((c) => (
+        <button key={c.label} type="button" className="retro-term-suggestion" onClick={() => onCategory(c.query)}>
+          {`[${c.label}]`}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function OfflineBlock({ onCategory }) {
   return (
     <div className="retro-term-result">
       <span className="retro-term-line retro-term-dim">&gt; portfolio intelligence temporarily offline</span>
       <span className="retro-term-line retro-term-gap" aria-hidden="true" />
       <span className="retro-term-line retro-term-dim">You can still explore the projects manually:</span>
-      <div className="retro-term-offline-categories">
-        {OFFLINE_CATEGORIES.map((c) => (
-          <button key={c.label} type="button" className="retro-term-suggestion" onClick={() => onCategory(c.query)}>
-            {`[${c.label}]`}
-          </button>
-        ))}
-      </div>
+      <CategoryButtons onCategory={onCategory} />
+    </div>
+  );
+}
+
+// Distinct from OfflineBlock: this is the local-capacity gate declining
+// to run public inference because Christopher's own private local
+// models are active (or the gate couldn't confirm the GPU is safely
+// idle) -- the backend, broker, and network are all working fine, and
+// cached portfolio answers still resolve instantly. Deliberately never
+// called "offline" anywhere in this text -- that would misrepresent a
+// working system as down.
+function BusyBlock({ onCategory }) {
+  return (
+    <div className="retro-term-result">
+      <span className="retro-term-line retro-term-dim">&gt; local intelligence busy</span>
+      <span className="retro-term-line retro-term-dim">cached portfolio answers remain available</span>
+      <span className="retro-term-line retro-term-gap" aria-hidden="true" />
+      <CategoryButtons onCategory={onCategory} />
     </div>
   );
 }
@@ -153,6 +177,9 @@ function ResultBlock({ state, stage, result, onCategory }) {
   }
 
   // Public Captain (broker/worker) result shape.
+  if (result.status === 'busy') {
+    return <BusyBlock onCategory={onCategory} />;
+  }
   return (
     <div className="retro-term-result">
       <span className="retro-term-line">{result.answer}</span>
@@ -172,9 +199,6 @@ function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample,
       <span className="retro-term-line retro-term-gap" aria-hidden="true" />
       <hr className="retro-term-divider" />
       <p className="retro-term-line retro-term-heading">ASK ABOUT MY WORK</p>
-      <p className="retro-term-line retro-term-dim">
-        Describe what you&rsquo;re looking for, ask about a project, or tell the system about a problem you&rsquo;re trying to solve.
-      </p>
       <hr className="retro-term-divider" />
 
       <form className="retro-term-form" onSubmit={onSubmit}>
@@ -263,7 +287,7 @@ export default function PortfolioNavigator() {
           // outcomes from the pipeline -- 'unresolved' is what Captain
           // returns when the portfolio genuinely has no evidence for the
           // question, and it must be shown, not treated as still-loading.
-          if (data.status === 'answered' || data.status === 'unresolved') {
+          if (data.status === 'answered' || data.status === 'unresolved' || data.status === 'busy') {
             setResult({ source: 'captain', ...data });
             setState('done');
             return;

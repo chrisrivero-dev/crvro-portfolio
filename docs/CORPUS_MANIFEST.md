@@ -75,7 +75,7 @@ Every evidence ID Public Captain is allowed to cite, with its source section and
 
 - `contact-email-45` -- Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.
 - `contact-github-46` -- GitHub: github.com/chrisrivero-dev
-- `contact-linkedin-47` -- LinkedIn: linkedin.com/in/christopher-rivero-47b03b97
+|- `contact-linkedin-47` -- LinkedIn: linkedin.com/in/christopherarivero
 
 ## What is deliberately excluded
 

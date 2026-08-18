@@ -77,21 +77,17 @@ export default function About() {
           </div>
           <div className="body">
             <p>
-              I’m Christopher. I build practical AI systems and internal tools
-              for support, automation, and GIS/CAD. Most of them start with
-              problems I’ve dealt with myself.
+              I’m Christopher. Most of what I build starts with a problem
+              I’ve dealt with myself.
             </p>
             <p>
               I started in GIS/CAD support and gradually moved deeper into
               automation and human-supervised AI. I built my own local AI
-              workstation and use Hermes every day to organize projects,
-              investigate problems, and troubleshoot bugs. I still make the
-              final calls.
+              workstation and use Hermes every day. I still make the final
+              calls.
             </p>
             <p>
-              I usually have more ideas than time. I keep improving the systems
-              I already use and start new projects when I see a problem worth
-              solving.
+              I usually have more ideas than time.
             </p>
 
             <div className="stat-list" data-stagger>
