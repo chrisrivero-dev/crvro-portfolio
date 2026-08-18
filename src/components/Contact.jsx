@@ -31,8 +31,8 @@ export default function Contact() {
                 <span className="left"><span className="lab">GitHub</span>github.com/chrisrivero-dev</span>
                 <span className="right">repos <span className="ar">↗</span></span>
               </a>
-              <a href="https://www.linkedin.com/in/christopher-rivero-47b03b97/" target="_blank" rel="noreferrer" className="reveal">
-                <span className="left"><span className="lab">LinkedIn</span>linkedin.com/in/christopher-rivero-47b03b97</span>
+              <a href="https://www.linkedin.com/in/christopherarivero" target="_blank" rel="noreferrer" className="reveal">
+                <span className="left"><span className="lab">LinkedIn</span>linkedin.com/in/christopherarivero</span>
                 <span className="right">background <span className="ar">↗</span></span>
               </a>
             </div>
