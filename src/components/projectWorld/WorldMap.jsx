@@ -11,6 +11,10 @@ import React, { useId } from "react";
 import { coastFor, contourFor } from "./geometry.js";
 import { LEGS, MAP_H, MAP_W, SIDE_ISLAND, STOPS } from "./worldData.jsx";
 
+/** GroundRules is the one island with a parcel-grid clip/hatch pattern. Looked
+ * up by id rather than a fixed array index, since the journey order changes. */
+const GROUNDRULES_STOP = STOPS.find((s) => s.id === "groundrules");
+
 function Decorations({ ids }) {
   const vLines = [];
   for (let x = 94; x < MAP_W; x += 76) {
@@ -213,12 +217,12 @@ export default function WorldMap({
       role="group"
       aria-label={
         title ||
-        "Illustrated map of Project World. Five destinations: Daventry One, OpenClaw / Hermes, Sidecar, Help Nearby, GroundRules."
+        "Illustrated map of Project World. Six destinations: Daventry One, OpenClaw / Hermes, Zarvin One, Sidecar, Help Nearby, GroundRules."
       }
     >
       <defs>
         <clipPath id={ids.grClip}>
-          <path d={coastFor(STOPS[4])} />
+          <path d={coastFor(GROUNDRULES_STOP)} />
         </clipPath>
         <pattern
           id={ids.hatch}

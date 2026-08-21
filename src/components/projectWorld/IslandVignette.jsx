@@ -14,6 +14,9 @@ const PAD_X = 150;
 const PAD_Y = 135;
 const VIEW_H = 290;
 
+/** Looked up by id, not a fixed array index -- see WorldMap.jsx. */
+const GROUNDRULES_STOP = STOPS.find((s) => s.id === "groundrules");
+
 export default function IslandVignette({ stop, index, active }) {
   const uid = useId().replace(/[:]/g, "");
   const ids = { grClip: `pwvGr-${uid}`, hatch: `pwvHatch-${uid}` };
@@ -31,7 +34,7 @@ export default function IslandVignette({ stop, index, active }) {
     >
       <defs>
         <clipPath id={ids.grClip}>
-          <path d={coastFor(STOPS[4])} />
+          <path d={coastFor(GROUNDRULES_STOP)} />
         </clipPath>
         <pattern
           id={ids.hatch}

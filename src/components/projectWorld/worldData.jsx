@@ -37,6 +37,8 @@ const bySlug = (slug) =>
 const DESCRIPTIONS = {
   openclaw:
     "The AI workflow system I use every day to route work between local and cloud models under my approval.",
+  "zarvin-one":
+    "One place to manage work, decisions, approvals, and follow-up while the complexity stays underneath.",
   sidecar:
     "Drafts support replies from approved KB articles and leaves the final response to the agent.",
   "help-nearby":
@@ -47,6 +49,7 @@ const DESCRIPTIONS = {
 
 const PROCESSES = {
   openclaw: ["Request", "Permission", "Action", "Verify"],
+  "zarvin-one": ["Ask", "Coordinate", "Verify", "Result"],
   sidecar: ["Request", "KB source", "Draft", "Review"],
   "help-nearby": ["ZIP", "Need", "Resource", "Confirm"],
   groundrules: ["Address", "Records", "Findings", "Verify"],
@@ -191,11 +194,54 @@ export const STOPS = [
     ],
   },
 
-  // ── 02 · Sidecar ──
+  // ── 02 · Zarvin One ──
+  // Sits between OpenClaw/Hermes and Sidecar on the sailed route: close
+  // enough to read as descended from OpenClaw's work, but its own
+  // island, not a cove tucked inside Hermes's coastline.
+  {
+    id: "zarvin-one",
+    name: "ZARVIN ONE",
+    sub: "PORT 02 · AI COMMAND SYSTEM",
+    cx: 510,
+    cy: 175,
+    rx: 62,
+    ry: 46,
+    seed: 41,
+    accent: "var(--pw-zarvin)",
+    harbor: [472, 216],
+    card: cardFor("zarvin-one", "№ 02", "var(--pw-zarvin)"),
+    landmarks: () => [
+      <>
+        <Beacon x={510} y={168} />
+        <Label x={536} y={171} anchor="start">command beacon</Label>
+      </>,
+      <>
+        <Hut x={484} y={192} w={20} h={12} />
+        <Label x={484} y={205}>one interface</Label>
+      </>,
+      <>
+        <Gate x={533} y={196} />
+        <Label x={533} y={211}>approval gate</Label>
+      </>,
+      <>
+        <path className="lm-dash" opacity="0.7" d="M 460 197 C 432 208 402 228 372 252" />
+        <Label x={392} y={248} anchor="end">out of Hermes</Label>
+      </>,
+      <>
+        <circle className="lm-dot" cx={494} cy={155} r="2" />
+        <circle className="lm-dot" cx={526} cy={184} r="2" />
+        <circle className="lm-dot" cx={504} cy={207} r="2" />
+        <Label x={539} y={148} anchor="start">specialists</Label>
+      </>,
+      <Peak x={544} y={156} w={11} h={15} />,
+    ],
+  },
+
+  // ── 03 · Sidecar ──
   {
     id: "sidecar",
     name: "SIDECAR",
-    sub: "PORT 02 · AI SUPPORT TOOL",
+    sub: "PORT 03 · AI SUPPORT TOOL",
     cx: 668,
     cy: 118,
     rx: 82,
@@ -203,7 +249,7 @@ export const STOPS = [
     seed: 37,
     accent: "var(--pw-sidecar)",
     harbor: [612, 186],
-    card: cardFor("sidecar", "№ 02", "var(--pw-sidecar)"),
+    card: cardFor("sidecar", "№ 03", "var(--pw-sidecar)"),
     landmarks: () => [
       <>
         <Lighthouse x={668} y={112} />
@@ -237,11 +283,11 @@ export const STOPS = [
     ],
   },
 
-  // ── 03 · Help Nearby ──
+  // ── 04 · Help Nearby ──
   {
     id: "help-nearby",
     name: "HELP NEARBY",
-    sub: "PORT 03 · COMMUNITY FINDER",
+    sub: "PORT 04 · COMMUNITY FINDER",
     cx: 868,
     cy: 418,
     rx: 88,
@@ -249,7 +295,7 @@ export const STOPS = [
     seed: 53,
     accent: "var(--pw-help-nearby)",
     harbor: [795, 362],
-    card: cardFor("help-nearby", "№ 03", "var(--pw-help-nearby)"),
+    card: cardFor("help-nearby", "№ 04", "var(--pw-help-nearby)"),
     landmarks: () => [
       <>
         <Hut x={852} y={400} w={16} h={11} />
@@ -286,11 +332,11 @@ export const STOPS = [
     ],
   },
 
-  // ── 04 · GroundRules ──
+  // ── 05 · GroundRules ──
   {
     id: "groundrules",
     name: "GROUNDRULES",
-    sub: "PORT 04 · PROPERTY INTEL",
+    sub: "PORT 05 · PROPERTY INTEL",
     cx: 612,
     cy: 692,
     rx: 100,
@@ -299,7 +345,7 @@ export const STOPS = [
     parcel: true,
     accent: "var(--pw-groundrules)",
     harbor: [640, 616],
-    card: cardFor("groundrules", "№ 04", "var(--pw-groundrules)"),
+    card: cardFor("groundrules", "№ 05", "var(--pw-groundrules)"),
     landmarks: (clipId, hatchId) => [
       <>
         <g clipPath={`url(#${clipId})`}>
@@ -349,7 +395,8 @@ export const BANDS = STOPS.length + 1;
 /** Curved sea routes, Daventry One outward. */
 export const LEGS = [
   "M 248 560 C 300 500, 230 386, 318 314",
-  "M 318 314 C 400 262, 520 236, 612 186",
+  "M 318 314 C 366 312, 436 276, 472 216",
+  "M 472 216 C 510 198, 560 192, 612 186",
   "M 612 186 C 712 196, 786 268, 795 362",
   "M 795 362 C 788 486, 724 588, 640 616",
 ];

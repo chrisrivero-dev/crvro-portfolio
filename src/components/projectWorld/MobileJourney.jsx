@@ -14,8 +14,10 @@ import WorldMap from "./WorldMap.jsx";
 import { clamp, F } from "./geometry.js";
 import { STOPS } from "./worldData.jsx";
 
-/** Lateral rail positions — the route weaves rather than running dead straight. */
-const RAIL_X = [28, 12, 44, 12, 44];
+/** Lateral rail positions — the route weaves rather than running dead straight.
+ * One explicit value per stop (Daventry One, OpenClaw, Zarvin One, Sidecar,
+ * Help Nearby, GroundRules) rather than relying on modulo wraparound. */
+const RAIL_X = [28, 12, 44, 12, 44, 12];
 
 export default function MobileJourney({ onOpenOverview, reduced }) {
   const rootRef = useRef(null);

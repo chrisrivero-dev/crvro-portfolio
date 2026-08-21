@@ -320,6 +320,38 @@ export const PROJECTS = [
   },
 
   // ---------------------------------------------------------
+  // Zarvin One
+  //
+  // This case study renders through its own section layout
+  // (ZarvinCaseStudy.jsx) instead of the generic overview / problem /
+  // built / features / stack / learned / next template every other
+  // project below uses — the approved copy has its own structure and
+  // none of those generic fields apply. See CaseStudy.jsx's
+  // `p.slug === 'zarvin-one'` branch.
+  // ---------------------------------------------------------
+  {
+    id: 'zarvin-one',
+    slug: 'zarvin-one',
+    n: '06',
+    title: 'Zarvin One',
+    titleEm: 'One place to get things done.',
+    kind: 'AI Product / Personal Automation',
+    year: '2026 — present',
+    desc: 'A personal AI command system. One place to manage work, decisions, approvals, and follow-up while the complexity stays underneath.',
+    tags: ['react native · expo · typescript · local models'],
+    accent: 'var(--teal)',
+    shape: 'circle',
+    role: 'Solo build — product design, AI orchestration, local model infrastructure, workflow design, testing',
+    status: 'Active prototype — interactive demo available; live integrations in progress',
+    statusBadge: 'Active prototype',
+    outcome: 'A personal AI system that brings everyday work, decisions, approvals, and follow-up into one place.',
+    disclaimer:
+      "The interactive version is a working product prototype built around controlled scenarios. Some backend pieces are still being connected and tested. I separate those from what I've already proven rather than making the demo look more complete than it is. If Zarvin One says something worked, I want there to be evidence that it worked. That's the standard I'm building toward.",
+    repo: null,
+    demo: 'https://zarvin-one-mobile.expo.app/',
+  },
+
+  // ---------------------------------------------------------
   // Help Nearby
   // ---------------------------------------------------------
   {

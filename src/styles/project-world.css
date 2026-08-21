@@ -7,6 +7,7 @@
 
 .project-world {
   --pw-hermes:      #5B2A3A;
+  --pw-zarvin:      #2E6B70;
   --pw-sidecar:     #6B6B3E;
   --pw-help-nearby: #B85A3A;
   --pw-groundrules: #3B6B55;
@@ -20,6 +21,7 @@
 
 [data-theme="dark"] .project-world {
   --pw-hermes:      #9c7f88;
+  --pw-zarvin:      #6fa8ac;
   --pw-sidecar:     #858560;
   --pw-help-nearby: #c06d51;
   --pw-groundrules: #7ba38d;
