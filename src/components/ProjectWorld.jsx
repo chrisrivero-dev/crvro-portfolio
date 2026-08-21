@@ -49,7 +49,7 @@ export default function ProjectWorld() {
         if (!announce) return;
         setAnnounced(
           target === OVERVIEW
-            ? "World overview: the full traveled route with all five destinations."
+            ? "World overview: the full traveled route with all six destinations."
             : `Arrived at ${STOPS[target].name}, stop ${target + 1} of ${STOPS.length}.`
         );
       });
@@ -140,7 +140,7 @@ export default function ProjectWorld() {
 
         <div className="pw-intro">
           <p>Each one started with a problem I cared enough to solve.</p>
-          <p className="cap">Depart Daventry One · four ports of call · ship at anchor</p>
+          <p className="cap">Depart Daventry One · five ports of call · ship at anchor</p>
           <div className="pw-topctl">
             <a className="pwbtn" href="#about">
               Skip journey ↓
@@ -258,7 +258,7 @@ export default function ProjectWorld() {
                       Pulled back, the whole chart reads as one system: local models where possible,
                       approval gates on everything consequential, verification before anything ships.
                     </p>
-                    <span className="pr-tags">5 harbors · 4 case studies · 1 side island</span>
+                    <span className="pr-tags">6 harbors · 5 case studies · 1 side island</span>
                     <div className="pw-close-actions">
                       <a className="pr-cta-link" href="/projects/openclaw">
                         Explore case studies <span className="ar">→</span>

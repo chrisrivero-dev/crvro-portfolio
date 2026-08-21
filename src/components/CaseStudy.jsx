@@ -3,6 +3,7 @@ import ProjectMark from './ProjectMark.jsx';
 import ParcelPreview from './ParcelPreview.jsx';
 import EvidencePanel from './EvidencePanel.jsx';
 import HermesIncidentReplay from './HermesIncidentReplay.jsx';
+import ZarvinCaseStudy from './ZarvinCaseStudy.jsx';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 
 function ToolRouterMockup() {
@@ -332,6 +333,14 @@ export default function CaseStudy({ project: p }) {
       {/* ── evidence panel ───────────────────────────────── */}
       <EvidencePanel project={p} />
 
+      {/* ── Zarvin One has its own section shape (see
+          ZarvinCaseStudy.jsx) instead of the generic template below;
+          every other project's rendering here is unchanged. ──── */}
+      {p.slug === 'zarvin-one' ? (
+        <ZarvinCaseStudy />
+      ) : (
+        <>
+
       {/* ── hermes incident replay (openclaw only) ──────── */}
       {p.slug === 'openclaw' && (
         <Section index="03a" label="Hermes Replay" title="A real supervised Hermes run.">
@@ -604,6 +613,9 @@ export default function CaseStudy({ project: p }) {
           ))}
         </ul>
       </Section>
+
+        </>
+      )}
 
       {/* ── footer cta ─────────────────────────────────── */}
       <div className="container-wide case-cta">

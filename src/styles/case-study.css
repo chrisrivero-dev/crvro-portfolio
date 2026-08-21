@@ -1666,3 +1666,139 @@
   .thread-node { min-width: 130px; }
   .phase-indicator { font-size: 8px; max-width: 110px; letter-spacing: 0.04em; }
 }
+
+/* ── Zarvin One — try-it demo (embedded live app or launch card) ──
+   Desktop/tablet gets the real, live, interactive app in an iframe;
+   narrow/mobile widths get a large launch card instead of a cramped
+   nested app, per the interactive-demo requirement. Toggled with the
+   same 720px breakpoint the rest of this file uses. */
+.zarvin-try {
+  margin: 0 auto 80px;
+}
+.zarvin-try-head {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+.zarvin-try-head .eyebrow {
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+.zarvin-try-head h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 10px;
+  text-wrap: balance;
+}
+.zarvin-try-head p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin: 0;
+}
+
+.zarvin-try-embed { display: block; }
+.zarvin-try-launch { display: none; }
+
+.zarvin-try-frame {
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 6px 28px rgba(32, 33, 36, 0.1), 0 1px 4px rgba(32, 33, 36, 0.06);
+}
+[data-theme="dark"] .zarvin-try-frame {
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.32), 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+.zarvin-try-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  background: var(--paper-3);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--graphite);
+}
+.zarvin-try-live {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--success) 25%, transparent);
+}
+.zarvin-try-iframe {
+  display: block;
+  width: 100%;
+  height: 760px;
+  border: 0;
+  background: var(--paper-2);
+}
+.zarvin-try-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.zarvin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border: 1px solid var(--ink);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.zarvin-btn:hover { background: var(--ink); color: var(--paper); }
+.zarvin-btn-primary { background: var(--ink); color: var(--paper); }
+.zarvin-btn-primary:hover { background: var(--teal); border-color: var(--teal); color: var(--paper); }
+.zarvin-btn-lg { padding: 16px 32px; font-size: 14px; }
+
+.zarvin-try-preview {
+  margin-bottom: 20px;
+}
+.zarvin-try-preview .frame {
+  aspect-ratio: 4 / 3;
+}
+.zarvin-try-launch .zarvin-btn {
+  display: flex;
+  justify-content: center;
+}
+
+.zarvin-try-disclosure {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--graphite);
+  margin: 22px 0 0;
+}
+
+/* Underneath — coordination-path mockup, centered in its section body */
+.zarvin-flow-mockup {
+  width: 100%;
+  margin: 4px 0 20px;
+}
+
+@media (max-width: 720px) {
+  .zarvin-try-embed { display: none; }
+  .zarvin-try-launch { display: block; }
+}
