@@ -293,7 +293,23 @@ export default function CaseStudy({ project: p }) {
                   />
                 )}
 
-                {p.demo && (
+                {p.demo && p.guidedTourUrl && (
+                  <MetaRow
+                    label="Demo"
+                    value={
+                      <span className="meta-demo-links">
+                        <a href={p.demo} target="_blank" rel="noreferrer">
+                          Interactive demo ↗
+                        </a>
+                        <a href={p.guidedTourUrl} target="_blank" rel="noreferrer">
+                          Guided tour →
+                        </a>
+                      </span>
+                    }
+                  />
+                )}
+
+                {p.demo && !p.guidedTourUrl && (
                   <MetaRow
                     label="Demo"
                     value={
