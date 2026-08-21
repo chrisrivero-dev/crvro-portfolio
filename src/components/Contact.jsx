@@ -1,4 +1,5 @@
 import React from "react";
+import PortfolioShare from "./PortfolioShare.jsx";
 
 export default function Contact() {
   return (
@@ -35,6 +36,7 @@ export default function Contact() {
                 <span className="left"><span className="lab">LinkedIn</span>linkedin.com/in/christopherarivero</span>
                 <span className="right">background <span className="ar">↗</span></span>
               </a>
+              <PortfolioShare />
             </div>
           </div>
         </div>

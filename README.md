@@ -126,7 +126,7 @@ The site lists `contact@crvro.com`.
 
 GitHub and LinkedIn links are live:
 - GitHub: https://github.com/chrisrivero-dev
-- LinkedIn: https://www.linkedin.com/in/christopher-rivero-47b03b97/
+- LinkedIn: https://www.linkedin.com/in/christopherarivero
 
 ---
 

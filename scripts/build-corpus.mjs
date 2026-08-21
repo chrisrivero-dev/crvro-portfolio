@@ -42,6 +42,14 @@ for (const p of [...PROJECTS, ...GIS_PROJECTS]) {
     add('project', p.slug, 'built', p.built.slice(0, 4).join(' '), [p.slug, 'built']);
   }
   if (p.outcome) add('project', p.slug, 'outcome', p.outcome, [p.slug, 'outcome']);
+  if (p.relationshipToHermes) {
+    add('project', p.slug, 'relationship', p.relationshipToHermes, [p.slug, 'hermes', 'openclaw', 'relationship']);
+  }
+  if (Array.isArray(p.publicStatus) && p.publicStatus.length) {
+    add('project', p.slug, 'status', p.publicStatus.join(' '), [p.slug, 'status', 'prototype']);
+  }
+  if (p.demo) add('project', p.slug, 'demo', `Interactive demo: ${p.demo}`, [p.slug, 'demo', 'try']);
+  if (p.guidedTourUrl) add('project', p.slug, 'guided-tour', `Guided tour: ${p.guidedTourUrl}`, [p.slug, 'guided tour']);
   if (Array.isArray(p.learned) && p.learned.length) {
     add('project', p.slug, 'learned', p.learned.slice(0, 3).join(' '), [p.slug, 'learned']);
   }
@@ -76,7 +84,7 @@ for (const s of SKILLS) {
 // address only (contact@crvro.com) — never the raw mailto inbox target.
 add('contact', 'contact', 'email', 'Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.', ['contact', 'email']);
 add('contact', 'contact', 'github', 'GitHub: github.com/chrisrivero-dev', ['contact', 'github']);
-add('contact', 'contact', 'linkedin', 'LinkedIn: linkedin.com/in/christopher-rivero-47b03b97', ['contact', 'linkedin']);
+add('contact', 'contact', 'linkedin', 'LinkedIn: https://www.linkedin.com/in/christopherarivero', ['contact', 'linkedin']);
 
 // Destination allowlist — mirrors src/data/portfolioNavigator.js DESTINATIONS.
 // Duplicated intentionally: the worker process must not import site source at
@@ -88,6 +96,9 @@ const DESTINATIONS = {
   skills: { label: 'Skills', href: '/#skills' },
   contact: { label: 'Contact', href: '/#contact' },
   openclaw: { label: 'OpenClaw / Hermes', href: '/projects/openclaw' },
+  'zarvin-one': { label: 'Zarvin One', href: '/projects/zarvin-one' },
+  'zarvin-demo': { label: 'Try Zarvin One', href: 'https://zarvin-one-mobile.expo.app/' },
+  'zarvin-guided-tour': { label: 'Zarvin One guided tour', href: 'https://zarvin-one-mobile.expo.app/guided-demo' },
   sidecar: { label: 'Sidecar', href: '/projects/sidecar' },
   'help-nearby': { label: 'Help Nearby', href: '/projects/help-nearby' },
   groundrules: { label: 'GroundRules', href: '/projects/groundrules' },
