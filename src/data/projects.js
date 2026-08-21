@@ -342,9 +342,15 @@ export const PROJECTS = [
     accent: 'var(--teal)',
     shape: 'circle',
     role: 'Solo build — product design, AI orchestration, local model infrastructure, workflow design, testing',
-    status: 'Active prototype — interactive demo available; live integrations in progress',
+    status: 'Active prototype — controlled interactive scenarios available; live integrations are still being validated separately',
     statusBadge: 'Active prototype',
     outcome: 'A personal AI system that brings everyday work, decisions, approvals, and follow-up into one place.',
+    relationshipToHermes: 'OpenClaw / Hermes is the underlying workflow/orchestration system. Zarvin One is the product experience built around making that capability simple for the person using it.',
+    publicStatus: [
+      'Active prototype.',
+      'Controlled interactive scenarios are available.',
+      'Live integrations are still being validated separately.',
+    ],
     disclaimer:
       "The interactive version is a working product prototype built around controlled scenarios. Some backend pieces are still being connected and tested. I separate those from what I've already proven rather than making the demo look more complete than it is. If Zarvin One says something worked, I want there to be evidence that it worked. That's the standard I'm building toward.",
     repo: null,

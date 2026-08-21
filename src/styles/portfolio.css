@@ -1747,24 +1747,32 @@ section.contact .grid > * {
 .contact .links {
   border-top: 1px solid var(--ink);
 }
-.contact .links a {
+.contact .links > a,
+.contact .links > button {
   display: flex; align-items: baseline; justify-content: space-between;
+  width: 100%;
   gap: 24px;
   padding: 22px 0;
   min-width: 0;
+  border: 0;
   border-bottom: 1px solid var(--rule);
+  border-radius: 0;
   background: none; color: var(--ink);
+  text-align: left;
+  cursor: pointer;
   transition:
     padding var(--dur-slow) var(--ease-out),
     color var(--dur-base) var(--ease-out),
     background var(--dur-base) var(--ease-out);
 }
-.contact .links a:hover {
+.contact .links > a:hover,
+.contact .links > button:hover {
   padding-left: 12px;
   color: var(--amber);
   background: color-mix(in oklab, var(--paper-2) 50%, transparent);
 }
-.contact .links a .left {
+.contact .links > a .left,
+.contact .links > button .left {
   display: flex; align-items: baseline; gap: 14px;
   font-family: var(--font-display);
   font-size: clamp(18px, 2vw, 22px);
@@ -1772,21 +1780,131 @@ section.contact .grid > * {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.contact .links a .left .lab {
+.contact .links > a .left .lab,
+.contact .links > button .left .lab {
   font-family: var(--font-mono);
   font-size: 12px; font-weight: 500;
   letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--graphite);
   min-width: 80px;
 }
-.contact .links a:hover .left .lab { color: var(--amber); }
-.contact .links a .right {
+.contact .links > a:hover .left .lab,
+.contact .links > button:hover .left .lab { color: var(--amber); }
+.contact .links > a .right,
+.contact .links > button .right {
   font-family: var(--font-mono);
   font-size: 12px; font-weight: 500;
   letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--graphite);
+  white-space: nowrap;
 }
-.contact .links a .ar { margin-left: 6px; }
+.contact .links .ar { margin-left: 6px; }
+
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+.share-sheet {
+  position: relative;
+  width: min(100%, 440px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 36px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 12px 12px 0 color-mix(in oklab, var(--amber) 70%, transparent);
+}
+.share-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  color: var(--graphite);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.share-kicker {
+  margin-bottom: 10px;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.share-copy h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 7vw, 46px);
+  letter-spacing: -0.03em;
+}
+.share-copy p {
+  margin: 6px 0 22px;
+  color: var(--graphite);
+}
+.share-qr {
+  display: grid;
+  place-items: center;
+  width: min(100%, 256px);
+  margin: 0 auto;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--rule);
+}
+.share-qr canvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1;
+}
+.share-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.share-actions button {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.share-actions button + button {
+  background: transparent;
+  color: var(--ink);
+}
+
+@media (max-width: 520px) {
+  .contact .links > a,
+  .contact .links > button { gap: 12px; }
+  .contact .links > a .left,
+  .contact .links > button .left { gap: 8px; font-size: 17px; }
+  .contact .links > a .left .lab,
+  .contact .links > button .left .lab { min-width: 62px; font-size: 10px; }
+  .contact .links > a .right,
+  .contact .links > button .right { font-size: 9px; letter-spacing: 0.07em; }
+  .share-overlay { align-items: end; padding: 0; }
+  .share-sheet {
+    width: 100%;
+    max-height: calc(100dvh - 12px);
+    padding: 32px 22px 24px;
+    border-width: 1px 0 0;
+    box-shadow: 0 -8px 0 color-mix(in oklab, var(--amber) 70%, transparent);
+  }
+}
 
 /* ─────────────────────────────────────────────────────────
    FOOTER

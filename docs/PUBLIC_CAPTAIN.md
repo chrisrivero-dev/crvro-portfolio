@@ -192,7 +192,7 @@ a disclosure). Summary:
 
 | Section | Entries | Source | Public-approval basis |
 |---|---|---|---|
-| project | 36 | `src/data/projects.js` | Same data the live case-study pages render; only desc/problem/built/outcome/learned/stack fields are copied, enumerated explicitly, never the whole object |
+| project | generated | `src/data/projects.js` | Same data the live case-study pages render; only explicitly enumerated public fields are copied (including Zarvin One relationship, status, demo, and guided-tour fields), never whole project objects |
 | about | 2 | `src/components/About.jsx` | Transcribed from the public bio + stat list |
 | skills | 6 | `src/components/Skills.jsx` | Transcribed from the public Skills section |
 | contact | 3 | `src/components/Contact.jsx` | Public display address (`contact@crvro.com`) + GitHub + LinkedIn only -- the real mailto inbox target is deliberately excluded |

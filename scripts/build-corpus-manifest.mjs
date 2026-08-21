@@ -19,7 +19,7 @@ const corpus = JSON.parse(readFileSync(path.join(ROOT, 'server', 'corpus.json'),
 const SOURCE_MAP = {
   project: {
     file: 'src/data/projects.js',
-    note: 'PROJECTS + GIS_PROJECTS arrays -- the same data the live case-study pages (/projects/<slug>) render. Public Captain never sees any field of these objects beyond desc/problem/built/outcome/learned/stack, and never sees internal-only fields if any are added later, because scripts/build-corpus.mjs enumerates exactly which fields it copies -- it does not spread the whole object.',
+    note: 'PROJECTS + GIS_PROJECTS arrays -- the same data the live case-study pages (/projects/<slug>) render. Public Captain only receives explicitly enumerated public fields (desc/problem/built/outcome/relationshipToHermes/publicStatus/demo/guidedTourUrl/learned/stack); the generator never spreads whole project objects.',
   },
   about: {
     file: 'src/components/About.jsx',
@@ -63,7 +63,7 @@ for (const [section, entries] of Object.entries(bySection)) {
 
 md += `\n## What is deliberately excluded\n\n`;
 md += `- The real mailto: inbox address (only the public display address \`contact@crvro.com\` is in the corpus)\n`;
-md += `- Any project field beyond desc/problem/built/outcome/learned/stack (e.g. no internal status notes, no unpublished project data)\n`;
+md += `- Any project field not explicitly enumerated by \`scripts/build-corpus.mjs\`; whole project objects are never copied into the corpus\n`;
 md += `- The \`predmkt-bot\` case study is present on the live site but was already excluded from the navigator's destination allowlist before this feature existed; it is also absent from this corpus for the same reason -- it is a real case study, just not one the navigator surfaces\n`;
 md += `- Anything not present in \`src/data/projects.js\`, \`About.jsx\`, \`Skills.jsx\`, or \`Contact.jsx\` -- there is no other input to \`scripts/build-corpus.mjs\`\n`;
 

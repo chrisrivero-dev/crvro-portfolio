@@ -28,6 +28,21 @@ export const DESTINATIONS = {
     label: findProject('openclaw')?.title || 'OpenClaw / Hermes',
     href: '/projects/openclaw',
   },
+  'zarvin-one': {
+    key: 'zarvin-one',
+    label: findProject('zarvin-one')?.title || 'Zarvin One',
+    href: '/projects/zarvin-one',
+  },
+  'zarvin-demo': {
+    key: 'zarvin-demo',
+    label: 'Try Zarvin One',
+    href: 'https://zarvin-one-mobile.expo.app/',
+  },
+  'zarvin-guided-tour': {
+    key: 'zarvin-guided-tour',
+    label: 'Zarvin One guided tour',
+    href: 'https://zarvin-one-mobile.expo.app/guided-demo',
+  },
   sidecar: {
     key: 'sidecar',
     label: findProject('sidecar')?.title || 'Sidecar',
@@ -54,7 +69,7 @@ export const DESTINATIONS = {
 // navigator is actually allowed to surface, which can differ from the
 // total number of case-study pages that exist.
 export const SYSTEM_COUNT = Object.keys(DESTINATIONS).filter(
-  (k) => !['work', 'about', 'skills', 'contact'].includes(k)
+  (k) => !['work', 'about', 'skills', 'contact', 'zarvin-demo', 'zarvin-guided-tour'].includes(k)
 ).length;
 
 const norm = (s) => (s || '').toLowerCase().trim();
@@ -63,6 +78,58 @@ const has = (q, ...terms) => terms.some((t) => q.includes(t));
 // Ordered rules — most specific match wins. Each rule returns a result
 // object or null. The first non-null result is used.
 const RULES = [
+  // ── Zarvin One — product, demo, tour, and Hermes relationship ──
+  (q) => {
+    if (has(q, 'guided tour', 'guided demo') && has(q, 'zarvin', 'tour', 'demo')) {
+      return {
+        kind: 'single',
+        lines: ['Zarvin One guided tour found', 'a controlled walkthrough of the product experience'],
+        results: [{ ...DESTINATIONS['zarvin-guided-tour'], cta: 'OPEN GUIDED TOUR →' }],
+      };
+    }
+    return null;
+  },
+  (q) => {
+    const wantsToTry = has(q, 'can i try', 'try zarvin', 'interactive demo', 'zarvin demo');
+    if (wantsToTry && (has(q, 'zarvin') || has(q, 'interactive demo'))) {
+      return {
+        kind: 'single',
+        lines: ['Zarvin One interactive demo found', 'controlled interactive scenarios are available'],
+        results: [{ ...DESTINATIONS['zarvin-demo'], cta: 'TRY ZARVIN ONE →' }],
+      };
+    }
+    return null;
+  },
+  (q) => {
+    if (has(q, 'difference between hermes and zarvin', 'difference between zarvin and hermes', 'hermes and zarvin one', 'zarvin one and hermes')) {
+      return {
+        kind: 'multi',
+        lines: [
+          'OpenClaw / Hermes is the underlying workflow and orchestration system.',
+          'Zarvin One is the product experience that makes that capability simple for the person using it.',
+        ],
+        results: [
+          { ...DESTINATIONS['zarvin-one'], n: '01' },
+          { ...DESTINATIONS.openclaw, n: '02' },
+        ],
+      };
+    }
+    return null;
+  },
+  (q) => {
+    if (has(q, 'zarvin one', 'zarvin-one')) {
+      return {
+        kind: 'single',
+        lines: [
+          'Zarvin One is a personal AI command system designed to put work, decisions, approvals, and follow-up in one place while the complexity stays underneath.',
+          'Status: active prototype; controlled interactive scenarios are available; live integrations are still being validated separately.',
+        ],
+        results: [{ ...DESTINATIONS['zarvin-one'], cta: 'OPEN ZARVIN ONE →' }],
+      };
+    }
+    return null;
+  },
+
   // ── Hermes / OpenClaw — local AI orchestration ──────────────
   // Proper nouns and short direct-navigation phrases only. The bare
   // bigram "local ai" used to match here, which swallowed genuinely
@@ -223,15 +290,16 @@ const RULES = [
     return null;
   },
 
-  // ── General AI work — OpenClaw/Hermes + Sidecar ─────────────
+  // ── General AI work — Zarvin One + OpenClaw/Hermes + Sidecar ──
   (q) => {
-    if (has(q, 'ai work', 'your ai', 'artificial intelligence', 'machine learning', ' ai systems', 'ai systems')) {
+    if (has(q, 'ai work', 'ai project', 'your ai', 'artificial intelligence', 'machine learning', ' ai systems', 'ai systems')) {
       return {
         kind: 'multi',
-        lines: ['2 relevant systems found'],
+        lines: ['3 relevant systems found'],
         results: [
-          { ...DESTINATIONS.openclaw, n: '01' },
-          { ...DESTINATIONS.sidecar, n: '02' },
+          { ...DESTINATIONS['zarvin-one'], n: '01' },
+          { ...DESTINATIONS.openclaw, n: '02' },
+          { ...DESTINATIONS.sidecar, n: '03' },
         ],
       };
     }

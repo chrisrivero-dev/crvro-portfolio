@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-16T03:29:24.221Z",
+  "generatedAt": "2026-08-21T23:14:12.207Z",
   "destinations": {
     "work": {
       "label": "Project World",
@@ -20,6 +20,18 @@
     "openclaw": {
       "label": "OpenClaw / Hermes",
       "href": "/projects/openclaw"
+    },
+    "zarvin-one": {
+      "label": "Zarvin One",
+      "href": "/projects/zarvin-one"
+    },
+    "zarvin-demo": {
+      "label": "Try Zarvin One",
+      "href": "https://zarvin-one-mobile.expo.app/"
+    },
+    "zarvin-guided-tour": {
+      "label": "Zarvin One guided tour",
+      "href": "https://zarvin-one-mobile.expo.app/guided-demo"
     },
     "sidecar": {
       "label": "Sidecar",
@@ -160,7 +172,71 @@
       ]
     },
     {
-      "id": "help-nearby-summary-13",
+      "id": "zarvin-one-summary-13",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "Zarvin One: One place to get things done. A personal AI command system. One place to manage work, decisions, approvals, and follow-up while the complexity stays underneath.",
+      "tags": [
+        "AI Product / Personal Automation",
+        "zarvin-one"
+      ]
+    },
+    {
+      "id": "zarvin-one-outcome-14",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "A personal AI system that brings everyday work, decisions, approvals, and follow-up into one place.",
+      "tags": [
+        "zarvin-one",
+        "outcome"
+      ]
+    },
+    {
+      "id": "zarvin-one-relationship-15",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "OpenClaw / Hermes is the underlying workflow/orchestration system. Zarvin One is the product experience built around making that capability simple for the person using it.",
+      "tags": [
+        "zarvin-one",
+        "hermes",
+        "openclaw",
+        "relationship"
+      ]
+    },
+    {
+      "id": "zarvin-one-status-16",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "Active prototype. Controlled interactive scenarios are available. Live integrations are still being validated separately.",
+      "tags": [
+        "zarvin-one",
+        "status",
+        "prototype"
+      ]
+    },
+    {
+      "id": "zarvin-one-demo-17",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "Interactive demo: https://zarvin-one-mobile.expo.app/",
+      "tags": [
+        "zarvin-one",
+        "demo",
+        "try"
+      ]
+    },
+    {
+      "id": "zarvin-one-guided-tour-18",
+      "section": "project",
+      "slug": "zarvin-one",
+      "text": "Guided tour: https://zarvin-one-mobile.expo.app/guided-demo",
+      "tags": [
+        "zarvin-one",
+        "guided tour"
+      ]
+    },
+    {
+      "id": "help-nearby-summary-19",
       "section": "project",
       "slug": "help-nearby",
       "text": "Help Nearby: A community resource finder. A simple resource finder for someone helping another person. Enter a ZIP code, choose the kind of help needed, and see nearby resources without creating an account.",
@@ -170,7 +246,7 @@
       ]
     },
     {
-      "id": "help-nearby-problem-14",
+      "id": "help-nearby-problem-20",
       "section": "project",
       "slug": "help-nearby",
       "text": "Local service information is often scattered across county websites, nonprofit pages, PDFs, and outdated directories. Even when resources exist, users may still need to call multiple places to confirm eligibility, hours, and availability. And the person searching is not always the person who needs help: a family member, neighbor, resident, client, or someone passing through may be the real subject of the search, which changes the workflow entirely. I wanted to test how close a simple tool could get to the real workflow: open a phone browser, enter a ZIP code, select a need, and get useful resource guidance without creating an account.",
@@ -180,7 +256,7 @@
       ]
     },
     {
-      "id": "help-nearby-built-15",
+      "id": "help-nearby-built-21",
       "section": "project",
       "slug": "help-nearby",
       "text": "A dashboard-style homepage combining ZIP search, urgent local updates, emergency alert areas, nearby resources, and a map-based get-there panel in a single user-facing flow. A community awareness flow for discovering and sharing resources even when the user is not personally seeking help, for a neighbor, client, family member, or resident they are assisting. A resource finder interface with ZIP search, category filters, and expandable resource details. A topic-based filtering flow that helps users narrow broad needs like housing, food, safety, and finance.",
@@ -190,7 +266,7 @@
       ]
     },
     {
-      "id": "help-nearby-outcome-16",
+      "id": "help-nearby-outcome-22",
       "section": "project",
       "slug": "help-nearby",
       "text": "Working live prototype with ZIP/category search, alert-ready dashboard areas, map-based get-there panel, bilingual UI support, and structured resource detail flows.",
@@ -200,7 +276,7 @@
       ]
     },
     {
-      "id": "help-nearby-learned-17",
+      "id": "help-nearby-learned-23",
       "section": "project",
       "slug": "help-nearby",
       "text": "Public service data gets stale quickly, so every resource should eventually show a visible verified date. The search experience does not need to be overly complex. Simple category mapping can cover most early user needs. The hardest product challenge is trust: users need clear, current, practical guidance, not just a long list of links.",
@@ -210,7 +286,7 @@
       ]
     },
     {
-      "id": "help-nearby-stack-18",
+      "id": "help-nearby-stack-24",
       "section": "project",
       "slug": "help-nearby",
       "text": "Frontend: React / Next.js, CSS, Responsive UI · Data: Structured resource records, Admin-maintained resource records, Category/topic mapping, Resource detail fields · Product: EN/ES toggle, ZIP search UI, Expandable help cards, Alert/update panels, Map/directions UI · Planned: Verified-date tracking, Source refresh workflow, Coverage report by ZIP/category",
@@ -220,7 +296,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-summary-19",
+      "id": "predmkt-bot-summary-25",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "Predmkt Bot: Decision log, rejection reasons, rule validation. A decision-logging research system for prediction market candidates. Every scan produces a record (accepted, rejected, or blocked) with the reason attached. The goal is validating whether the decision rules hold up, not placing more trades.",
@@ -230,7 +306,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-problem-20",
+      "id": "predmkt-bot-problem-26",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "Prediction-market prices move quickly, but it is easy to fool yourself if you only look at a few winning trades or interesting screenshots. I wanted a system that records the boring parts too: what the bot scanned, what it rejected, what filters blocked a trade, and what happened after a trade settled. The real question is not whether the bot can place trades. The real question is whether the decision rules are actually selecting better opportunities over time.",
@@ -240,7 +316,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-built-21",
+      "id": "predmkt-bot-built-27",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "A market scanner that evaluates configured market families and candidate contracts against spread, EV, liquidity, price-band, and family filters. Safety gates that block unknown or unapproved market families until there is an explicit reason to allow them. Trade and order logging so accepted decisions can be reviewed after settlement. Candidate and rejection diagnostics so no-trade cycles are still useful data, not silent gaps.",
@@ -250,7 +326,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-outcome-22",
+      "id": "predmkt-bot-outcome-28",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "Local research dashboard and logging system for comparing expected edge against realized outcomes before scaling risk.",
@@ -260,7 +336,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-learned-23",
+      "id": "predmkt-bot-learned-29",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "The rejection log matters as much as the trade log. No-trade cycles still explain what the system is seeing. A strategy is not proven because a few trades win. The edge has to survive realized-outcome review over a meaningful sample. Family-level rules matter. A market that looks attractive by spread alone can still be a bad candidate if the historical bucket is weak.",
@@ -270,7 +346,7 @@
       ]
     },
     {
-      "id": "predmkt-bot-stack-24",
+      "id": "predmkt-bot-stack-30",
       "section": "project",
       "slug": "predmkt-bot",
       "text": "Core: Python, asyncio, Kalshi API integration · Data: SQLite / local trade logs, SQL queries, Bucket analysis · Analysis: Realized outcome review, Log-based diagnostics, Rejection-reason summaries · Ops: Terminal scripts, Telegram notifications, Git-based iteration",
@@ -280,7 +356,7 @@
       ]
     },
     {
-      "id": "groundrules-summary-25",
+      "id": "groundrules-summary-31",
       "section": "project",
       "slug": "groundrules",
       "text": "GroundRules: Cited first-pass property screening from public records. GroundRules turns an address into a first-pass property screening report. It shows parcel and zoning context, early risk flags, and what still needs to be verified.",
@@ -290,7 +366,7 @@
       ]
     },
     {
-      "id": "groundrules-problem-26",
+      "id": "groundrules-problem-32",
       "section": "project",
       "slug": "groundrules",
       "text": "Early property feasibility is messy. Before a project can move forward, professionals often need to check parcel records, zoning context, jurisdiction boundaries, overlays, hazards, permit risk, and source documents, often across multiple public systems. That work is slow, repetitive, and easy to misread. GroundRules compresses the first-pass research step into a structured report that helps users decide whether a property is worth advancing, needs manual review, or has obvious early risk signals. The first wedge is residential feasibility for ADUs, additions, zoning context, and early permit risk.",
@@ -300,7 +376,7 @@
       ]
     },
     {
-      "id": "groundrules-built-27",
+      "id": "groundrules-built-33",
       "section": "project",
       "slug": "groundrules",
       "text": "I built a property screening workflow that accepts an address or parcel, retrieves relevant public-record context, and turns it into a reviewable report. The system separates findings into practical decision categories: what may be possible, what looks risky, what is unknown, and what needs verification. I also added source framing and jurisdiction guardrails so the product avoids pretending unsupported areas or incomplete data are definitive. Address and parcel lookup flow.",
@@ -310,7 +386,7 @@
       ]
     },
     {
-      "id": "groundrules-outcome-28",
+      "id": "groundrules-outcome-34",
       "section": "project",
       "slug": "groundrules",
       "text": "Working property screening tool that turns an address into a cited, reviewable first-pass feasibility report covering parcel context, zoning signals, jurisdiction notes, risk flags, and verification needs.",
@@ -320,7 +396,18 @@
       ]
     },
     {
-      "id": "groundrules-learned-29",
+      "id": "groundrules-demo-35",
+      "section": "project",
+      "slug": "groundrules",
+      "text": "Interactive demo: https://www.usegroundrules.com/",
+      "tags": [
+        "groundrules",
+        "demo",
+        "try"
+      ]
+    },
+    {
+      "id": "groundrules-learned-36",
       "section": "project",
       "slug": "groundrules",
       "text": "Public records are messier than they look. Zoning codes, parcel data, and hazard layers often disagree with each other or contain stale information: the report has to acknowledge this rather than paper over it. Plain-English output is harder to get right than structured output. The goal is something someone can actually read and act on, not a JSON dump of zoning fields. Source citations matter a lot. Users need to know where a finding came from before they can trust it.",
@@ -330,7 +417,7 @@
       ]
     },
     {
-      "id": "groundrules-stack-30",
+      "id": "groundrules-stack-37",
       "section": "project",
       "slug": "groundrules",
       "text": "Frontend: Next.js, React, CSS · AI / data: LLM API for report generation, Public parcel and zoning data, GIS data sources · Infrastructure: Vercel",
@@ -340,7 +427,7 @@
       ]
     },
     {
-      "id": "parcel-engine-summary-31",
+      "id": "parcel-engine-summary-38",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Parcel Engine: Local metes-and-bounds parser and parcel geometry validator. A local Python tool that parses metes-and-bounds legal descriptions into structured COGO calls, builds preview geometry, checks closure/misclosure, and exports DXF or GeoJSON for mapping workflow testing. No official County data, real APNs, private legal descriptions, Q-drive files, or production records are included.",
@@ -350,7 +437,7 @@
       ]
     },
     {
-      "id": "parcel-engine-problem-32",
+      "id": "parcel-engine-problem-39",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Legal descriptions are dense, inconsistent, and easy to misread. Mapping workflows often require interpreting bearings, distances, curve calls, and closure behavior manually. This project explores whether a local tool can assist with that process without relying on official production data.",
@@ -360,7 +447,7 @@
       ]
     },
     {
-      "id": "parcel-engine-built-33",
+      "id": "parcel-engine-built-40",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Structured parser for line calls and selected curve calls Bearing and distance parsing for quadrant, compact, and cardinal formats Coordinate geometry builder Closure / misclosure validation",
@@ -370,7 +457,7 @@
       ]
     },
     {
-      "id": "parcel-engine-outcome-34",
+      "id": "parcel-engine-outcome-41",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Local research tool for parsing, validating, and exporting metes-and-bounds legal descriptions for mapping workflow testing.",
@@ -380,7 +467,7 @@
       ]
     },
     {
-      "id": "parcel-engine-learned-35",
+      "id": "parcel-engine-learned-42",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Legal descriptions are more varied than they appear. Handling the full range of bearing formats and notation styles is the bulk of the parsing problem. Closure validation is the most reliable feedback signal for whether a description was interpreted correctly.",
@@ -390,7 +477,7 @@
       ]
     },
     {
-      "id": "parcel-engine-stack-36",
+      "id": "parcel-engine-stack-43",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Core: Python, COGO parsing, Geometry validation · Export: DXF, GeoJSON · Workflow: Desktop preview, OCR / Tesseract, Source-span review",
@@ -400,7 +487,7 @@
       ]
     },
     {
-      "id": "about-bio-37",
+      "id": "about-bio-44",
       "section": "about",
       "slug": "about",
       "text": "I'm Christopher. I build practical AI systems and internal tools for support, automation, and GIS/CAD. Most of them start with problems I've dealt with myself. I started in GIS/CAD support and gradually moved deeper into automation and human-supervised AI. I built my own local AI workstation and use Hermes every day to organize projects, investigate problems, and troubleshoot bugs. I still make the final calls. I usually have more ideas than time. I keep improving the systems I already use and start new projects when I see a problem worth solving.",
@@ -411,7 +498,7 @@
       ]
     },
     {
-      "id": "about-facts-38",
+      "id": "about-facts-45",
       "section": "about",
       "slug": "about",
       "text": "Based in Lakewood, CA (Pacific time). Currently building automation and AI tooling. Open to automation, AI support, and GIS/CAD ops work. Background in CAD/GIS, Python, and on-device AI.",
@@ -422,7 +509,7 @@
       ]
     },
     {
-      "id": "skills-languages-39",
+      "id": "skills-languages-46",
       "section": "skills",
       "slug": "skills",
       "text": "languages: Python, JavaScript, SQL, Bash, HTML / CSS",
@@ -432,7 +519,7 @@
       ]
     },
     {
-      "id": "skills-data-infra-40",
+      "id": "skills-data-infra-47",
       "section": "skills",
       "slug": "skills",
       "text": "data & infra: SQLite, Postgres, JSON / JSONL, Git / GitHub, Railway, REST APIs",
@@ -442,7 +529,7 @@
       ]
     },
     {
-      "id": "skills-AI-support-systems-41",
+      "id": "skills-AI-support-systems-48",
       "section": "skills",
       "slug": "skills",
       "text": "AI & support systems: OpenAI API, OpenClaw, KB-grounded drafting, RAG-style retrieval, Prompt guardrails, Canned response workflows",
@@ -452,7 +539,7 @@
       ]
     },
     {
-      "id": "skills-GIS-CAD-42",
+      "id": "skills-GIS-CAD-49",
       "section": "skills",
       "slug": "skills",
       "text": "GIS & CAD: ArcGIS Pro, QGIS, PostGIS, AutoCAD, MicroStation, Civil 3D, Shapefile / GeoPackage",
@@ -462,7 +549,7 @@
       ]
     },
     {
-      "id": "skills-automation-43",
+      "id": "skills-automation-50",
       "section": "skills",
       "slug": "skills",
       "text": "automation: Telegram Bot API, GitHub Actions, cron / scheduled jobs, Python scripts, Excel automation, pandas / openpyxl",
@@ -472,7 +559,7 @@
       ]
     },
     {
-      "id": "skills-ops-testing-44",
+      "id": "skills-ops-testing-51",
       "section": "skills",
       "slug": "skills",
       "text": "ops & testing: Structured logging, CLI tools, curl / API testing, Railway deploy logs, Local test scripts, Lightweight dashboards",
@@ -482,7 +569,7 @@
       ]
     },
     {
-      "id": "contact-email-45",
+      "id": "contact-email-52",
       "section": "contact",
       "slug": "contact",
       "text": "Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.",
@@ -492,7 +579,7 @@
       ]
     },
     {
-      "id": "contact-github-46",
+      "id": "contact-github-53",
       "section": "contact",
       "slug": "contact",
       "text": "GitHub: github.com/chrisrivero-dev",
@@ -502,10 +589,10 @@
       ]
     },
     {
-      "id": "contact-linkedin-47",
+      "id": "contact-linkedin-54",
       "section": "contact",
       "slug": "contact",
-      "text": "LinkedIn: linkedin.com/in/christopher-rivero-47b03b97",
+      "text": "LinkedIn: https://www.linkedin.com/in/christopherarivero",
       "tags": [
         "contact",
         "linkedin"
