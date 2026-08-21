@@ -208,7 +208,11 @@ export const STOPS = [
     ry: 46,
     seed: 41,
     accent: "var(--pw-zarvin)",
-    harbor: [472, 216],
+    // Harbor sits just offshore on the south/southwest coast, where the
+    // route naturally arrives from OpenClaw/Hermes and departs toward
+    // Sidecar (bug fix: the previous point and its adjacent LEGS curves
+    // clipped through this island's landmass -- see LEGS below).
+    harbor: [465, 223],
     card: cardFor("zarvin-one", "№ 02", "var(--pw-zarvin)"),
     landmarks: () => [
       <>
@@ -395,8 +399,11 @@ export const BANDS = STOPS.length + 1;
 /** Curved sea routes, Daventry One outward. */
 export const LEGS = [
   "M 248 560 C 300 500, 230 386, 318 314",
-  "M 318 314 C 366 312, 436 276, 472 216",
-  "M 472 216 C 510 198, 560 192, 612 186",
+  // OpenClaw/Hermes -> Zarvin One and Zarvin One -> Sidecar: re-routed
+  // south of Zarvin's coastline (bug fix -- the previous curves clipped
+  // through Zarvin's landmass; see harbor comment above).
+  "M 318 314 C 389 340, 439 296, 465 223",
+  "M 465 223 C 501 273, 558 257, 612 186",
   "M 612 186 C 712 196, 786 268, 795 362",
   "M 795 362 C 788 486, 724 588, 640 616",
 ];
