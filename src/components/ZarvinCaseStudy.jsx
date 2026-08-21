@@ -33,6 +33,14 @@ import React from 'react';
  */
 const ZARVIN_DEMO_URL = import.meta.env.VITE_ZARVIN_DEMO_URL || 'https://zarvin-one-mobile.expo.app';
 
+/**
+ * The Guided Tour is a permanent, replayable walkthrough at a fixed path on
+ * the same deployment -- unlike the embedded demo, it isn't gated by the
+ * app's one-time first-entry intro, so it doesn't need the same local-dev
+ * override as ZARVIN_DEMO_URL above.
+ */
+const ZARVIN_GUIDED_TOUR_URL = 'https://zarvin-one-mobile.expo.app/guided-demo';
+
 function Section({ index, label, title, children }) {
   return (
     <section className="case-section">
@@ -106,7 +114,10 @@ function TryZarvinOne() {
         </div>
         <div className="zarvin-try-actions">
           <a className="zarvin-btn zarvin-btn-primary" href={ZARVIN_DEMO_URL} target="_blank" rel="noreferrer">
-            Open full demo ↗
+            Open interactive demo ↗
+          </a>
+          <a className="zarvin-btn" href={ZARVIN_GUIDED_TOUR_URL} target="_blank" rel="noreferrer">
+            Take the guided tour →
           </a>
         </div>
       </div>
@@ -124,9 +135,14 @@ function TryZarvinOne() {
             <span className="placeholder-label">Zarvin One</span>
           </div>
         </div>
-        <a className="zarvin-btn zarvin-btn-primary zarvin-btn-lg" href={ZARVIN_DEMO_URL} target="_blank" rel="noreferrer">
-          Launch interactive demo ↗
-        </a>
+        <div className="zarvin-try-actions">
+          <a className="zarvin-btn zarvin-btn-primary zarvin-btn-lg" href={ZARVIN_DEMO_URL} target="_blank" rel="noreferrer">
+            Open interactive demo ↗
+          </a>
+          <a className="zarvin-btn zarvin-btn-lg" href={ZARVIN_GUIDED_TOUR_URL} target="_blank" rel="noreferrer">
+            Take the guided tour →
+          </a>
+        </div>
       </div>
 
       <p className="zarvin-try-disclosure">
