@@ -34,6 +34,7 @@ import { WORKER_SECRET, BROKER_PORT, LIMITS } from '../server/config.mjs';
 import { validateResult } from '../server/validate.mjs';
 import { answerQuestion } from './orchestrate.mjs';
 import { callOllamaChat } from './ollama.mjs';
+import { runPollingLoop } from './polling.mjs';
 
 // Environment isolation safety net (addresses independent review finding:
 // nothing prevents this process from silently inheriting a private
@@ -66,7 +67,6 @@ process.on('unhandledRejection', (err) => {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BROKER_URL = process.env.BROKER_URL || `http://localhost:${BROKER_PORT}`;
-const EMPTY_QUEUE_WAIT_MS = 1500;
 // Derived from the Queue lease's own visibility timeout (the real
 // ceiling now that claim/extend/submit are lease-based -- see
 // server/handlers.mjs), with headroom under it so a genuinely stuck
@@ -207,20 +207,22 @@ process.on('SIGINT', () => {
 });
 
 async function loop() {
-  while (running) {
-    try {
-      const claim = await claimJob();
-      if (!claim.ok) {
-        await new Promise((r) => setTimeout(r, EMPTY_QUEUE_WAIT_MS));
-        continue;
+  let lastLoggedEmptyDelay = 0;
+  await runPollingLoop({
+    claimJob,
+    processJob,
+    isRunning: () => running,
+    onError: (err) => console.error('[worker] loop error:', err.message),
+    onWait: ({ delay, reason }) => {
+      // Log each backoff transition (including the first arrival at the
+      // 60-second cap), but not every capped idle poll forever.
+      if (reason === 'empty' && delay !== lastLoggedEmptyDelay) {
+        console.log(`[worker] queue empty; next claim in ${delay}ms`);
+        lastLoggedEmptyDelay = delay;
       }
-      await processJob(claim.job);
-      // loop immediately to check for more
-    } catch (err) {
-      console.error('[worker] loop error:', err.message);
-      await new Promise((r) => setTimeout(r, EMPTY_QUEUE_WAIT_MS));
-    }
-  }
+      if (reason === 'error') lastLoggedEmptyDelay = 0;
+    },
+  });
 }
 
 loop();
