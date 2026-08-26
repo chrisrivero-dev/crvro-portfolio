@@ -10,6 +10,7 @@
     "corpus:build": "node scripts/build-corpus.mjs",
     "broker": "node server/broker.mjs",
     "worker": "node worker/public-captain.mjs",
+    "worker:test": "node --test worker/polling.test.mjs",
     "captain:test": "node worker/adversarial-tests.mjs",
     "portfolio:test": "node scripts/test-portfolio-knowledge.mjs"
   },
