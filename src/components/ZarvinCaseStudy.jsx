@@ -88,6 +88,19 @@ const FLOW_STAGES = [
   'VERIFIED RESULT',
 ];
 
+function WhoItsFor() {
+  return (
+    <div className="container-wide zarvin-who">
+      <div className="eyebrow">Who it's for</div>
+      <p>
+        Built for people with too many moving parts. Zarvin One is for someone juggling work, schedules,
+        decisions, messages, follow-up, and everyday responsibilities -- a business to run, a family to keep
+        track of, a project on a deadline. They talk to Zarvin. The complicated AI machinery stays underneath.
+      </p>
+    </div>
+  );
+}
+
 function TryZarvinOne() {
   return (
     <div className="container-wide zarvin-try">
@@ -102,7 +115,7 @@ function TryZarvinOne() {
         <div className="zarvin-try-frame">
           <div className="zarvin-try-bar">
             <span className="zarvin-try-live" aria-hidden="true" />
-            <span>ZARVIN ONE · LIVE INTERACTIVE DEMO</span>
+            <span>ZARVIN ONE · INTERACTIVE DEMO</span>
           </div>
           <iframe
             className="zarvin-try-iframe"
@@ -146,7 +159,7 @@ function TryZarvinOne() {
       </div>
 
       <p className="zarvin-try-disclosure">
-        Prototype demo · Live integrations are being validated separately.
+        Controlled demo scenarios · Live integrations validated separately.
       </p>
     </div>
   );
@@ -155,6 +168,7 @@ function TryZarvinOne() {
 export default function ZarvinCaseStudy() {
   return (
     <>
+      <WhoItsFor />
       <TryZarvinOne />
 
       <Section index="01" label="Overview" title="What it is.">

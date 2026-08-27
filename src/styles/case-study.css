@@ -1672,6 +1672,29 @@
   .phase-indicator { font-size: 8px; max-width: 110px; letter-spacing: 0.04em; }
 }
 
+/* ── Zarvin One — "who it's for" thesis, ahead of the try-it demo ── */
+.zarvin-who {
+  max-width: 720px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+.zarvin-who .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+.zarvin-who p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin: 0;
+}
+
 /* ── Zarvin One — try-it demo (embedded live app or launch card) ──
    Desktop/tablet gets the real, live, interactive app in an iframe;
    narrow/mobile widths get a large launch card instead of a cramped
