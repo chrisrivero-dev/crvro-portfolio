@@ -73,6 +73,18 @@ function Flow({ stages, reduced }) {
   );
 }
 
+/* ── Zarvin One ──────────────────────────────────────────── */
+function ZarvinPanel({ reduced }) {
+  return (
+    <PanelFrame
+      title="zarvin · approval-gated execution (real job, redacted)"
+      ariaLabel="Zarvin One real workflow: a Tier-3 calendar write proposed, approved, executed, and independently verified"
+    >
+      <Flow stages={FLOWS['zarvin-one'].stages} reduced={reduced} />
+    </PanelFrame>
+  );
+}
+
 /* ── Sidecar ─────────────────────────────────────────────── */
 function SidecarPanel({ reduced }) {
   return (
@@ -191,6 +203,7 @@ function ParcelEnginePanel({ reduced }) {
 }
 
 const PANELS = {
+  'zarvin-one': ZarvinPanel,
   sidecar: SidecarPanel,
   openclaw: HermesPanel,
   'help-nearby': HelpNearbyPanel,
@@ -199,6 +212,11 @@ const PANELS = {
 };
 
 const COPY = {
+  'zarvin-one': {
+    heading: 'What a real approval-gated action looks like.',
+    body:
+      'This traces an actual Job Ledger entry: a Tier-3 calendar write proposed, approved, executed, and independently verified against Google Calendar, with the account and event details redacted. It is the same path every consequential Zarvin action takes today, not a hypothetical.',
+  },
   sidecar: {
     heading: 'How a draft actually gets built.',
     body:

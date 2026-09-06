@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T23:14:12.207Z",
+  "generatedAt": "2026-09-06T20:13:17.150Z",
   "destinations": {
     "work": {
       "label": "Project World",
@@ -175,7 +175,7 @@
       "id": "zarvin-one-summary-13",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "Zarvin One: One place to get things done. A personal AI command system. One place to manage work, decisions, approvals, and follow-up while the complexity stays underneath.",
+      "text": "Zarvin One: One place to get things done. A personal AI operator. Ask for an outcome, and Zarvin coordinates specialists, models, tools, permissions, execution, verification, and follow-up underneath.",
       "tags": [
         "AI Product / Personal Automation",
         "zarvin-one"
@@ -185,7 +185,7 @@
       "id": "zarvin-one-outcome-14",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "A personal AI system that brings everyday work, decisions, approvals, and follow-up into one place.",
+      "text": "A personal AI operator that connects real calendar, email, and meeting-notes tools, executes approved actions, verifies the result against the provider, and keeps an evidence-backed record of what actually happened — not just what it says happened.",
       "tags": [
         "zarvin-one",
         "outcome"
@@ -207,7 +207,7 @@
       "id": "zarvin-one-status-16",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "Active prototype. Controlled interactive scenarios are available. Live integrations are still being validated separately.",
+      "text": "Active live build — running daily on my own hardware, not a demo. Real connected accounts: Google Calendar, two Gmail accounts, Granola meeting notes. Consequential actions are approval-gated, executed, and independently verified against the provider. Some newer capabilities are still being hardened, or are intentionally off by default until they earn their way on.",
       "tags": [
         "zarvin-one",
         "status",

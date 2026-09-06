@@ -6,6 +6,65 @@
 // ============================================================
 
 export const FLOWS = {
+  'zarvin-one': {
+    console: 'zarvin · approval-gated execution (real job, redacted)',
+    stages: [
+      {
+        n: '01',
+        label: 'REQUEST',
+        state: 'incoming',
+        tag: 'REAL JOB LEDGER ENTRY, REDACTED',
+        detail: 'A calendar hold is requested for a real commitment.',
+        short: 'A real request comes in.',
+      },
+      {
+        n: '02',
+        label: 'CAPABILITY',
+        state: 'processing',
+        detail: 'The request maps to CALENDAR_WRITE — a Tier-3 consequential capability, not a chat reply.',
+        short: 'It maps to a named, tiered capability.',
+      },
+      {
+        n: '03',
+        label: 'SPECIALIST + MODEL',
+        state: 'processing',
+        detail: 'Zarvin routes the job to a pinned local specialist by capability. Nobody picks a model by hand.',
+        short: 'Routed to a specialist automatically.',
+      },
+      {
+        n: '04',
+        label: 'PERMISSION',
+        state: 'permission',
+        tag: 'APPROVAL REQUIRED',
+        detail: 'Tier-3 writes wait for explicit approval and expire after 15 minutes unattended.',
+        short: 'A Tier-3 write waits for approval.',
+      },
+      {
+        n: '05',
+        label: 'EXECUTION',
+        state: 'processing',
+        detail: 'Once approved, the action reaches Google Calendar through the connected account.',
+        short: 'Approved action reaches the provider.',
+      },
+      {
+        n: '06',
+        label: 'VERIFICATION',
+        state: 'verified',
+        tag: 'VERIFIED AGAINST THE PROVIDER',
+        detail: 'The result is checked against Calendar itself — not assumed from a 200 response.',
+        short: 'Checked against the real provider.',
+      },
+      {
+        n: '07',
+        label: 'JOB LEDGER',
+        state: 'export',
+        detail: 'Approved 19:32:01Z, executed 19:32:03Z. Outcome, evidence, and timing are recorded.',
+        short: 'Outcome and evidence are recorded.',
+        last: true,
+      },
+    ],
+  },
+
   sidecar: {
     console: 'sidecar · support console',
     stages: [

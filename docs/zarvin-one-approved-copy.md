@@ -1,11 +1,26 @@
-# Zarvin One — Approved Portfolio Copy
+# Zarvin One — Approved Portfolio Copy (SUPERSEDED)
 
-**Status: locked.** This is the approved source of truth for the Zarvin One
-case study, finalized in Christopher's ChatGPT project conversation. Do not
-rewrite it into generic marketing language, do not make it more verbose,
-and preserve Christopher's voice. Only tiny grammar/spacing adjustments are
-allowed where the existing portfolio component structure requires them —
-no material wording changes without asking first.
+**Status: superseded, 2026-09-06.** This document described Zarvin One as an
+August 2026 controlled interactive prototype with an aspirational backend.
+A current-state audit (`docs/zarvin-one-current-state-audit.md`) verified
+against the running Zarvin Bridge API, live connected accounts, the Job
+Ledger, and git/test history found that framing stale: a real backend now
+exists, connected services are live, and consequential actions are
+approval-gated and independently verified. The current approved copy is
+`docs/zarvin-one-current-approved-copy.md`, implemented in
+`src/components/ZarvinCaseStudy.jsx`.
+
+This file is kept for history and to show what the August prototype's
+copy actually said — do not source new portfolio copy from it, and do not
+treat its "Active prototype" status line as current. The prototype it
+describes still exists and is still linked from the case study; it's just
+no longer presented as the current product.
+
+---
+
+*Original document follows, unmodified below this line.*
+
+---
 
 ---
 

@@ -1835,3 +1835,340 @@
   .zarvin-try-embed { display: none; }
   .zarvin-try-launch { display: block; }
 }
+
+/* ── Zarvin One — current-build walkthrough slot ─────────────
+   Reuses the .case-figure placeholder idiom (repeating-diagonal frame
+   + dot mark + label) already used for not-yet-captured screenshots
+   elsewhere, so an unrecorded asset never invents a fake player. */
+.zarvin-walkthrough {
+  margin: 0 auto 80px;
+}
+.zarvin-walkthrough-head {
+  max-width: 720px;
+  margin: 0 auto 24px;
+  text-align: center;
+}
+.zarvin-walkthrough-head .eyebrow {
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+.zarvin-walkthrough-head h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 10px;
+  text-wrap: balance;
+}
+.zarvin-walkthrough-head p {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin: 0;
+}
+.zarvin-walkthrough-slot {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.zarvin-walkthrough-slot .frame {
+  aspect-ratio: 16 / 9;
+  flex-direction: column;
+  gap: 10px;
+}
+.zarvin-walkthrough-slot .placeholder-note {
+  position: static;
+  transform: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--graphite);
+  max-width: 46ch;
+  text-align: center;
+  padding: 0 24px;
+}
+.zarvin-walkthrough-asset-names {
+  margin-top: 16px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--graphite);
+  opacity: 0.72;
+}
+
+/* ── Zarvin One — capability status matrix ───────────────────
+   Four honest, visually distinct states. VERIFIED LIVE always reads
+   as the strongest tier; NEXT always reads as the weakest — the two
+   must never be visually interchangeable. */
+.zarvin-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin: 8px 0 4px;
+}
+.zarvin-matrix-col {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  overflow: hidden;
+  background: var(--paper);
+}
+.zarvin-matrix-col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.zarvin-matrix-col-head .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.zarvin-matrix-col--verified {
+  border-color: color-mix(in oklab, var(--state-verified) 45%, var(--rule));
+}
+.zarvin-matrix-col--verified .zarvin-matrix-col-head {
+  background: color-mix(in oklab, var(--state-verified) 14%, var(--paper));
+  color: color-mix(in oklab, var(--state-verified) 70%, var(--ink));
+}
+.zarvin-matrix-col--verified .dot { background: var(--state-verified); }
+
+.zarvin-matrix-col--validating .zarvin-matrix-col-head {
+  background: color-mix(in oklab, var(--state-processing) 14%, var(--paper));
+  color: color-mix(in oklab, var(--state-processing) 65%, var(--ink));
+}
+.zarvin-matrix-col--validating .dot { background: var(--state-processing); }
+
+.zarvin-matrix-col--implemented .zarvin-matrix-col-head {
+  background: color-mix(in oklab, var(--indigo) 12%, var(--paper));
+  color: color-mix(in oklab, var(--indigo) 60%, var(--ink));
+}
+.zarvin-matrix-col--implemented .dot { background: var(--indigo); }
+
+.zarvin-matrix-col--next {
+  border-style: dashed;
+  opacity: 0.86;
+}
+.zarvin-matrix-col--next .zarvin-matrix-col-head {
+  background: var(--paper-2);
+  color: var(--graphite);
+}
+.zarvin-matrix-col--next .dot { background: var(--graphite); }
+
+.zarvin-matrix-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 16px 14px;
+}
+.zarvin-matrix-list li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.zarvin-matrix-list li:last-child { border-bottom: none; }
+.zarvin-matrix-col--next .zarvin-matrix-list li {
+  color: var(--graphite);
+}
+
+@media (max-width: 720px) {
+  .zarvin-matrix { grid-template-columns: 1fr; }
+}
+
+/* ── Zarvin One — specialist table ────────────────────────── */
+.zarvin-specialist-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+.zarvin-specialist-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--graphite);
+  border-bottom: 1px solid var(--ink);
+}
+.zarvin-specialist-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  vertical-align: top;
+}
+.zarvin-specialist-table td:first-child,
+.zarvin-specialist-table th:first-child {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.zarvin-specialist-table .model {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--graphite);
+}
+@media (max-width: 720px) {
+  .zarvin-specialist-table { display: block; overflow-x: auto; }
+}
+
+/* ── Zarvin One — original prototype (§10, demoted) ──────────
+   Reuses .zarvin-try-* embed/launch chrome verbatim so the demoted
+   demo still looks intentional, with an explicit historical badge
+   stamped over it instead of presenting it as the current product. */
+.zarvin-prototype {
+  margin: 0 auto 80px;
+}
+.zarvin-prototype-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--graphite);
+}
+.zarvin-prototype-badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--graphite);
+  flex-shrink: 0;
+}
+.zarvin-prototype-scripted-note {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--graphite);
+  margin: 22px auto 0;
+  max-width: 60ch;
+}
+
+/* ── Zarvin One — reliability loop (§06) ─────────────────────
+   Same mockup/flow-row chrome as the request-path diagram, reused
+   for a second, shorter stage sequence. */
+.zarvin-reliability-mockup {
+  width: 100%;
+  margin: 4px 0 24px;
+}
+.zarvin-principle-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+.zarvin-principle-list li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.zarvin-principle-list li::before {
+  content: '—';
+  font-family: var(--font-mono);
+  color: var(--teal);
+  line-height: 1.55;
+}
+.zarvin-principle-list strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── Zarvin One — gate story callout ─────────────────────────*/
+.zarvin-gate-story {
+  margin-top: 24px;
+  padding: 20px 22px;
+  background: color-mix(in oklab, var(--paper-2) 70%, var(--paper));
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+}
+.zarvin-gate-story .lab {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-deep);
+  margin-bottom: 10px;
+}
+.zarvin-gate-story ol {
+  margin: 0;
+  padding-left: 20px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.zarvin-gate-story li { margin-bottom: 6px; }
+.zarvin-gate-story li:last-child { margin-bottom: 0; }
+
+/* ── Zarvin One — current development status list ───────────*/
+.zarvin-dev-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.zarvin-dev-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.zarvin-dev-list li:first-child { border-top: 1px solid var(--rule); }
+.zarvin-dev-list .name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+}
+.zarvin-dev-list .tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.zarvin-dev-list .tag--validating {
+  color: color-mix(in oklab, var(--state-processing) 65%, var(--ink));
+  background: color-mix(in oklab, var(--state-processing) 16%, var(--paper));
+}
+.zarvin-dev-list .tag--failing {
+  color: color-mix(in oklab, var(--state-warning) 60%, var(--ink));
+  background: color-mix(in oklab, var(--state-warning) 16%, var(--paper));
+}
+.zarvin-dev-list .tag--next {
+  color: var(--graphite);
+  background: var(--paper-2);
+}

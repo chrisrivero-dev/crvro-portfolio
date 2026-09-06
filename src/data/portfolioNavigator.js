@@ -83,7 +83,7 @@ const RULES = [
     if (has(q, 'guided tour', 'guided demo') && has(q, 'zarvin', 'tour', 'demo')) {
       return {
         kind: 'single',
-        lines: ['Zarvin One guided tour found', 'a controlled walkthrough of the product experience'],
+        lines: ['Zarvin One guided tour found', 'a scripted walkthrough of the original August 2026 product prototype'],
         results: [{ ...DESTINATIONS['zarvin-guided-tour'], cta: 'OPEN GUIDED TOUR →' }],
       };
     }
@@ -94,7 +94,7 @@ const RULES = [
     if (wantsToTry && (has(q, 'zarvin') || has(q, 'interactive demo'))) {
       return {
         kind: 'single',
-        lines: ['Zarvin One interactive demo found', 'controlled interactive scenarios are available'],
+        lines: ['Zarvin One interactive demo found', 'the original controlled-scenario prototype, no live backend'],
         results: [{ ...DESTINATIONS['zarvin-demo'], cta: 'TRY ZARVIN ONE →' }],
       };
     }
@@ -121,8 +121,8 @@ const RULES = [
       return {
         kind: 'single',
         lines: [
-          'Zarvin One is a personal AI command system designed to put work, decisions, approvals, and follow-up in one place while the complexity stays underneath.',
-          'Status: active prototype; controlled interactive scenarios are available; live integrations are still being validated separately.',
+          'Zarvin One is a personal AI operator: ask for an outcome, and it coordinates specialists, models, tools, permissions, execution, and verification underneath.',
+          'Status: active live build, running on my own hardware with real connected services. Some newer capabilities are still being hardened.',
         ],
         results: [{ ...DESTINATIONS['zarvin-one'], cta: 'OPEN ZARVIN ONE →' }],
       };

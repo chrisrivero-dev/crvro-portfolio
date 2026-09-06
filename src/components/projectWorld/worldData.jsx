@@ -38,7 +38,7 @@ const DESCRIPTIONS = {
   openclaw:
     "The AI workflow system I use every day to route work between local and cloud models under my approval.",
   "zarvin-one":
-    "One place to manage work, decisions, approvals, and follow-up while the complexity stays underneath.",
+    "Ask for an outcome. Zarvin coordinates specialists, models, tools, permissions, execution, and verification underneath.",
   sidecar:
     "Drafts support replies from approved KB articles and leaves the final response to the agent.",
   "help-nearby":
