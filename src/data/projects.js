@@ -353,7 +353,7 @@ export const PROJECTS = [
       'Some newer capabilities are still being hardened, or are intentionally off by default until they earn their way on.',
     ],
     disclaimer:
-      "Zarvin runs on my own hardware with real connected services — Calendar, Gmail, Granola. I separate what's independently verified, from what completed but wasn't independently checked, from what's still being hardened, rather than presenting all of it as equally finished. The original controlled prototype from August 2026 is still on this page, further down, clearly labeled as a scripted demo — not the current backend.",
+      "Zarvin runs on my own hardware with real connected services — Calendar, Gmail, Granola. I separate what's independently verified, from what completed but wasn't independently checked, from what's still being hardened, rather than presenting all of it as equally finished. The interactive demo below is a scripted product demo with sample data, not the live backend — the verified runtime is documented further down this page.",
     repo: null,
     demo: 'https://zarvin-one-mobile.expo.app/',
     guidedTourUrl: 'https://zarvin-one-mobile.expo.app/guided-demo',

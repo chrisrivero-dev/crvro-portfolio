@@ -10,15 +10,20 @@
 // stale. This component tells the current story instead: the August
 // interactive build was the first product prototype, and it has since
 // grown into a persistent, tool-connected, approval-gated operator, with
-// some newer capabilities still being hardened. The original prototype
-// is preserved, not deleted — it's demoted to §10 and labeled honestly.
+// some newer capabilities still being hardened.
+//
+// The interactive demo is still the same scripted, sample-data build
+// (self-labeled by the app itself as "not live activity from a Zarvin
+// computer"), so it's promoted near the top as the primary hands-on
+// experience but labeled truthfully as a demo, not the live runtime —
+// §10 gives it one short historical note instead of embedding it twice.
 //
 // Reuses existing CRVRO primitives throughout (Section, capability-grid,
 // bullet-list, learned-list, stack-grid, the flow-diagram mockup classes,
 // the case-figure placeholder idiom) rather than inventing new chrome.
 // New CSS lives in src/styles/case-study.css under the zarvin-matrix,
-// zarvin-specialist-table, zarvin-walkthrough, zarvin-prototype,
-// zarvin-reliability, zarvin-gate-story, and zarvin-dev-list rules.
+// zarvin-specialist-table, zarvin-reliability, zarvin-gate-story, and
+// zarvin-dev-list rules.
 // ============================================================
 
 import React from 'react';
@@ -236,55 +241,17 @@ function CurrentDevelopment() {
   );
 }
 
-/* ── top-of-page — current build walkthrough slot ─────────── */
-function CurrentBuildWalkthrough() {
+/* ── top-of-page — try the interactive demo ───────────────── */
+function TryZarvinOne() {
   return (
-    <div className="container-wide zarvin-walkthrough">
-      <div className="zarvin-walkthrough-head">
-        <div className="eyebrow">Current build walkthrough</div>
-        <h2>See the current build, not just the demo.</h2>
-        <p>
-          The strongest evidence for what Zarvin actually does today is a walkthrough of the real
-          system — not the scripted prototype further down this page.
-        </p>
-      </div>
-      <figure className="case-figure zarvin-walkthrough-slot">
-        <div className="frame">
-          <span className="placeholder-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          <p className="placeholder-note">
-            Walkthrough not recorded yet. This slot is reserved for a real, redacted screen
-            recording of the live system — once captured, it replaces this placeholder without
-            changing anything else on the page.
-          </p>
-        </div>
-      </figure>
-      <p className="zarvin-walkthrough-asset-names">
-        reserved: zarvin-current-build-walkthrough · zarvin-command-center · zarvin-approval ·
-        zarvin-job-ledger · zarvin-connections · zarvin-automations
-      </p>
-    </div>
-  );
-}
-
-/* ── §10 — original interactive prototype (demoted) ───────── */
-function OriginalPrototype() {
-  return (
-    <div className="container-wide zarvin-prototype">
+    <div className="container-wide zarvin-try">
       <div className="zarvin-try-head">
-        <span className="zarvin-prototype-badge">
-          <span className="dot" aria-hidden="true" />
-          Original interactive product prototype · August 2026
-        </span>
-        <div className="eyebrow">10 — Where Zarvin One started</div>
-        <h2>Controlled scenarios. No live backend.</h2>
+        <div className="eyebrow">Try Zarvin One</div>
+        <h2>See the product in action.</h2>
         <p>
-          This is Zarvin's first product prototype — five scripted scenarios, built to test what
-          the product experience should feel like before any of the backend above existed. Kept
-          here as evidence of how the product evolved, not as a demonstration of the current system.
+          Explore the current Zarvin One experience through the interactive demo. The interface
+          reflects the product I'm building; verified live capabilities and current runtime status
+          are documented below.
         </p>
       </div>
 
@@ -292,22 +259,22 @@ function OriginalPrototype() {
         <div className="zarvin-try-frame">
           <div className="zarvin-try-bar">
             <span className="zarvin-try-live" aria-hidden="true" />
-            <span>ZARVIN ONE · SCRIPTED PROTOTYPE, AUGUST 2026</span>
+            <span>ZARVIN ONE · INTERACTIVE PRODUCT DEMO</span>
           </div>
           <iframe
             className="zarvin-try-iframe"
             src={ZARVIN_DEMO_URL}
-            title="Zarvin One original interactive prototype (August 2026, scripted)"
+            title="Zarvin One interactive product demo"
             loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
           />
         </div>
         <div className="zarvin-try-actions">
           <a className="zarvin-btn zarvin-btn-primary" href={ZARVIN_DEMO_URL} target="_blank" rel="noreferrer">
-            Open original prototype ↗
+            Open interactive demo ↗
           </a>
           <a className="zarvin-btn" href={ZARVIN_GUIDED_TOUR_URL} target="_blank" rel="noreferrer">
-            Take the scripted guided tour →
+            Take the guided tour →
           </a>
         </div>
       </div>
@@ -320,22 +287,23 @@ function OriginalPrototype() {
               <span />
               <span />
             </span>
-            <span className="placeholder-label">Zarvin One · prototype</span>
+            <span className="placeholder-label">Zarvin One</span>
           </div>
         </div>
         <div className="zarvin-try-actions">
           <a className="zarvin-btn zarvin-btn-primary zarvin-btn-lg" href={ZARVIN_DEMO_URL} target="_blank" rel="noreferrer">
-            Open original prototype ↗
+            Open interactive demo ↗
           </a>
           <a className="zarvin-btn zarvin-btn-lg" href={ZARVIN_GUIDED_TOUR_URL} target="_blank" rel="noreferrer">
-            Take the scripted guided tour →
+            Take the guided tour →
           </a>
         </div>
       </div>
 
-      <p className="zarvin-prototype-scripted-note">
-        Every scenario, including any "something went wrong" moment, is scripted for the tour. None
-        of it is a record of a real incident — the real incidents and their fixes are in §06 and §09.
+      <p className="zarvin-try-disclosure">
+        Interactive product demo · scripted scenarios with sample data, not the live backend. The
+        Current Build Status, Reliability, and specialist sections below document what's actually
+        running.
       </p>
     </div>
   );
@@ -344,7 +312,7 @@ function OriginalPrototype() {
 export default function ZarvinCaseStudy() {
   return (
     <>
-      <CurrentBuildWalkthrough />
+      <TryZarvinOne />
 
       <Section index="01" label="What it is now" title="One place to ask for an outcome.">
         <p>
@@ -466,7 +434,19 @@ export default function ZarvinCaseStudy() {
         <CurrentDevelopment />
       </Section>
 
-      <OriginalPrototype />
+      <Section index="10" label="From prototype to current build" title="Where Zarvin One started.">
+        <p>
+          The interactive demo above is Zarvin's product experience, but its scenarios are scripted
+          with sample data — the same origin point described in §03. Zarvin's first product
+          prototype, built in August 2026, used those same five scenarios to test what the product
+          should feel like before any of the backend in §05 and §06 existed.
+        </p>
+        <p>
+          Every scenario in that demo, including any "something went wrong" moment, is scripted.
+          None of it is a record of a real incident — the real incidents and their fixes are
+          documented in §06 and §09.
+        </p>
+      </Section>
 
       <div className="container-wide">
         <div className="zarvin-try-head" style={{ marginBottom: 28 }}>

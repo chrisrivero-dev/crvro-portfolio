@@ -52,21 +52,21 @@ backend.
 
 ---
 
-### Current build walkthrough (top slot)
+### Try Zarvin One (top slot)
 
-Primary hiring evidence, placed directly after the hero. No video asset
-exists yet (verified: zero Zarvin assets in `public/images/`, no
-`.mp4`/`.mov` walkthrough on the build machine at audit time) — the section
-ships as a labeled, truthful placeholder rather than a fabricated player,
-with reserved asset names so a real recording drops in without touching
-the surrounding page:
+Updated 2026-09-06: the walkthrough-video placeholder that originally
+occupied this slot was removed — no video is being recorded, and an empty
+"not recorded yet" placeholder had no reason to stay on the page
+indefinitely. The interactive demo (the same build described in §10) is
+promoted here instead as the primary hands-on experience, labeled
+truthfully as an **interactive product demo** — scripted scenarios with
+sample data, not the live backend (confirmed live: the demo app itself
+labels its guided tour "not live activity from a Zarvin computer"). The
+Current Build Status, Reliability, and specialist sections further down
+are where verified runtime claims live; this section never implies the
+demo is live execution.
 
-- `zarvin-current-build-walkthrough.*`
-- `zarvin-command-center.*`
-- `zarvin-approval.*`
-- `zarvin-job-ledger.*`
-- `zarvin-connections.*`
-- `zarvin-automations.*`
+Keeps: "Open interactive demo" and "Take the guided tour" links.
 
 ### 01 — What it is now
 
@@ -181,13 +181,16 @@ the system itself), cross-device physical acceptance, a live-verified job
 for the M18 local-execution runtime, Switchyard/STRONG_LOCAL evidence
 gates, native iOS push.
 
-### 10 — Original interactive prototype
+### 10 — From prototype to current build
 
-Explicitly labeled: **Original interactive product prototype · August
-2026 · controlled scenarios · no live backend.** The guided tour is
-labeled scripted. No scripted event (including any "something went wrong"
-moment) is presented as a real historical incident — the real incidents
-and their fixes are in §06 and §09.
+Updated 2026-09-06: this section no longer re-embeds the demo (it's shown
+once, in the top slot, to avoid presenting the same large embed twice). It
+is now a short historical note: the interactive demo above is the same
+scripted, sample-data build that was Zarvin's first product prototype in
+August 2026 — the origin point already described in §03. No scripted
+event (including any "something went wrong" moment) is presented as a
+real historical incident — the real incidents and their fixes are in §06
+and §09.
 
 ---
 

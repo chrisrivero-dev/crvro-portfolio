@@ -1836,69 +1836,6 @@
   .zarvin-try-launch { display: block; }
 }
 
-/* ── Zarvin One — current-build walkthrough slot ─────────────
-   Reuses the .case-figure placeholder idiom (repeating-diagonal frame
-   + dot mark + label) already used for not-yet-captured screenshots
-   elsewhere, so an unrecorded asset never invents a fake player. */
-.zarvin-walkthrough {
-  margin: 0 auto 80px;
-}
-.zarvin-walkthrough-head {
-  max-width: 720px;
-  margin: 0 auto 24px;
-  text-align: center;
-}
-.zarvin-walkthrough-head .eyebrow {
-  color: var(--teal);
-  margin-bottom: 12px;
-}
-.zarvin-walkthrough-head h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(24px, 3vw, 34px);
-  font-weight: 500;
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  margin: 0 0 10px;
-  text-wrap: balance;
-}
-.zarvin-walkthrough-head p {
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--graphite);
-  margin: 0;
-}
-.zarvin-walkthrough-slot {
-  max-width: 860px;
-  margin: 0 auto;
-}
-.zarvin-walkthrough-slot .frame {
-  aspect-ratio: 16 / 9;
-  flex-direction: column;
-  gap: 10px;
-}
-.zarvin-walkthrough-slot .placeholder-note {
-  position: static;
-  transform: none;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--graphite);
-  max-width: 46ch;
-  text-align: center;
-  padding: 0 24px;
-}
-.zarvin-walkthrough-asset-names {
-  margin-top: 16px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--graphite);
-  opacity: 0.72;
-}
-
 /* ── Zarvin One — capability status matrix ───────────────────
    Four honest, visually distinct states. VERIFIED LIVE always reads
    as the strongest tier; NEXT always reads as the weakest — the two
@@ -2024,46 +1961,6 @@
 }
 @media (max-width: 720px) {
   .zarvin-specialist-table { display: block; overflow-x: auto; }
-}
-
-/* ── Zarvin One — original prototype (§10, demoted) ──────────
-   Reuses .zarvin-try-* embed/launch chrome verbatim so the demoted
-   demo still looks intentional, with an explicit historical badge
-   stamped over it instead of presenting it as the current product. */
-.zarvin-prototype {
-  margin: 0 auto 80px;
-}
-.zarvin-prototype-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  margin-bottom: 16px;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--r-pill);
-  background: var(--paper-2);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--graphite);
-}
-.zarvin-prototype-badge .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--graphite);
-  flex-shrink: 0;
-}
-.zarvin-prototype-scripted-note {
-  text-align: center;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 14px;
-  color: var(--graphite);
-  margin: 22px auto 0;
-  max-width: 60ch;
 }
 
 /* ── Zarvin One — reliability loop (§06) ─────────────────────
