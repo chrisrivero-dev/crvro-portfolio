@@ -378,14 +378,14 @@ export default function ZarvinCaseStudy() {
       <Section index="06" label="Reliability and trust" title="COMPLETED is not the same as VERIFIED.">
         <FlowMockup label="zarvin one · reliability gate" stages={RELIABILITY_STAGES} className="zarvin-reliability-mockup" />
         <ul className="zarvin-principle-list">
-          <li><strong>COMPLETED is not VERIFIED.</strong> Most finished jobs are completed, not independently checked — the system says so instead of blurring the two.</li>
-          <li><strong>Approvals expire.</strong> A Tier-3 approval is a 15-minute window, not a standing grant.</li>
-          <li><strong>Tiers are enforced.</strong> Consequential actions need the matching approval tier — there's no shortcut around it.</li>
-          <li><strong>Unknown isn't retried.</strong> A crash-orphaned action becomes an explicit <code>EXECUTION_UNKNOWN</code> state, never a blind retry.</li>
-          <li><strong>Tests decide, not the model.</strong> A proposed code fix only counts if the project's own test command passes after the edit.</li>
-          <li><strong>Failure means rollback.</strong> If those tests fail, the edit is rolled back — a model saying "fixed" doesn't make it so.</li>
-          <li><strong>Commands are allowlisted.</strong> Recognized-and-safe runs; anything else needs approval, and nothing runs through a raw shell string.</li>
-          <li><strong>Autonomy can't self-grant.</strong> Track record makes a capability eligible; only I can grant it. Destructive actions can never become autonomous.</li>
+          <li><span className="zarvin-principle-copy"><strong>COMPLETED is not VERIFIED.</strong> Most finished jobs are completed, not independently checked — the system says so instead of blurring the two.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Approvals expire.</strong> A Tier-3 approval is a 15-minute window, not a standing grant.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Tiers are enforced.</strong> Consequential actions need the matching approval tier — there's no shortcut around it.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Unknown isn't retried.</strong> A crash-orphaned action becomes an explicit <code>EXECUTION_UNKNOWN</code> state, never a blind retry.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Tests decide, not the model.</strong> A proposed code fix only counts if the project's own test command passes after the edit.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Failure means rollback.</strong> If those tests fail, the edit is rolled back — a model saying "fixed" doesn't make it so.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Commands are allowlisted.</strong> Recognized-and-safe runs; anything else needs approval, and nothing runs through a raw shell string.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Autonomy can't self-grant.</strong> Track record makes a capability eligible; only I can grant it. Destructive actions can never become autonomous.</span></li>
         </ul>
         <div className="zarvin-gate-story">
           <span className="lab">From the runtime's history: the reliability gate</span>

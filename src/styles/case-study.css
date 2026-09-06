@@ -1974,32 +1974,45 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  max-width: 640px;
   border-top: 1px solid var(--rule);
 }
 .zarvin-principle-list li {
   display: grid;
   grid-template-columns: 18px 1fr;
   gap: 14px;
-  padding: 14px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--ink);
 }
 .zarvin-principle-list li::before {
   content: '—';
   font-family: var(--font-mono);
   color: var(--teal);
-  line-height: 1.55;
+  line-height: 1.6;
+}
+/* Everything for one principle — the bold lead-in, the plain-text
+   explanation, and any inline <code> token — lives inside this single
+   span so it forms exactly one grid item next to the dash. Without this
+   wrapper, <strong>/text/<code> each become their own grid item and get
+   squeezed into the 18px dash column, wrapping one word per line. */
+.zarvin-principle-copy {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
 }
 .zarvin-principle-list strong {
   color: var(--ink);
   font-weight: 600;
 }
+.zarvin-principle-list code {
+  white-space: nowrap;
+}
 
 /* ── Zarvin One — gate story callout ─────────────────────────*/
 .zarvin-gate-story {
+  max-width: 640px;
   margin-top: 24px;
   padding: 20px 22px;
   background: color-mix(in oklab, var(--paper-2) 70%, var(--paper));
