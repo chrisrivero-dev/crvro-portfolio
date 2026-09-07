@@ -119,48 +119,48 @@ const MATRIX = [
     key: 'verified',
     label: 'Verified live',
     items: [
-      'Bridge API runtime — dozens of live endpoints, self-reports its own build and staleness',
-      'Connected accounts — Google Calendar, two Gmail accounts, Granola meeting notes',
-      'Approval-gated execution — propose → approve → execute → verify, with an expiry window',
-      'Job Ledger — real evidence, and COMPLETED is tracked separately from VERIFIED',
-      'Specialist routing — deterministic capability-to-model mapping, local-only fails closed',
-      'Independent reviewer — a separate pinned role from whichever specialist did the work',
-      'Durable Ask pipeline — resumable, cancellable, streams progress, survives a restart',
-      'Attention Engine — scored, deduplicated, suppresses noise by default',
-      'Scheduled automations — Morning Brief and Evening Recap running on real timestamps',
+      'Bridge API runtime: dozens of live endpoints, self-reports its own build and staleness',
+      'Connected accounts: Google Calendar, two Gmail accounts, Granola meeting notes',
+      'Approval-gated execution: propose → approve → execute → verify, with an expiry window',
+      'Job Ledger: real evidence, and COMPLETED is tracked separately from VERIFIED',
+      'Specialist routing: deterministic capability-to-model mapping, local-only fails closed',
+      'Independent reviewer: a separate pinned role from whichever specialist did the work',
+      'Durable Ask pipeline: resumable, cancellable, streams progress, survives a restart',
+      'Attention Engine: scored, deduplicated, suppresses noise by default',
+      'Scheduled automations: Morning Brief and Evening Recap running on real timestamps',
       'Telegram as the live notification transport',
-      'Concurrency hardening — atomic cross-process store, no duplicate execution',
-      'Command Center — an operations inbox backed by real evidence cards',
+      'Concurrency hardening: atomic cross-process store, no duplicate execution',
+      'Command Center: an operations inbox backed by real evidence cards',
     ],
   },
   {
     key: 'validating',
     label: 'Connected · validating',
     items: [
-      'Automation Engine V2 — a deterministic NL interpreter now running; one live automation is currently failing, and the system reports that honestly',
-      'Cross-device state — phone and web reading backend-authoritative state, physical acceptance in progress',
+      'Automation Engine V2: a deterministic NL interpreter now running; one live automation is currently failing, and the system reports that honestly',
+      'Cross-device state: phone and web reading backend-authoritative state, physical acceptance in progress',
     ],
   },
   {
     key: 'implemented',
     label: 'Implemented',
     items: [
-      'Scoped local execution — files, Git, and an allowlisted command policy, wired in but without a live-verified job yet',
+      'Scoped local execution: files, Git, and an allowlisted command policy, wired in but without a live-verified job yet',
       'Code fixes gated on the project\'s own tests, with automatic rollback on failure',
-      'Earned-autonomy tiers — eligibility can accrue, but no grant has been issued',
+      'Earned-autonomy tiers: eligibility can accrue, but no grant has been issued',
       'Web research and real-browser reading, contained against SSRF',
-      'Cloud escape hatch — benchmarked under a budget cap, limited role, not an automatic fallback',
+      'Cloud escape hatch: benchmarked under a budget cap, limited role, not an automatic fallback',
     ],
   },
   {
     key: 'next',
     label: 'Next',
     items: [
-      'Switchyard adaptive second-layer routing — built, off by default',
-      'STRONG_LOCAL / Flash-Next escalation — evaluated, currently a no-go on live evidence',
-      'Native iOS push notifications — Telegram is the transport today',
-      'Watchers as first-class entities — condition watches exist; standalone watchers are still empty',
-      'Device registry / pairing discovery — devices are added by manual address and token today',
+      'Switchyard adaptive second-layer routing: built, off by default',
+      'STRONG_LOCAL / Flash-Next escalation: evaluated, currently a no-go on live evidence',
+      'Native iOS push notifications: Telegram is the transport today',
+      'Watchers as first-class entities: condition watches exist; standalone watchers are still empty',
+      'Device registry / pairing discovery: devices are added by manual address and token today',
     ],
   },
 ];
@@ -187,12 +187,12 @@ function CapabilityMatrix() {
 
 /* ── §07 — specialists and models ─────────────────────────── */
 const SPECIALISTS = [
-  { role: 'CAPTAIN', job: 'Chief of staff — project awareness, daily context, daily operating brief', model: 'qwen3.8:27b' },
+  { role: 'CAPTAIN', job: 'Chief of staff: project awareness, daily context, daily operating brief', model: 'qwen3.8:27b' },
   { role: 'NEMO', job: 'Fast chat and evidence triage', model: 'nemotron-lightning:30b-a3b-q4' },
   { role: 'VOLT', job: 'Deep coding', model: 'qwen3-coder-next:q4_K_M' },
   { role: 'BYTE', job: 'Systems work', model: 'qwen3-coder-next:q4_K_M' },
   { role: 'FINLEY', job: 'UX and communication', model: 'muse-glimmer:30b-mlx' },
-  { role: 'REVIEWER', job: 'Independent review — a separate pinned model from whoever did the work', model: 'qwen3-coder:30b' },
+  { role: 'REVIEWER', job: 'Independent review: a separate pinned model from whoever did the work', model: 'qwen3-coder:30b' },
   { role: 'VISION', job: 'Image and screen understanding', model: 'qwen3-vl:32b' },
 ];
 
@@ -221,7 +221,7 @@ function SpecialistTable() {
 
 /* ── §09 — current development ────────────────────────────── */
 const CURRENT_DEV = [
-  { name: 'Automation Engine V2 validation — one live automation ("tell me if a job gets stuck or fails") is currently failing, and reports it', tag: 'FAILING (reported)', cls: 'failing' },
+  { name: 'Automation Engine V2 validation: one live automation ("tell me if a job gets stuck or fails") is currently failing, and reports it', tag: 'FAILING (reported)', cls: 'failing' },
   { name: 'Cross-device physical acceptance across phone and web', tag: 'VALIDATING', cls: 'validating' },
   { name: 'Live-verified job for the M18 local-execution runtime', tag: 'VALIDATING', cls: 'validating' },
   { name: 'Switchyard adaptive routing and STRONG_LOCAL evidence gates', tag: 'NEXT', cls: 'next' },
@@ -316,8 +316,8 @@ export default function ZarvinCaseStudy() {
 
       <Section index="01" label="What it is now" title="One place to ask for an outcome.">
         <p>
-          Zarvin One is a personal AI operator. You ask for an outcome — not which model, which
-          tool, or which specialist should handle it — and Zarvin coordinates all of that
+          Zarvin One is a personal AI operator. You ask for an outcome: not which model, which
+          tool, or which specialist should handle it. Zarvin coordinates all of that
           underneath: capability routing, specialist and model selection, tool execution,
           permission and earned autonomy, verification, evidence, and follow-up.
         </p>
@@ -327,8 +327,8 @@ export default function ZarvinCaseStudy() {
       <Section index="02" label="Why I built it" title="I already had the machinery. Using it was the problem.">
         <p>
           I already had local models, agents, tools, automations, and integrations working. They
-          were useful, but using them meant managing all of that machinery myself — which model
-          for which job, which tool was allowed to do what, what still needed my approval.
+          were useful, but using them meant managing all of that machinery myself: which model
+          for which job, which tool was allowed to do what, and what still needed my approval.
         </p>
         <p>Zarvin One is the product layer that hides that complexity so the person asking doesn't have to think about it.</p>
       </Section>
@@ -336,19 +336,19 @@ export default function ZarvinCaseStudy() {
       <Section index="03" label="From prototype to operating layer" title="What replaced the scripted demo.">
         <p>
           Zarvin's first product prototype, built in August 2026, was a controlled interactive
-          build: five scripted scenarios, no live backend. It answered a design question — what
-          should this feel like as a product — before there was a real system underneath it to
+          build: five scripted scenarios, no live backend. It answered a design question: what
+          should this feel like as a product before there was a real system underneath it to
           answer to.
         </p>
         <p>Since then, a real backend has grown underneath it. Verified and currently running:</p>
         <ul className="bullet-list">
-          <li>Persistent jobs — a durable, resumable Job Ledger instead of a session that forgets</li>
-          <li>Specialist routing — requests reach a named specialist by capability, not by guesswork</li>
-          <li>Real connected services — Google Calendar, two Gmail accounts, Granola meeting notes</li>
-          <li>Approval boundaries — consequential actions wait for explicit approval, with an expiry</li>
-          <li>Verification and evidence — outcomes are checked against the provider, not assumed</li>
-          <li>Recovery — a crash-orphaned action gets an honest terminal state, not a silent retry</li>
-          <li>Proactive attention — a scoring engine that surfaces what matters and suppresses the rest</li>
+          <li>Persistent jobs: a durable, resumable Job Ledger instead of a session that forgets</li>
+          <li>Specialist routing: requests reach a named specialist by capability, not by guesswork</li>
+          <li>Real connected services: Google Calendar, two Gmail accounts, Granola meeting notes</li>
+          <li>Approval boundaries: consequential actions wait for explicit approval, with an expiry</li>
+          <li>Verification and evidence: outcomes are checked against the provider, not assumed</li>
+          <li>Recovery: a crash-orphaned action gets an honest terminal state, not a silent retry</li>
+          <li>Proactive attention: a scoring engine that surfaces what matters and suppresses the rest</li>
         </ul>
       </Section>
 
@@ -358,8 +358,8 @@ export default function ZarvinCaseStudy() {
           A real example, redacted: a calendar hold gets requested. It maps to{' '}
           <code>CALENDAR_WRITE</code>, a Tier-3 consequential capability, which routes to a pinned
           specialist and waits for my approval instead of running on its own. Once approved, it
-          executes against Google Calendar and Zarvin checks the result against Calendar itself —
-          not just the tool's own response — before marking it verified. The whole approve-to-verify
+          executes against Google Calendar and Zarvin checks the result against Calendar itself—not
+          just the tool's own response—before marking it verified. The whole approve-to-verify
           window was about two seconds; the record of it lives in the Job Ledger, evidence attached.
         </p>
       </Section>
@@ -378,19 +378,19 @@ export default function ZarvinCaseStudy() {
       <Section index="06" label="Reliability and trust" title="COMPLETED is not the same as VERIFIED.">
         <FlowMockup label="zarvin one · reliability gate" stages={RELIABILITY_STAGES} className="zarvin-reliability-mockup" />
         <ul className="zarvin-principle-list">
-          <li><span className="zarvin-principle-copy"><strong>COMPLETED is not VERIFIED.</strong> Most finished jobs are completed, not independently checked — the system says so instead of blurring the two.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>COMPLETED is not VERIFIED.</strong> Most finished jobs are completed, not independently checked; the system says so instead of blurring the two.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Approvals expire.</strong> A Tier-3 approval is a 15-minute window, not a standing grant.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Tiers are enforced.</strong> Consequential actions need the matching approval tier — there's no shortcut around it.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Tiers are enforced.</strong> Consequential actions need the matching approval tier; there's no shortcut around it.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Unknown isn't retried.</strong> A crash-orphaned action becomes an explicit <code>EXECUTION_UNKNOWN</code> state, never a blind retry.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Tests decide, not the model.</strong> A proposed code fix only counts if the project's own test command passes after the edit.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Failure means rollback.</strong> If those tests fail, the edit is rolled back — a model saying "fixed" doesn't make it so.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Failure means rollback.</strong> If those tests fail, the edit is rolled back; a model saying "fixed" doesn't make it so.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Commands are allowlisted.</strong> Recognized-and-safe runs; anything else needs approval, and nothing runs through a raw shell string.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Autonomy can't self-grant.</strong> Track record makes a capability eligible; only I can grant it. Destructive actions can never become autonomous.</span></li>
         </ul>
         <div className="zarvin-gate-story">
           <span className="lab">From the runtime's history: the reliability gate</span>
           <ol>
-            <li>Reproduced a real concurrent-write race under load — two processes racing the same on-disk store.</li>
+            <li>Reproduced a real concurrent-write race under load: two processes racing the same on-disk store.</li>
             <li>Replaced the ad hoc temp-file convention with an atomic, cross-process store shared across every JSON-backed store.</li>
             <li>Closed a duplicate-execution race where two concurrent approvals could both reach the broker.</li>
             <li>Added an explicit <code>EXECUTION_UNKNOWN</code> state for a crash-orphaned action, instead of it looking active forever.</li>
@@ -402,12 +402,12 @@ export default function ZarvinCaseStudy() {
       <Section index="07" label="Specialists and models" title="You don't pick a model. Zarvin does.">
         <p>
           Underneath a request, Zarvin maps the capability it needs to a named specialist and a
-          pinned model — deterministically, not adaptively, today.
+          pinned model: deterministically, not adaptively, today.
         </p>
         <SpecialistTable />
         <ul className="bullet-list">
           <li>Capability-to-model routing is deterministic and running now; nothing picks "the best model" adaptively yet</li>
-          <li>Local-only policy fails closed — a non-local model provider is rejected outright, not silently allowed</li>
+          <li>Local-only policy fails closed: a non-local model provider is rejected outright, not silently allowed</li>
           <li>Independent review is a separate, differently-pinned model from whichever specialist did the original work</li>
           <li>An adaptive second routing layer exists in code but is off by default</li>
           <li>A cloud model is integrated as a deliberately limited escalation path, not an automatic fallback</li>
@@ -416,12 +416,12 @@ export default function ZarvinCaseStudy() {
 
       <Section index="08" label="What I learned" title="Reliable agents need more than good prompts.">
         <ol className="learned-list">
-          <li><span className="num">01</span><span>Reliable agents need more than good prompts — they need boundaries, verification, and a way to recover when something goes wrong.</span></li>
+          <li><span className="num">01</span><span>Reliable agents need more than good prompts: they need boundaries, verification, and a way to recover when something goes wrong.</span></li>
           <li><span className="num">02</span><span>A successful API response is not proof of a successful side effect. The provider has to confirm it, not just accept the call.</span></li>
           <li><span className="num">03</span><span>UI state has to agree with persisted runtime state, or the interface starts lying to the person using it.</span></li>
-          <li><span className="num">04</span><span>Consequential actions need explicit, tiered boundaries — a blanket "ask before doing anything" doesn't scale and a blanket "just do it" isn't safe.</span></li>
+          <li><span className="num">04</span><span>Consequential actions need explicit, tiered boundaries: a blanket "ask before doing anything" doesn't scale and a blanket "just do it" isn't safe.</span></li>
           <li><span className="num">05</span><span>Evidence beats an agent's own assertion, every time. "It worked" is a claim; a verified record is proof.</span></li>
-          <li><span className="num">06</span><span>Retries can themselves become dangerous — a naive retry after a crash can turn one action into two.</span></li>
+          <li><span className="num">06</span><span>Retries can themselves become dangerous: a naive retry after a crash can turn one action into two.</span></li>
           <li><span className="num">07</span><span>Useful automation should reduce what needs my attention, not add another feed I now have to check.</span></li>
         </ol>
       </Section>
@@ -437,13 +437,13 @@ export default function ZarvinCaseStudy() {
       <Section index="10" label="From prototype to current build" title="Where Zarvin One started.">
         <p>
           The interactive demo above is Zarvin's product experience, but its scenarios are scripted
-          with sample data — the same origin point described in §03. Zarvin's first product
+          with sample data: the same origin point described in §03. Zarvin's first product
           prototype, built in August 2026, used those same five scenarios to test what the product
           should feel like before any of the backend in §05 and §06 existed.
         </p>
         <p>
           Every scenario in that demo, including any "something went wrong" moment, is scripted.
-          None of it is a record of a real incident — the real incidents and their fixes are
+          None of it is a record of a real incident: the real incidents and their fixes are
           documented in §06 and §09.
         </p>
       </Section>
