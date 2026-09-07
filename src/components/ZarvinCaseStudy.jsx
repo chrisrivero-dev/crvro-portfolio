@@ -358,8 +358,8 @@ export default function ZarvinCaseStudy() {
           A real example, redacted: a calendar hold gets requested. It maps to{' '}
           <code>CALENDAR_WRITE</code>, a Tier-3 consequential capability, which routes to a pinned
           specialist and waits for my approval instead of running on its own. Once approved, it
-          executes against Google Calendar and Zarvin checks the result against Calendar itself—not
-          just the tool's own response—before marking it verified. The whole approve-to-verify
+          executes against Google Calendar and Zarvin checks the result against Calendar itself:
+          not just the tool's own response, but the actual Calendar response. The whole approve-to-verify
           window was about two seconds; the record of it lives in the Job Ledger, evidence attached.
         </p>
       </Section>
