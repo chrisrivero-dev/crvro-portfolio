@@ -658,7 +658,6 @@ export const PROJECTS = [
     statusBadge: 'Public sample available',
     outcome: 'Working property screening tool that turns an address into a cited, reviewable first-pass feasibility report covering parcel context, zoning signals, jurisdiction notes, risk flags, and verification needs.',
     repo: null,
-    demo: 'https://www.usegroundrules.com/',
     overview: [
       'GroundRules helps ADU builders, architects, permit expediters, small developers, real estate professionals, and property owners screen whether an address is worth deeper review before spending time or money on formal due diligence.',
       'It uses public parcel, zoning, jurisdiction, and hazard data to generate a plain-English report showing what may be possible, what looks risky, what is unknown, and what needs human verification.',
