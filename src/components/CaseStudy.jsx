@@ -4,6 +4,7 @@ import ParcelPreview from './ParcelPreview.jsx';
 import EvidencePanel from './EvidencePanel.jsx';
 import HermesIncidentReplay from './HermesIncidentReplay.jsx';
 import ZarvinCaseStudy from './ZarvinCaseStudy.jsx';
+import ProofFirstCaseStudy from './ProofFirstCaseStudy.jsx';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 
 function ToolRouterMockup() {
@@ -320,7 +321,18 @@ export default function CaseStudy({ project: p }) {
                   />
                 )}
 
-                {!p.repo && !p.demo && (
+                {p.site && (
+                  <MetaRow
+                    label="Site"
+                    value={
+                      <a href={p.site} target="_blank" rel="noreferrer">
+                        {p.site.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
+                      </a>
+                    }
+                  />
+                )}
+
+                {!p.repo && !p.demo && !p.site && (
                   <MetaRow
                     label="Links"
                     value={
@@ -349,11 +361,14 @@ export default function CaseStudy({ project: p }) {
       {/* ── evidence panel ───────────────────────────────── */}
       <EvidencePanel project={p} />
 
-      {/* ── Zarvin One has its own section shape (see
-          ZarvinCaseStudy.jsx) instead of the generic template below;
-          every other project's rendering here is unchanged. ──── */}
+      {/* ── Zarvin One and Proof First have their own section shape
+          (ZarvinCaseStudy.jsx, ProofFirstCaseStudy.jsx) instead of the
+          generic template below; every other project's rendering here
+          is unchanged. ──── */}
       {p.slug === 'zarvin-one' ? (
         <ZarvinCaseStudy />
+      ) : p.slug === 'proof-first' ? (
+        <ProofFirstCaseStudy />
       ) : (
         <>
 

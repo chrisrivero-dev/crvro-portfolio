@@ -2082,3 +2082,190 @@
   color: var(--graphite);
   background: var(--paper-2);
 }
+
+/* ── Proof First ─────────────────────────────────────────────
+   Fail / same-test / pass tones reuse the shared state tokens:
+   --error for FAIL, --state-processing for SAME TEST, --success for
+   PASS. The lead block mirrors the Zarvin "try" block: centered
+   head, then the sequence strip, then the demo video. */
+.pf-lead {
+  margin: 0 auto 80px;
+}
+.pf-lead-head {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+.pf-lead-head .eyebrow {
+  color: #2457FF;
+  margin-bottom: 12px;
+}
+[data-theme="dark"] .pf-lead-head .eyebrow { color: #6F8CFF; }
+.pf-lead-head h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 10px;
+  text-wrap: balance;
+}
+.pf-lead-head p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin: 0;
+}
+
+.pf-sequence-mockup {
+  max-width: 880px;
+  margin: 0 auto 28px;
+}
+.flow-node[data-tone="fail"] { border-color: var(--error); }
+.flow-node[data-tone="fail"] .flow-k { color: var(--error); }
+.flow-node[data-tone="same"] { border-color: var(--ink); }
+.flow-node[data-tone="pass"] { border-color: var(--success); }
+.flow-node[data-tone="pass"] .flow-k { color: var(--success); }
+
+.pf-demo {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.pf-demo-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+}
+.pf-demo figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--graphite);
+}
+.pf-demo-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.pf-demo-state b { font-weight: 700; }
+.pf-demo-state i { font-style: normal; }
+.pf-demo-state em { font-style: normal; margin-left: auto; color: var(--ink); }
+.pf-fail { color: var(--error); }
+.pf-same { color: var(--ink); }
+.pf-pass { color: var(--success); }
+.pf-demo-note { max-width: 62ch; }
+
+/* §02 mechanism: one row per step */
+.pf-seq {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+.pf-seq li {
+  display: grid;
+  grid-template-columns: 32px 140px 1fr;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-top: 1px solid var(--rule);
+}
+.pf-seq li:last-child { border-bottom: 1px solid var(--rule); }
+.pf-seq-n {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--pencil);
+}
+.pf-seq-k {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+.pf-seq li[data-tone="fail"] .pf-seq-k { color: var(--error); }
+.pf-seq li[data-tone="pass"] .pf-seq-k { color: var(--success); }
+.pf-seq-body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* §03 worked example: before / same test / after */
+.pf-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 8px 0 22px;
+}
+.pf-compare-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+}
+.pf-compare-k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+.pf-compare-v {
+  font-family: var(--font-serif);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.pf-compare-d {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--graphite);
+}
+.pf-compare-cell[data-tone="fail"] { border-color: var(--error); }
+.pf-compare-cell[data-tone="fail"] .pf-compare-k,
+.pf-compare-cell[data-tone="fail"] .pf-compare-v { color: var(--error); }
+.pf-compare-cell[data-tone="pass"] { border-color: var(--success); }
+.pf-compare-cell[data-tone="pass"] .pf-compare-k,
+.pf-compare-cell[data-tone="pass"] .pf-compare-v { color: var(--success); }
+
+/* §04 status columns */
+.pf-status {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  margin-top: 8px;
+}
+.pf-status-col {
+  padding-top: 16px;
+  border-top: 2px solid var(--rule-strong);
+}
+.pf-status-col--built { border-top-color: var(--success); }
+.pf-status-col--person { border-top-color: var(--state-processing); }
+.pf-status-col--not { border-top-color: var(--pencil); }
+
+@media (max-width: 720px) {
+  .pf-seq li {
+    grid-template-columns: 28px 1fr;
+  }
+  .pf-seq-body { grid-column: 2; }
+  .pf-compare { grid-template-columns: 1fr; }
+}

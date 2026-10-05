@@ -58,6 +58,11 @@ export const DESTINATIONS = {
     label: findProject('groundrules')?.title || 'GroundRules',
     href: '/projects/groundrules',
   },
+  'proof-first': {
+    key: 'proof-first',
+    label: findProject('proof-first')?.title || 'Proof First',
+    href: '/projects/proof-first',
+  },
   'parcel-engine': {
     key: 'parcel-engine',
     label: findProject('parcel-engine')?.title || 'Parcel Engine',
@@ -195,6 +200,21 @@ const RULES = [
         kind: 'single',
         lines: ['hiring intent detected', 'closest system: SIDECAR'],
         results: [{ ...DESTINATIONS.sidecar, cta: 'OPEN SIDECAR →' }],
+      };
+    }
+    return null;
+  },
+
+  // ── Software repair with evidence: Proof First ───────────
+  (q) => {
+    if (has(q, 'proof first', 'proof-first', 'repair proof', 'prove a fix', 'bug fix proof')) {
+      return {
+        kind: 'single',
+        lines: [
+          'Proof First repairs a broken behavior, reruns the same test, and shows the before and after evidence before payment.',
+          'Status: active product. Checkout and delivery are not built yet.',
+        ],
+        results: [{ ...DESTINATIONS['proof-first'], cta: 'OPEN PROOF FIRST →' }],
       };
     }
     return null;

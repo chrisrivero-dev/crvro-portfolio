@@ -11,6 +11,7 @@
   --pw-sidecar:     #6B6B3E;
   --pw-help-nearby: #B85A3A;
   --pw-groundrules: #3B6B55;
+  --pw-proof-first: #2457FF;
   --pw-parcel:      #4A6B3F;
   --pw-sea:         color-mix(in oklab, var(--amber) 9%, var(--paper-2));
   --pw-land:        var(--paper-3);
@@ -25,6 +26,7 @@
   --pw-sidecar:     #858560;
   --pw-help-nearby: #c06d51;
   --pw-groundrules: #7ba38d;
+  --pw-proof-first: #6F8CFF;
   --pw-parcel:      #718b69;
   --pw-sea:         color-mix(in oklab, #8faab8 7%, #16191d);
   --pw-land:        #262420;
@@ -85,7 +87,7 @@ a.pw-skip { padding-bottom: 2px; }
 /* ─────────────────────────────────────────────────────────
    DESKTOP STAGE — tall track, sticky map + card
    ───────────────────────────────────────────────────────── */
-.pw-track { position: relative; height: 560vh; }
+.pw-track { position: relative; height: 640vh; }
 .pw-stage {
   position: sticky;
   top: 64px;

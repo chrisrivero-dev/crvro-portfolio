@@ -41,7 +41,7 @@ function Decorations({ ids }) {
 
   const waves = [
     [470, 250], [540, 320], [420, 350], [740, 480], [870, 580],
-    [330, 470], [910, 240], [180, 420], [760, 720], [940, 420],
+    [330, 470], [910, 240], [180, 420], [776, 772], [940, 420],
   ];
 
   return (
@@ -217,7 +217,7 @@ export default function WorldMap({
       role="group"
       aria-label={
         title ||
-        "Illustrated map of Project World. Six destinations: Daventry One, OpenClaw / Hermes, Zarvin One, Sidecar, Help Nearby, GroundRules."
+        "Illustrated map of Project World. Seven destinations: Daventry One, OpenClaw / Hermes, Zarvin One, Sidecar, Help Nearby, GroundRules, Proof First."
       }
     >
       <defs>
