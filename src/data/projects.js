@@ -731,6 +731,60 @@ export const PROJECTS = [
       'Explore a shareable report format for sending feasibility summaries to collaborators.',
     ],
   },
+
+  // ---------------------------------------------------------
+  // Proof First
+  //
+  // Renders through its own section layout (ProofFirstCaseStudy.jsx),
+  // like Zarvin One. Claims are limited to what the proof-first and
+  // proof-first-worker repositories implement and document
+  // (proof-first/docs/automation-audit.md, 2026-10-05). No customer,
+  // revenue, or adoption claims: the examples are a sample app and
+  // bugs from my own projects.
+  // ---------------------------------------------------------
+  {
+    id: 'proof-first',
+    slug: 'proof-first',
+    n: '07',
+    title: 'Proof First',
+    titleEm: 'Software repair, proven before payment.',
+    kind: 'Product / Software repair',
+    year: '2026 to present',
+    desc: 'Proof First repairs a broken software behavior, reruns the same agreed test, and shows the before and after evidence before the customer pays. A code change is not proof that the problem is fixed.',
+    tags: ['node · python · docker sandbox · local models'],
+    accent: '#2457FF',
+    shape: 'square',
+    role: 'Solo build: product, intake, repair workflow, sandboxed verification, and proof records',
+    status: 'Active product · workflow built and tested on bugs from my own projects · checkout not built',
+    statusBadge: 'Active product',
+    outcome: 'A working repair and proof workflow: reproduce the failure, freeze the test, repair, rerun the same test in a sandbox, and package the before and after evidence for review.',
+    disclaimer:
+      'Proof First is an active product, not an established business. The demo video uses a sample app, and the worked example is a bug from my own project, not a customer case. A person writes the reproduction, calibrates the test, applies the repair, and approves every result. Checkout and delivery are not built yet.',
+    repo: null,
+    demo: null,
+    site: 'https://proof-first-mu.vercel.app/',
+    problem: [
+      'A tool, an AI, or a developer says something is fixed while the part that mattered is still broken. A code change is not proof that the problem is fixed.',
+      'Proof First treats a repair as unfinished until the same test that failed before the repair passes after it.',
+    ],
+    built: [
+      'A controlled intake that validates, signs, and stores each submission as a private record.',
+      'A worker that turns a verified submission into one resumable job.',
+      'Reproduction and test runs inside a disposable sandbox with no network.',
+      'A frozen test: criteria, commands, and scripts are hashed before the repair starts.',
+      'Verification that only a test run can write, never a model.',
+      'A proof record with before and after evidence, what changed, what was tested, and what was not checked.',
+    ],
+    learned: [
+      'A repair needs evidence. Saying it worked is a claim, and the rerun is the proof.',
+      'The test has to be fixed before the repair starts, or the result cannot be trusted.',
+      'Models can propose. Only the same test passing counts.',
+    ],
+    stack: [
+      { group: 'Site and intake', items: ['JavaScript', 'Vercel', 'Private Blob storage'] },
+      { group: 'Worker', items: ['Python', 'Docker sandbox', 'Local models via Ollama'] },
+    ],
+  },
 ];
 
 export function getProjectBySlug(slug) {

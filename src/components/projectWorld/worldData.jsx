@@ -45,6 +45,8 @@ const DESCRIPTIONS = {
     "Enter a ZIP code and choose a need to find nearby resources without creating an account.",
   groundrules:
     "Turns an address into an early property screen showing findings and what still needs verification.",
+  "proof-first":
+    "Repairs a broken behavior, reruns the same test, and shows the before and after evidence before payment.",
 };
 
 const PROCESSES = {
@@ -53,6 +55,7 @@ const PROCESSES = {
   sidecar: ["Request", "KB source", "Draft", "Review"],
   "help-nearby": ["ZIP", "Need", "Resource", "Confirm"],
   groundrules: ["Address", "Records", "Findings", "Verify"],
+  "proof-first": ["Fail", "Repair", "Same test", "Pass", "Proof"],
 };
 
 /** Builds a destination card from approved project data. */
@@ -390,6 +393,45 @@ export const STOPS = [
       </>,
     ],
   },
+
+  // ── 06 · Proof First ──
+  // Last port on the route, in the open water between GroundRules and the
+  // Parcel Engine side island. Harbor sits off the island's northwest coast,
+  // where the leg arrives from above GroundRules' parcel boundary. The label
+  // drops a little (labelDY) so it reads as its own line, not as a
+  // continuation of the Parcel Engine label beside it.
+  {
+    id: "proof-first",
+    name: "PROOF FIRST",
+    sub: "PORT 06 · REPAIR PROOF",
+    cx: 810,
+    cy: 648,
+    rx: 64,
+    ry: 46,
+    seed: 89,
+    labelDY: 14,
+    accent: "var(--pw-proof-first)",
+    harbor: [754, 606],
+    card: cardFor("proof-first", "№ 06", "var(--pw-proof-first)"),
+    landmarks: () => [
+      <>
+        <Hut x={776} y={660} w={18} h={12} />
+        <Label x={776} y={675}>fail</Label>
+      </>,
+      <>
+        <Gate x={810} y={642} />
+        <Label x={810} y={623}>same test</Label>
+      </>,
+      <>
+        <Hut x={850} y={660} w={18} h={12} />
+        <Label x={850} y={675}>repair</Label>
+      </>,
+      <>
+        <ScrollDoc x={810} y={677} />
+        <Label x={810} y={690}>proof</Label>
+      </>,
+    ],
+  },
 ];
 
 /** Index of the pull-back overview band, one past the last island. */
@@ -406,6 +448,7 @@ export const LEGS = [
   "M 465 223 C 501 273, 558 257, 612 186",
   "M 612 186 C 712 196, 786 268, 795 362",
   "M 795 362 C 788 486, 724 588, 640 616",
+  "M 640 616 C 674 588, 716 584, 754 606",
 ];
 
 /** Parcel Engine — optional side island, off the main route. */
