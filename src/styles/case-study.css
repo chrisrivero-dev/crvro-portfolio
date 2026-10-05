@@ -778,6 +778,7 @@
   display: inline-flex;
   gap: 12px;
 }
+.pf-lead .btn,
 .cta-card .btn {
   display: inline-flex;
   align-items: center;
@@ -796,14 +797,17 @@
     background 0.25s var(--ease-out),
     color 0.25s var(--ease-out);
 }
+.pf-lead .btn:hover,
 .cta-card .btn:hover {
   background: var(--ink);
   color: var(--paper);
 }
+.pf-lead .btn-primary,
 .cta-card .btn-primary {
   background: var(--ink);
   color: var(--paper);
 }
+.pf-lead .btn-primary:hover,
 .cta-card .btn-primary:hover {
   background: var(--amber);
   border-color: var(--amber);

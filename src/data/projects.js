@@ -758,8 +758,6 @@ export const PROJECTS = [
     status: 'Active product · workflow built and tested on bugs from my own projects · checkout not built',
     statusBadge: 'Active product',
     outcome: 'A working repair and proof workflow: reproduce the failure, freeze the test, repair, rerun the same test in a sandbox, and package the before and after evidence for review.',
-    disclaimer:
-      'Proof First is an active product, not an established business. The demo video uses a sample app, and the worked example is a bug from my own project, not a customer case. A person writes the reproduction, calibrates the test, applies the repair, and approves every result. Checkout and delivery are not built yet.',
     repo: null,
     demo: null,
     site: 'https://proof-first-mu.vercel.app/',

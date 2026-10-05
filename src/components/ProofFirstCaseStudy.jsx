@@ -16,9 +16,11 @@
 // ============================================================
 
 import React from 'react';
+import { getProjectBySlug } from '../data/projects.js';
 
 const DEMO_VIDEO = '/videos/proof-first-demo.mp4';
 const DEMO_POSTER = '/images/proof-first-demo-poster.png';
+const PROOF_FIRST_URL = getProjectBySlug('proof-first').site;
 
 function Section({ index, label, title, children }) {
   return (
@@ -106,6 +108,12 @@ function ProofFirstLead() {
           </span>
         </figcaption>
       </figure>
+
+      <div className="evidence-cta" style={{ justifyContent: 'center', marginTop: 24 }}>
+        <a className="btn btn-primary" href={PROOF_FIRST_URL} target="_blank" rel="noreferrer">
+          VIEW PROOF FIRST ↗
+        </a>
+      </div>
     </div>
   );
 }
@@ -197,10 +205,10 @@ function WorkedExample() {
 const STATUS = [
   {
     key: 'built',
-    label: 'Built',
+    label: 'AUTOMATED',
     items: [
       'Intake that validates, signs, and stores each submission as a private record',
-      'A worker that turns a verified submission into one job and resumes the same job on retry',
+      'A worker that, once I trigger it, turns a verified submission into one job and resumes the same job on retry',
       'Reproduction and test runs in a disposable sandbox',
       'A frozen test, hashed before the repair starts',
       'Verification written only by a test run',
@@ -211,7 +219,7 @@ const STATUS = [
   },
   {
     key: 'person',
-    label: 'Still done by a person',
+    label: 'HUMAN-CONTROLLED',
     items: [
       'Writing the reproduction',
       'Deciding what working means and calibrating the test',
@@ -223,13 +231,13 @@ const STATUS = [
   },
   {
     key: 'not',
-    label: 'Not built yet',
+    label: 'NEXT',
     items: [
       'Checkout and payment',
       'Releasing the repaired code after the customer accepts',
       'A live private proof page for real jobs (the page and its rules exist as an example)',
       'Email notifications',
-      'Background polling for new submissions (ingest is triggered by me)',
+      'Background polling for new submissions, which I trigger by hand today',
     ],
   },
 ];
