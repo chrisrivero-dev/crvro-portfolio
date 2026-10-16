@@ -760,7 +760,7 @@ export const PROJECTS = [
     outcome: 'A working repair and proof workflow: reproduce the failure, freeze the test, repair, rerun the same test in a sandbox, and package the before and after evidence for review.',
     repo: null,
     demo: null,
-    site: 'https://proof-first-mu.vercel.app/',
+    site: 'https://proof-first.daventry.workers.dev/',
     problem: [
       'A tool, an AI, or a developer says something is fixed while the part that mattered is still broken. A code change is not proof that the problem is fixed.',
       'Proof First treats a repair as unfinished until the same test that failed before the repair passes after it.',
