@@ -38,7 +38,7 @@ const DESCRIPTIONS = {
   openclaw:
     "The AI workflow system I use every day to route work between local and cloud models under my approval.",
   "zarvin-one":
-    "Ask for an outcome. Zarvin coordinates specialists, models, tools, permissions, execution, and verification underneath.",
+    "Owns my work as durable responsibilities, asks before anything consequential, and closes them only with verified evidence.",
   sidecar:
     "Drafts support replies from approved KB articles and leaves the final response to the agent.",
   "help-nearby":
@@ -51,7 +51,7 @@ const DESCRIPTIONS = {
 
 const PROCESSES = {
   openclaw: ["Request", "Permission", "Action", "Verify"],
-  "zarvin-one": ["Ask", "Coordinate", "Verify", "Result"],
+  "zarvin-one": ["Request", "Own", "Approve", "Verify"],
   sidecar: ["Request", "KB source", "Draft", "Review"],
   "help-nearby": ["ZIP", "Need", "Resource", "Confirm"],
   groundrules: ["Address", "Records", "Findings", "Verify"],
@@ -204,7 +204,7 @@ export const STOPS = [
   {
     id: "zarvin-one",
     name: "ZARVIN ONE",
-    sub: "PORT 02 · AI COMMAND SYSTEM",
+    sub: "PORT 02 · PERSONAL AI OS",
     cx: 510,
     cy: 175,
     rx: 62,

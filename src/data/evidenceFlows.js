@@ -21,7 +21,7 @@ export const FLOWS = {
         n: '02',
         label: 'CAPABILITY',
         state: 'processing',
-        detail: 'The request maps to CALENDAR_WRITE — a Tier-3 consequential capability, not a chat reply.',
+        detail: 'The request maps to CALENDAR_WRITE, a Tier-3 consequential capability, not a chat reply.',
         short: 'It maps to a named, tiered capability.',
       },
       {
@@ -51,7 +51,7 @@ export const FLOWS = {
         label: 'VERIFICATION',
         state: 'verified',
         tag: 'VERIFIED AGAINST THE PROVIDER',
-        detail: 'The result is checked against Calendar itself — not assumed from a 200 response.',
+        detail: 'The result is checked against Calendar itself, not assumed from a 200 response.',
         short: 'Checked against the real provider.',
       },
       {

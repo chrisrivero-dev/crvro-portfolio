@@ -126,7 +126,7 @@ const RULES = [
       return {
         kind: 'single',
         lines: [
-          'Zarvin One is a personal AI operator: ask for an outcome, and it coordinates specialists, models, tools, permissions, execution, and verification underneath.',
+          'Zarvin One is a personal AI operating system: it takes ownership of work as durable responsibilities, stops for approval when it matters, and only closes them with verified evidence.',
           'Status: active live build, running on my own hardware with real connected services. Some newer capabilities are still being hardened.',
         ],
         results: [{ ...DESTINATIONS['zarvin-one'], cta: 'OPEN ZARVIN ONE →' }],

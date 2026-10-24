@@ -1,29 +1,27 @@
 // ============================================================
-// Zarvin One — case study body
+// Zarvin One: case study body
 //
-// Rebuilt from a current-state audit (docs/zarvin-one-current-state-audit.md,
-// 2026-09-06) that verified the running Zarvin Bridge API, live connected
-// accounts, the Job Ledger, and git/test history directly — not the old
-// approved-copy document and not roadmap intent. The old approved copy
-// (docs/zarvin-one-approved-copy.md) described Zarvin as a controlled
-// August prototype with an aspirational backend; that framing is now
-// stale. This component tells the current story instead: the August
-// interactive build was the first product prototype, and it has since
-// grown into a persistent, tool-connected, approval-gated operator, with
-// some newer capabilities still being hardened.
+// Reconciled 2026-10-24 against the current Zarvin backend
+// (daventry-customer-hub main @ 528647f, 2026-10-08), its unmerged
+// M4B / Devin validation branches (through 2026-10-19), and
+// zarvin-one-mobile main @ af868f2 (2026-10-03). The previous version
+// (2026-09-06 audit, docs/zarvin-one-current-state-audit.md) described a
+// request pipeline; the current system is built around durable
+// responsibilities (WorkSpine), so this body leads with that.
 //
-// The interactive demo is still the same scripted, sample-data build
-// (self-labeled by the app itself as "not live activity from a Zarvin
-// computer"), so it's promoted near the top as the primary hands-on
-// experience but labeled truthfully as a demo, not the live runtime —
-// §10 gives it one short historical note instead of embedding it twice.
+// Naming, verified in code: "Aven" is the user-facing persistent worker
+// (the `zarvin` character template, named by Christopher). "Ava" is the
+// internal attention layer the ResponsibilityCoordinator consults to
+// decide which owned work to pick up; by design it has no human-facing
+// identity and never executes or approves anything itself.
+//
+// Anything that exists only on unmerged branches, or behind a default-off
+// flag on main, is labeled as validating in development, never as live.
 //
 // Reuses existing CRVRO primitives throughout (Section, capability-grid,
 // bullet-list, learned-list, stack-grid, the flow-diagram mockup classes,
-// the case-figure placeholder idiom) rather than inventing new chrome.
-// New CSS lives in src/styles/case-study.css under the zarvin-matrix,
-// zarvin-specialist-table, zarvin-reliability, zarvin-gate-story, and
-// zarvin-dev-list rules.
+// zarvin-matrix, zarvin-principle-list, zarvin-specialist-table,
+// zarvin-gate-story, zarvin-dev-list). No new CSS.
 // ============================================================
 
 import React from 'react';
@@ -64,22 +62,19 @@ function Section({ index, label, title, children }) {
   );
 }
 
-/* ── §04 — the real request path ──────────────────────────── */
-const REQUEST_FLOW_STAGES = [
-  'YOU',
-  'ZARVIN',
-  'CAPABILITY',
-  'SPECIALIST',
-  'MODEL',
-  'TOOL',
-  'PERMISSION / EARNED AUTONOMY',
-  'EXECUTION',
+/* ── §03: how a responsibility moves ──────────────────────── */
+const RESPONSIBILITY_FLOW = [
+  'REQUEST',
+  'RESPONSIBILITY',
+  'OWNERSHIP',
+  'ONE BOUNDED STEP',
+  'APPROVAL WHEN REQUIRED',
   'VERIFICATION',
-  'JOB LEDGER',
-  'RESULT',
+  'EVIDENCE',
+  'COMPLETE',
 ];
 
-/* ── §06 — the reliability gate ───────────────────────────── */
+/* ── §07: the reliability gate ────────────────────────────── */
 const RELIABILITY_STAGES = [
   'BUILD',
   'TEST',
@@ -113,54 +108,64 @@ function FlowMockup({ label, stages, className }) {
   );
 }
 
-/* ── §05 — current build status matrix ────────────────────── */
+/* ── §03: responsibility states (WorkSpine WorkItemState) ─── */
+const STATES = [
+  { k: 'ACTIVE', d: 'Zarvin owns it and can take the next step.' },
+  { k: 'WAITING', d: 'Nothing to do until a time, an event, or a scheduled retry. The wait reason is stored.' },
+  { k: 'BLOCKED', d: 'It cannot proceed, and the blocker is recorded instead of hidden.' },
+  { k: 'NEEDS_APPROVAL', d: 'The next step is consequential. It stops until I approve or deny that exact action.' },
+  { k: 'NEEDS_HUMAN', d: 'It needs a judgment or an answer only I can give. Once I resolve it, the same responsibility resumes.' },
+  { k: 'COMPLETE', d: 'Rejected unless at least one evidence record is VERIFIED. One successful action is not completion.' },
+  { k: 'CANCELLED', d: 'I stopped it. Nothing further runs, and anything already done is reported, not silently undone.' },
+];
+
+/* ── §06: automated vs human-controlled vs next ───────────── */
 const MATRIX = [
   {
     key: 'verified',
-    label: 'Verified live',
+    label: 'Automated today',
     items: [
-      'Bridge API runtime: dozens of live endpoints, self-reports its own build and staleness',
-      'Connected accounts: Google Calendar, two Gmail accounts, Granola meeting notes',
-      'Approval-gated execution: propose → approve → execute → verify, with an expiry window',
-      'Job Ledger: real evidence, and COMPLETED is tracked separately from VERIFIED',
-      'Specialist routing: deterministic capability-to-model mapping, local-only fails closed',
-      'Independent reviewer: a separate pinned role from whichever specialist did the work',
-      'Durable Ask pipeline: resumable, cancellable, streams progress, survives a restart',
-      'Attention Engine: scored, deduplicated, suppresses noise by default',
-      'Scheduled automations: Morning Brief and Evening Recap running on real timestamps',
-      'Telegram as the live notification transport',
-      'Concurrency hardening: atomic cross-process store, no duplicate execution',
-      'Command Center: an operations inbox backed by real evidence cards',
+      'Continuing an owned responsibility one bounded step at a time, woken by a timer, a watched project change, or an approval outcome',
+      'Restart catch-up: incomplete responsibilities are re-woken under the same ID, with claim leases so two workers never run the same step',
+      'Bounded retry with backoff for failures classified as safe and transient',
+      'Ava prioritizing due work and suppressing noise, then reconsidering it later',
+      'Notices on meaningful state changes, deduplicated, over Telegram and Web Push',
+      'A daily executive brief built from the responsibility ledger',
+      'Background progress written back into the conversation that started it',
+      'Reading and drafting in two Gmail accounts, reading Google Calendar, reading Granola meeting notes',
+      'Creating an explicit personal calendar event, and ordinary grocery list upkeep, with no approval tap',
     ],
   },
   {
     key: 'validating',
-    label: 'Connected · validating',
+    label: 'Human-controlled by design',
     items: [
-      'Automation Engine V2: a deterministic NL interpreter now running; one live automation is currently failing, and the system reports that honestly',
-      'Cross-device state: phone and web reading backend-authoritative state, physical acceptance in progress',
+      'Consequential actions (sending email, changing calendar events, deleting) wait for an approval bound to that exact action, with an expiry and revalidation',
+      'NEEDS_HUMAN questions are answered by me; the system does not guess',
+      'Failures that might have had a side effect are never retried automatically',
+      'Destructive actions have no autonomous tier at all',
+      'Earned autonomy: a track record makes a capability eligible, only I can grant it',
+      'New devices pair through a short-lived code from the Mac, then get a scoped credential',
     ],
   },
   {
     key: 'implemented',
-    label: 'Implemented',
+    label: 'Validating in development',
     items: [
-      'Scoped local execution: files, Git, and an allowlisted command policy, wired in but without a live-verified job yet',
-      'Code fixes gated on the project\'s own tests, with automatic rollback on failure',
-      'Earned-autonomy tiers: eligibility can accrue, but no grant has been issued',
-      'Web research and real-browser reading, contained against SSRF',
-      'Cloud escape hatch: benchmarked under a budget cap, limited role, not an automatic fallback',
+      'A supervised local coding worker (local Qwen in an isolated tmux session, no network, no credentials), on main behind a flag that is off by default',
+      'Independent verification of worker output: a worker saying "done" stays UNVERIFIED until Zarvin checks it',
+      'An end-to-end engineering loop: repo, plan, isolated worktree, browser reproduction, fix, visual check, PR, CI, merge, deploy, production verification. Passed on a disposable project; not merged to main',
+      'Cloud escalation to Codex or Claude when local repair is exhausted, tested in acceptance runs only',
     ],
   },
   {
     key: 'next',
     label: 'Next',
     items: [
-      'Switchyard adaptive second-layer routing: built, off by default',
-      'STRONG_LOCAL / Flash-Next escalation: evaluated, currently a no-go on live evidence',
-      'Native iOS push notifications: Telegram is the transport today',
-      'Watchers as first-class entities: condition watches exist; standalone watchers are still empty',
-      'Device registry / pairing discovery: devices are added by manual address and token today',
+      'Production enablement of the engineering loop: two release gates are still open (a real-Codex visual acceptance run, and a hosted deployment target to verify against)',
+      'Escalation rules for approvals that sit too long, and multi-step approval chains',
+      'Native iOS push: the phone path today is Web Push to the Home Screen web app, plus Telegram',
+      'Switchyard adaptive routing: built, off by default',
     ],
   },
 ];
@@ -185,7 +190,7 @@ function CapabilityMatrix() {
   );
 }
 
-/* ── §07 — specialists and models ─────────────────────────── */
+/* ── §08: specialists and models ──────────────────────────── */
 const SPECIALISTS = [
   { role: 'CAPTAIN', job: 'Chief of staff: project awareness, daily context, daily operating brief', model: 'qwen3.8:27b' },
   { role: 'NEMO', job: 'Fast chat and evidence triage', model: 'nemotron-lightning:30b-a3b-q4' },
@@ -219,12 +224,12 @@ function SpecialistTable() {
   );
 }
 
-/* ── §09 — current development ────────────────────────────── */
+/* ── §10: what remains next ───────────────────────────────── */
 const CURRENT_DEV = [
-  { name: 'Automation Engine V2 validation: one live automation ("tell me if a job gets stuck or fails") is currently failing, and reports it', tag: 'FAILING (reported)', cls: 'failing' },
-  { name: 'Cross-device physical acceptance across phone and web', tag: 'VALIDATING', cls: 'validating' },
-  { name: 'Live-verified job for the M18 local-execution runtime', tag: 'VALIDATING', cls: 'validating' },
-  { name: 'Switchyard adaptive routing and STRONG_LOCAL evidence gates', tag: 'NEXT', cls: 'next' },
+  { name: 'Supervised coding worker and the full engineering loop: proven in development, not yet enabled on the live system', tag: 'VALIDATING', cls: 'validating' },
+  { name: 'Real-Codex visual acceptance run, blocked on provider quota and not faked', tag: 'GATE OPEN', cls: 'failing' },
+  { name: 'A hosted deployment target for production verification outside my own machine', tag: 'GATE OPEN', cls: 'failing' },
+  { name: 'Stale-approval escalation and multi-step approval chains', tag: 'NEXT', cls: 'next' },
   { name: 'Native iOS push notifications', tag: 'NEXT', cls: 'next' },
 ];
 
@@ -241,17 +246,17 @@ function CurrentDevelopment() {
   );
 }
 
-/* ── top-of-page — try the interactive demo ───────────────── */
+/* ── top-of-page: try the interactive demo ────────────────── */
 function TryZarvinOne() {
   return (
     <div className="container-wide zarvin-try">
       <div className="zarvin-try-head">
         <div className="eyebrow">Try Zarvin One</div>
-        <h2>See the product in action.</h2>
+        <h2>The original product demo.</h2>
         <p>
-          Explore the current Zarvin One experience through the interactive demo. The interface
-          reflects the product I'm building; verified live capabilities and current runtime status
-          are documented below.
+          This is the first Zarvin One prototype from August 2026: the mobile interface running
+          scripted scenarios with sample data. It shows the product feel and the approval
+          boundary. It does not show responsibilities, Aven, or the live backend described below.
         </p>
       </div>
 
@@ -259,7 +264,7 @@ function TryZarvinOne() {
         <div className="zarvin-try-frame">
           <div className="zarvin-try-bar">
             <span className="zarvin-try-live" aria-hidden="true" />
-            <span>ZARVIN ONE · INTERACTIVE PRODUCT DEMO</span>
+            <span>ZARVIN ONE · EARLIER INTERACTIVE DEMO</span>
           </div>
           <iframe
             className="zarvin-try-iframe"
@@ -301,9 +306,8 @@ function TryZarvinOne() {
       </div>
 
       <p className="zarvin-try-disclosure">
-        Interactive product demo · scripted scenarios with sample data, not the live backend. The
-        Current Build Status, Reliability, and specialist sections below document what's actually
-        running.
+        Earlier interactive demo · scripted scenarios with sample data, not the live backend. Every
+        "something went wrong" moment in it is scripted, not a recorded incident.
       </p>
     </div>
   );
@@ -312,80 +316,111 @@ function TryZarvinOne() {
 export default function ZarvinCaseStudy() {
   return (
     <>
-      <TryZarvinOne />
-
-      <Section index="01" label="What it is now" title="One place to ask for an outcome.">
+      <Section index="01" label="What it is now" title="I hand it a responsibility, not a prompt.">
         <p>
-          Zarvin One is a personal AI operator. You ask for an outcome: not which model, which
-          tool, or which specialist should handle it. Zarvin coordinates all of that
-          underneath: capability routing, specialist and model selection, tool execution,
-          permission and earned autonomy, verification, evidence, and follow-up.
+          I built Zarvin One to take responsibility for work, not just answer prompts. It is a
+          personal AI operating system running on my own Mac. When I ask for something that takes
+          more than one answer, Zarvin turns it into a durable responsibility: one record with an
+          objective, a completion criterion, a next action, and an owner. That record survives
+          restarts, waits when it should wait, stops for my approval when the next step is
+          consequential, and is only marked complete when there is verified evidence that the
+          outcome happened.
         </p>
-        <p>Do less. Get more. That's the whole idea.</p>
+        <p>
+          I talk to it from the Zarvin One mobile app, the Home Screen web app, or Telegram. The
+          heavy work runs locally on my own models.
+        </p>
       </Section>
 
-      <Section index="02" label="Why I built it" title="I already had the machinery. Using it was the problem.">
+      <Section index="02" label="Why I built it" title="Chat forgets. Work doesn't.">
         <p>
-          I already had local models, agents, tools, automations, and integrations working. They
-          were useful, but using them meant managing all of that machinery myself: which model
-          for which job, which tool was allowed to do what, and what still needed my approval.
+          I already had local models, agents, tools, and integrations working. The problem was
+          follow-through. A chat answer ends when the reply ends. Real work waits on people,
+          fails halfway, needs a decision, or has to be checked later. I was the one carrying all
+          of that state in my head.
         </p>
-        <p>Zarvin One is the product layer that hides that complexity so the person asking doesn't have to think about it.</p>
+        <p>
+          Zarvin One carries it instead, and tells me plainly when something needs me.
+        </p>
       </Section>
 
-      <Section index="03" label="From prototype to operating layer" title="What replaced the scripted demo.">
+      <Section index="03" label="How responsibility moves" title="One record, from request to evidence.">
+        <FlowMockup label="zarvin one · the responsibility lifecycle" stages={RESPONSIBILITY_FLOW} className="zarvin-flow-mockup" />
         <p>
-          Zarvin's first product prototype, built in August 2026, was a controlled interactive
-          build: five scripted scenarios, no live backend. It answered a design question: what
-          should this feel like as a product before there was a real system underneath it to
-          answer to.
+          Every responsibility lives in WorkSpine, Zarvin's durable work ledger. A coordinator
+          wakes it on a timer, a watched project change, an approval outcome, or a restart, claims
+          it under a lease, and runs at most one bounded step before writing the result back. The
+          same responsibility ID carries through every cycle, every notice, and every approval.
+          At any moment it is in one of seven states:
         </p>
-        <p>Since then, a real backend has grown underneath it. Verified and currently running:</p>
-        <ul className="bullet-list">
-          <li>Persistent jobs: a durable, resumable Job Ledger instead of a session that forgets</li>
-          <li>Specialist routing: requests reach a named specialist by capability, not by guesswork</li>
-          <li>Real connected services: Google Calendar, two Gmail accounts, Granola meeting notes</li>
-          <li>Approval boundaries: consequential actions wait for explicit approval, with an expiry</li>
-          <li>Verification and evidence: outcomes are checked against the provider, not assumed</li>
-          <li>Recovery: a crash-orphaned action gets an honest terminal state, not a silent retry</li>
-          <li>Proactive attention: a scoring engine that surfaces what matters and suppresses the rest</li>
+        <ul className="zarvin-principle-list">
+          {STATES.map((s) => (
+            <li key={s.k}>
+              <span className="zarvin-principle-copy"><strong><code>{s.k}</code></strong> {s.d}</span>
+            </li>
+          ))}
         </ul>
-      </Section>
-
-      <Section index="04" label="How a request moves through Zarvin" title="The current path, end to end.">
-        <FlowMockup label="zarvin one · the current request path" stages={REQUEST_FLOW_STAGES} className="zarvin-flow-mockup" />
         <p>
-          A real example, redacted: a calendar hold gets requested. It maps to{' '}
-          <code>CALENDAR_WRITE</code>, a Tier-3 consequential capability, which routes to a pinned
-          specialist and waits for my approval instead of running on its own. Once approved, it
-          executes against Google Calendar and Zarvin checks the result against Calendar itself:
-          not just the tool's own response, but the actual Calendar response. The whole approve-to-verify
-          window was about two seconds; the record of it lives in the Job Ledger, evidence attached.
+          State is committed before any notification goes out. If Telegram or Web Push fails, only
+          the delivery record changes; the truth about the work does not.
         </p>
       </Section>
 
-      <Section index="05" label="Current build status" title="What's live, what's validating, what's next.">
+      <Section index="04" label="Aven and Ava" title="One I talk to. One that decides what needs attention.">
         <p>
-          Four honest states, not a percentage. <strong>Verified live</strong> means it ran for real
-          and was checked. <strong>Connected · validating</strong> means it's wired up and running,
-          but still earning trust. <strong>Implemented</strong> means it's built and tested but
-          hasn't had a live-verified run yet, or is deliberately limited. <strong>Next</strong> means
-          it exists in code but is off, or hasn't shipped.
+          <strong>Aven</strong> is my head assistant inside Zarvin One: the persistent worker I
+          actually talk to. Aven has a durable identity, a live status on the app's Home screen
+          (working, waiting, needs approval, recovering, completed), skills scored only from
+          verified work, and lessons learned from real failures and confirmed recoveries. In
+          development runs, the commits Zarvin makes are authored as "Aven (Zarvin)". Aven's
+          status is read from the system's own stores, never invented by the app.
+        </p>
+        <p>
+          <strong>Ava</strong> is internal. When responsibilities are due, Ava scores them and
+          decides which one deserves a cycle now, which can wait, and when a suppressed one should
+          be reconsidered. Ava has no voice of her own, cannot approve anything, and does not
+          execute. Zarvin's executor still enforces authorization, runs the step, and verifies it.
+        </p>
+        <p>
+          Neither is a separate product. Zarvin One is the system; Aven and Ava are roles inside it.
+        </p>
+      </Section>
+
+      <Section index="05" label="One real workflow" title="A calendar write, proposed, approved, verified.">
+        <p>
+          A real example from my own system, redacted: I asked for a calendar hold. It mapped to{' '}
+          <code>CALENDAR_WRITE</code>, a Tier-3 consequential capability, so the responsibility
+          moved to <code>NEEDS_APPROVAL</code> instead of running on its own. The approval card
+          showed the exact event and expired after 15 minutes. I approved it. Zarvin executed it
+          against Google Calendar, then read the event back from Calendar itself, not just the
+          tool's own response, and recorded the result as <code>VERIFIED</code>. Approve to verify
+          took about two seconds. The record, with evidence attached, is in the ledger.
+        </p>
+        <p>
+          The rule that makes this matter: if that read-back had not matched, the work would not
+          have been marked complete.
+        </p>
+      </Section>
+
+      <Section index="06" label="Human control" title="What runs alone, what waits for me, what's next.">
+        <p>
+          Human approval is not a missing feature here. It is a deliberate boundary. Safe,
+          reversible work runs on its own. Anything with a real-world consequence waits for me,
+          bound to that exact action.
         </p>
         <CapabilityMatrix />
       </Section>
 
-      <Section index="06" label="Reliability and trust" title="COMPLETED is not the same as VERIFIED.">
+      <Section index="07" label="Verification and evidence" title="COMPLETED is not the same as VERIFIED.">
         <FlowMockup label="zarvin one · reliability gate" stages={RELIABILITY_STAGES} className="zarvin-reliability-mockup" />
         <ul className="zarvin-principle-list">
-          <li><span className="zarvin-principle-copy"><strong>COMPLETED is not VERIFIED.</strong> Most finished jobs are completed, not independently checked; the system says so instead of blurring the two.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Approvals expire.</strong> A Tier-3 approval is a 15-minute window, not a standing grant.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Tiers are enforced.</strong> Consequential actions need the matching approval tier; there's no shortcut around it.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Unknown isn't retried.</strong> A crash-orphaned action becomes an explicit <code>EXECUTION_UNKNOWN</code> state, never a blind retry.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Tests decide, not the model.</strong> A proposed code fix only counts if the project's own test command passes after the edit.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Failure means rollback.</strong> If those tests fail, the edit is rolled back; a model saying "fixed" doesn't make it so.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Complete needs proof.</strong> A responsibility cannot be marked COMPLETE without a VERIFIED evidence record.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>A worker's "done" is a claim.</strong> Only Zarvin writes the VERIFIED row, after checking the result itself.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Approvals expire.</strong> A Tier-3 approval is a short window bound to one action, revalidated before it runs.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Unknown isn't retried.</strong> A crash-orphaned action becomes <code>EXECUTION_UNKNOWN</code>, never a blind retry.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Retries are bounded and classified.</strong> Only failures known to be safe and transient retry, with backoff and a limit.</span></li>
+          <li><span className="zarvin-principle-copy"><strong>Tests decide, not the model.</strong> A proposed code fix only counts if the project's own tests pass; otherwise it is rolled back.</span></li>
           <li><span className="zarvin-principle-copy"><strong>Commands are allowlisted.</strong> Recognized-and-safe runs; anything else needs approval, and nothing runs through a raw shell string.</span></li>
-          <li><span className="zarvin-principle-copy"><strong>Autonomy can't self-grant.</strong> Track record makes a capability eligible; only I can grant it. Destructive actions can never become autonomous.</span></li>
         </ul>
         <div className="zarvin-gate-story">
           <span className="lab">From the runtime's history: the reliability gate</span>
@@ -399,54 +434,42 @@ export default function ZarvinCaseStudy() {
         </div>
       </Section>
 
-      <Section index="07" label="Specialists and models" title="You don't pick a model. Zarvin does.">
+      <Section index="08" label="Architecture and interfaces" title="Local models underneath, one bridge on top.">
         <p>
-          Underneath a request, Zarvin maps the capability it needs to a named specialist and a
-          pinned model: deterministically, not adaptively, today.
+          Zarvin runs as a Python service on my Mac behind the Zarvin Bridge API, reached privately
+          over Tailscale. Underneath a step, the capability it needs maps to a named specialist and
+          a pinned local model, deterministically. A non-local provider is rejected outright.
         </p>
         <SpecialistTable />
         <ul className="bullet-list">
-          <li>Capability-to-model routing is deterministic and running now; nothing picks "the best model" adaptively yet</li>
-          <li>Local-only policy fails closed: a non-local model provider is rejected outright, not silently allowed</li>
-          <li>Independent review is a separate, differently-pinned model from whichever specialist did the original work</li>
-          <li>An adaptive second routing layer exists in code but is off by default</li>
-          <li>A cloud model is integrated as a deliberately limited escalation path, not an automatic fallback</li>
+          <li>Mobile app (Expo, iOS and web): Home with Aven's live status, Ask, approvals, activity, and receipts, all read from the backend, never from a client-side guess</li>
+          <li>Device pairing: a short-lived code from the Mac gives each device its own scoped credential, stored in the iOS Keychain</li>
+          <li>Notices: Web Push to the Home Screen web app, and Telegram, with a durable receipt when I actually open one</li>
+          <li>Connected services: Google Calendar, two Gmail accounts, and Granola meeting notes</li>
+          <li>A cloud model exists only as a narrow escalation path, never an automatic fallback</li>
         </ul>
       </Section>
 
-      <Section index="08" label="What I learned" title="Reliable agents need more than good prompts.">
+      <Section index="09" label="What I learned" title="Reliable agents need more than good prompts.">
         <ol className="learned-list">
-          <li><span className="num">01</span><span>Reliable agents need more than good prompts: they need boundaries, verification, and a way to recover when something goes wrong.</span></li>
+          <li><span className="num">01</span><span>The unit of work is the responsibility, not the message. Without a durable owner, nothing gets followed through.</span></li>
           <li><span className="num">02</span><span>A successful API response is not proof of a successful side effect. The provider has to confirm it, not just accept the call.</span></li>
           <li><span className="num">03</span><span>UI state has to agree with persisted runtime state, or the interface starts lying to the person using it.</span></li>
           <li><span className="num">04</span><span>Consequential actions need explicit, tiered boundaries: a blanket "ask before doing anything" doesn't scale and a blanket "just do it" isn't safe.</span></li>
-          <li><span className="num">05</span><span>Evidence beats an agent's own assertion, every time. "It worked" is a claim; a verified record is proof.</span></li>
-          <li><span className="num">06</span><span>Retries can themselves become dangerous: a naive retry after a crash can turn one action into two.</span></li>
-          <li><span className="num">07</span><span>Useful automation should reduce what needs my attention, not add another feed I now have to check.</span></li>
+          <li><span className="num">05</span><span>Retries can themselves become dangerous: a naive retry after a crash can turn one action into two.</span></li>
+          <li><span className="num">06</span><span>A notification is not the work. If delivery fails, the record of what happened has to stay true.</span></li>
         </ol>
       </Section>
 
-      <Section index="09" label="Current development" title="What's still being hardened.">
+      <Section index="10" label="What remains next" title="What's still being proven.">
         <p>
-          Being honest about what's still in progress is part of the standard, not an exception to
-          it. Right now:
+          The engineering loop below passed end to end on a disposable project, and my own release
+          gate still says it is not ready for the live system. I'm keeping that call.
         </p>
         <CurrentDevelopment />
       </Section>
 
-      <Section index="10" label="From prototype to current build" title="Where Zarvin One started.">
-        <p>
-          The interactive demo above is Zarvin's product experience, but its scenarios are scripted
-          with sample data: the same origin point described in §03. Zarvin's first product
-          prototype, built in August 2026, used those same five scenarios to test what the product
-          should feel like before any of the backend in §05 and §06 existed.
-        </p>
-        <p>
-          Every scenario in that demo, including any "something went wrong" moment, is scripted.
-          None of it is a record of a real incident: the real incidents and their fixes are
-          documented in §06 and §09.
-        </p>
-      </Section>
+      <TryZarvinOne />
 
       <div className="container-wide">
         <div className="zarvin-try-head" style={{ marginBottom: 28 }}>
@@ -457,14 +480,13 @@ export default function ZarvinCaseStudy() {
           <div className="stack-col">
             <h4>What I built</h4>
             <ul>
-              <li>The Zarvin product experience</li>
+              <li>The Zarvin One product experience and mobile client</li>
               <li>The Bridge API</li>
-              <li>The capability/specialist routing layer</li>
+              <li>WorkSpine and the responsibility lifecycle</li>
+              <li>The coordinator, Ava's attention layer, and Aven's character system</li>
               <li>The approval and verification workflow</li>
-              <li>The Job Ledger and its evidence behavior</li>
-              <li>The Attention Engine and Command Center</li>
-              <li>Automation and runtime integration</li>
-              <li>The mobile client and the cross-device orchestration around it</li>
+              <li>Device pairing and notice delivery</li>
+              <li>The capability/specialist routing layer</li>
             </ul>
           </div>
           <div className="stack-col">
