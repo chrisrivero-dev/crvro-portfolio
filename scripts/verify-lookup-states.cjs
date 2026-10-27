@@ -35,7 +35,7 @@ const json = (r, status, body) => (r.method() === 'OPTIONS' ? r.respond({ status
 
 (async () => {
   let o = await run('rate-limited', (r) => json(r, 429, { error: 'rate_limited' }), { wait: 1500 });
-  note('POST /api/ask -> 429 rate_limited', o.text, /offline/i.test(o.text));   // observed: shown as the generic offline message
+  note('POST /api/ask -> 429 rate_limited -> accurate rate-limit message (not "offline")', o.text, /too many questions/.test(o.text) && !/offline/i.test(o.text));
   o = await run('ask 500', (r) => json(r, 500, { error: 'x' }), { wait: 1500 });
   note('POST /api/ask -> 500', o.text, /offline/i.test(o.text));
   o = await run('html fallback (no backend, SPA rewrite)', (r) => r.respond({ status: 200, headers: CORS, contentType: 'text/html', body: '<html></html>' }), { wait: 1500 });
@@ -48,6 +48,6 @@ const json = (r, status, body) => (r.method() === 'OPTIONS' ? r.respond({ status
   note('unresolved -> shown as a legitimate result, not as loading', o.text, /no evidence/.test(o.text));
   o = await run('expired', (r) => (r.method() === 'POST' ? json(r, 200, { request_id: 'sim4' }) : json(r, 404, { status: 'expired' })), { wait: 3500 });
   note('result expired (404) -> offline block', o.text, /offline/i.test(o.text));
-  fs.writeFileSync(path.join(__dirname, '..', 'captures', 'iter-04b', 'lookup-states.json'), JSON.stringify(results, null, 2));
+  fs.writeFileSync(path.join(__dirname, '..', 'captures', 'iter-04c', 'lookup-states.json'), JSON.stringify(results, null, 2));
   console.log(`${results.filter((r) => r.ok).length}/${results.length} observed as expected`);
 })();

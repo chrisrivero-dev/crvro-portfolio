@@ -359,6 +359,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
 
   return {
     diskList: disks,
+    tray: org,
   };
 }
 

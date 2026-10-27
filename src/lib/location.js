@@ -38,7 +38,7 @@ export function navigate(href, { replace = false } = {}) {
   const next = url.pathname + url.search + url.hash;
   if (next === window.location.pathname + window.location.search + window.location.hash) return;
   window.history.replaceState({ ...(window.history.state || {}), scrollY: window.scrollY }, '');
-  window.history[replace ? 'replaceState' : 'pushState']({ scrollY: 0 }, '', next);
+  window.history[replace ? 'replaceState' : 'pushState']({ scrollY: 0, from: window.location.pathname + window.location.hash }, '', next);
   emit('push');
 }
 

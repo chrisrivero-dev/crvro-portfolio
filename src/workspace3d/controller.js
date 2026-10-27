@@ -79,6 +79,12 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
     st.session = slug; st.pending = null; st.view = 'crt'; emit();
     await flyTo('crt', 1100, alive);
   }
+  /** Look closer at the tray: the camera frames the disks and the drive. Selecting a disk (or the dock) then loads it. */
+  async function focusTray() {
+    const alive = mine();
+    st.view = 'drive'; emit();
+    await flyTo('drive', 900, alive);
+  }
   async function approach() {                     // to the screen: menu when no disk is loaded, the disk's directory when one is
     const alive = mine();
     st.view = 'crt'; emit();
@@ -119,20 +125,23 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray], true)[0];
     let g = hit?.object;
-    while (g && !g.userData.project && g !== engine.machine) g = g.parent;
-    return g === engine.machine ? { machine: true } : g ? { slug: g.userData.project.slug, label: g.userData.project.label } : null;
+    while (g && !g.userData.project && g !== engine.machine && g !== engine.tray) g = g.parent;
+    if (g === engine.machine) return { machine: true };
+    if (g === engine.tray) return { tray: true };
+    return g ? { slug: g.userData.project.slug, label: g.userData.project.label } : null;
   };
   let down = null;
   const onDown = (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now(), ui: !!e.target.closest('a, button, input, #screen') }; };
   const onUp = (e) => {
     const d = down; down = null;
     if (!d || d.ui || engine.suspended || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8 || performance.now() - d.t > 600) return;
-    if (st.view === 'crt' || st.view === 'fill') return;
+    if (st.view === 'crt' || st.view === 'fill' || st.pending) return;
     const hit = pick(e);
     if (hit?.slug) { if (st.session === hit.slug) approach(); else load(hit.slug); }
     else if (hit?.machine) approach();
+    else if (hit?.tray) focusTray();
   };
   const onMove = (e) => {
     if (e.pointerType === 'touch' || engine.suspended || st.view === 'crt' || st.view === 'fill' || e.target.closest?.('a, button, #screen')) { onHover?.(null); return; }
@@ -150,5 +159,5 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
   };
 
   emit();
-  return { load, eject, approach, back, launch, returnFromScreen, dispose, get state() { return { ...st }; } };
+  return { load, eject, approach, focusTray, back, launch, returnFromScreen, dispose, get state() { return { ...st }; } };
 }

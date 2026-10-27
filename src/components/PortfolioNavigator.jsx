@@ -3,6 +3,8 @@ import RetroComputer, { useTypewriter } from './RetroComputer.jsx';
 import { matchQuery, DESTINATIONS } from '../data/portfolioNavigator.js';
 
 const INTRO_LINES = ['journey complete', 'selected systems indexed', 'visitor path unresolved'];
+// Opened directly (from the computer's ASK.EXE) the visitor has not made the journey, so the first line would be false.
+const INTRO_LINES_DIRECT = ['selected systems indexed', 'visitor path unresolved'];
 
 const EXAMPLES = [
   "I'm hiring for support operations. What should I look at?",
@@ -41,11 +43,11 @@ const POLL_INTERVAL_MS = 1500;
 // into a "timed out" report.
 const MAX_POLLS = 112; // ~168s before giving up and showing the offline fallback
 
-function IntroLines({ reduced }) {
-  const { output } = useTypewriter(INTRO_LINES, !reduced);
+function IntroLines({ reduced, lines = INTRO_LINES }) {
+  const { output } = useTypewriter(lines, !reduced);
   return (
     <>
-      {INTRO_LINES.map((_, i) => (
+      {lines.map((_, i) => (
         <span key={i} className="retro-term-line retro-term-dim">{`> ${output[i] || ''}`}</span>
       ))}
     </>
@@ -71,6 +73,26 @@ function DestinationLinks({ destinations }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+// HTTP 429 from the broker: the visitor asked too quickly. This is not an outage, so it must not say "offline".
+function LimitedBlock({ onCategory }) {
+  return (
+    <div className="retro-term-result">
+      <span className="retro-term-line retro-term-dim">&gt; too many questions in a short time</span>
+      <span className="retro-term-line retro-term-gap" aria-hidden="true" />
+      <span className="retro-term-line retro-term-dim">The assistant answers a limited number of questions per minute. Please wait about a minute and ask again.</span>
+      <span className="retro-term-line retro-term-gap" aria-hidden="true" />
+      <span className="retro-term-line retro-term-dim">Meanwhile you can explore the projects manually:</span>
+      <div className="retro-term-offline-categories">
+        {OFFLINE_CATEGORIES.map((c) => (
+          <button key={c.label} type="button" className="retro-term-suggestion" onClick={() => onCategory(c.query)}>
+            {`[${c.label}]`}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -104,6 +126,9 @@ function ResultBlock({ state, stage, result, onCategory }) {
         <span className="retro-term-line retro-term-dim">&gt; {THINKING_LINES[stage] || THINKING_LINES.queued}</span>
       </div>
     );
+  }
+  if (state === 'limited') {
+    return <LimitedBlock onCategory={onCategory} />;
   }
   if (state === 'offline') {
     return <OfflineBlock onCategory={onCategory} />;
@@ -162,13 +187,13 @@ function ResultBlock({ state, stage, result, onCategory }) {
   );
 }
 
-function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample, state, stage, result }) {
+function NavigatorScreen({ lines, awake, reduced, value, setValue, onSubmit, onExample, state, stage, result }) {
   const inputId = useId();
   if (!awake) return null;
 
   return (
     <>
-      <IntroLines reduced={reduced} />
+      <IntroLines reduced={reduced} lines={lines} />
       <span className="retro-term-line retro-term-gap" aria-hidden="true" />
       <hr className="retro-term-divider" />
       <p className="retro-term-line retro-term-heading">ASK ABOUT MY WORK</p>
@@ -218,7 +243,7 @@ function NavigatorScreen({ awake, reduced, value, setValue, onSubmit, onExample,
 // way; this only changes which honest sentence is shown meanwhile.
 const STILL_WORKING_AFTER_POLLS = 10; // ~15s of actual processing
 
-export default function PortfolioNavigator() {
+export default function PortfolioNavigator({ direct = false }) {
   const [value, setValue] = useState('');
   const [state, setState] = useState('idle'); // idle | thinking | done | offline
   const [stage, setStage] = useState('queued'); // queued | processing | processing_long (only meaningful while state === 'thinking')
@@ -254,6 +279,11 @@ export default function PortfolioNavigator() {
         pollCount.current += 1;
         try {
           const res = await fetch(`${BROKER_URL}/api/result/${requestId}`);
+          if (res.status === 429) {
+            console.warn('[navigator] rate limited while polling');
+            setState('limited');
+            return;
+          }
           if (!res.ok && res.status !== 404) {
             setOffline('request_unavailable', `HTTP ${res.status}`);
             return;
@@ -323,6 +353,11 @@ export default function PortfolioNavigator() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: q }),
         });
+        if (res.status === 429) {
+          console.warn('[navigator] rate limited on submit');
+          setState('limited');
+          return;
+        }
         if (!res.ok) throw new Error(`ask_failed: HTTP ${res.status}`);
         const data = await res.json();
         if (!data.request_id) throw new Error('ask_failed: no request_id in response');
@@ -357,6 +392,7 @@ export default function PortfolioNavigator() {
         <RetroComputer mode="navigator" chrome="light">
           {({ awake, reduced }) => (
             <NavigatorScreen
+              lines={direct ? INTRO_LINES_DIRECT : INTRO_LINES}
               awake={awake}
               reduced={reduced}
               value={value}

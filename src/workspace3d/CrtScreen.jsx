@@ -4,7 +4,8 @@
 //   home  the idle screen in the room (the production hero copy + "use the computer")
 //   menu  the directory of full-page experiences (WORLD.MAP, ASK.EXE, ...)
 //   disk  the directory of the floppy in the drive, built from the project registry
-// Nothing here is invented: disk files are registry fields, menu blurbs are the sections' own wording.
+// Nothing here is invented: disk files are registry fields, menu blurbs are the sections' own wording. Content appears at once:
+// no typing or staged loading (the only motion is the cursor's blink, and the disk's physical travel in the room).
 // ============================================================
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
@@ -29,33 +30,6 @@ export function filesFor(p) {
   if (p.site) files.push({ name: 'SITE', ext: 'LNK', head: 'PRODUCT SITE', body: ['The product site.'], link: { href: p.site, label: 'OPEN SITE', external: true } });
   if (p.repo) files.push({ name: 'REPO', ext: 'LNK', head: 'SOURCE', body: ['The source repository.'], link: { href: p.repo, label: 'OPEN REPOSITORY', external: true } });
   return files.filter((f) => f.body.every(Boolean));
-}
-
-/** Types `text` one character at a time (instantly when motion is reduced); resolves `done` for sequencing. */
-function useTyped(text, { reduced, speed = 70, start = true } = {}) {
-  const [n, setN] = useState(reduced ? text.length : 0);
-  useEffect(() => {
-    if (reduced) { setN(text.length); return undefined; }
-    if (!start) { setN(0); return undefined; }
-    setN(0);
-    let i = 0;
-    const t = setInterval(() => { i += 1; setN(i); if (i >= text.length) clearInterval(t); }, speed);
-    return () => clearInterval(t);
-  }, [text, reduced, speed, start]);
-  return [text.slice(0, n), n >= text.length];
-}
-
-/** Reveals `count` rows one by one once `start` is true. */
-function useStaggered(count, { reduced, start, gap = 70 }) {
-  const [n, setN] = useState(reduced ? count : 0);
-  useEffect(() => {
-    if (reduced) { setN(count); return undefined; }
-    if (!start) return undefined;
-    let i = 0;
-    const t = setInterval(() => { i += 1; setN(i); if (i >= count) clearInterval(t); }, gap);
-    return () => clearInterval(t);
-  }, [count, reduced, start, gap]);
-  return n;
 }
 
 function Prompt({ cmd, cursor = true }) {
@@ -95,11 +69,11 @@ function HomePane({ onUse }) {
 }
 
 /* ── menu: the full-page experiences ────────────────────────────── */
-function MenuPane({ reduced, loaded, focusEntry, onPick, onOpenDisk, active }) {
-  const [cmd, typed] = useTyped('DIR', { reduced });
-  const rows = useStaggered(EXPERIENCES.length, { reduced, start: typed });
+function MenuPane({ loaded, focusEntry, onPick, onOpenDisk, active }) {
+  const cmd = 'DIR';
+  const rows = EXPERIENCES.length;
   const listRef = useRef(null);
-  const done = typed && rows >= EXPERIENCES.length;
+  const done = true;
   useEffect(() => {
     if (!active || !done) return;
     const want = focusEntry ? listRef.current?.querySelector(`[data-entry="${focusEntry}"]`) : null;
@@ -141,22 +115,19 @@ function MenuPane({ reduced, loaded, focusEntry, onPick, onOpenDisk, active }) {
 }
 
 /* ── disk: the floppy in the drive ──────────────────────────────── */
-function DiskPane({ slug, reduced, active, onMenu }) {
+function DiskPane({ slug, active, onMenu }) {
   const p = BY_SLUG[slug];
   const files = useMemo(() => filesFor(p), [p]);
-  const [cmd, typed] = useTyped('DIR', { reduced });
-  const rows = useStaggered(files.length, { reduced, start: typed });
+  const rows = files.length;
   const [sel, setSel] = useState(0);
-  const [shownCmd, setShownCmd] = useState(null);
   const listRef = useRef(null);
-  const done = typed && rows >= files.length;
-  useEffect(() => { setSel(0); setShownCmd(null); }, [slug]);
+  const done = true;
+  useEffect(() => { setSel(0); }, [slug]);
   useEffect(() => { if (active && done) listRef.current?.children[sel]?.focus({ preventScroll: true }); }, [active, done]); // eslint-disable-line react-hooks/exhaustive-deps
   const f = files[sel];
-  const [typedType] = useTyped(`TYPE ${f.name}.${f.ext}`, { reduced, speed: 14, start: done });
   return (
     <div className="ws-pane ws-disk">
-      <Prompt cmd={done ? typedType : cmd} />
+      <Prompt cmd={`TYPE ${f.name}.${f.ext}`} />
       <div className="ws-vol">Volume in drive A is {slug.toUpperCase().replace(/-/g, ' ')}  ·  CASE {CASE_IDS[slug]}</div>
       <div className="ws-body">
         <div className="ws-list" ref={listRef} role="group" aria-label="Files on the disk">
@@ -205,9 +176,9 @@ export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, onUse, on
   return (
     <div className={`ws-screen-inner${atScreen ? ' is-near' : ''}`}>
       {showDisk ? (
-        <DiskPane slug={ui.session} reduced={reduced} active={ui.view === 'crt'} onMenu={onMenu} />
+        <DiskPane slug={ui.session} active={ui.view === 'crt'} onMenu={onMenu} />
       ) : atScreen ? (
-        <MenuPane reduced={reduced} loaded={ui.session} focusEntry={focusEntry} onPick={onPick} onOpenDisk={onOpenDisk} active={ui.view === 'crt'} />
+        <MenuPane loaded={ui.session} focusEntry={focusEntry} onPick={onPick} onOpenDisk={onOpenDisk} active={ui.view === 'crt'} />
       ) : (
         <HomePane onUse={onUse} />
       )}

@@ -32,3 +32,6 @@
 
 ## Iteration 04B (production-shaped code lives in `src/`, see `docs/iteration-04b.md`)
 The approved iteration-03 room was ported to `src/workspace3d/` and mounted as the React home page; this `m15/` archive is unchanged.
+
+## Iteration 04C (see `docs/iteration-04c.md`)
+The CRT became an immersive application shell (`src/components/OsShell.jsx`); Skip Journey, 429 handling, tray/CRT targets, compact mobile dock. `m15/` unchanged otherwise.

@@ -15,7 +15,9 @@
     "portfolio:test": "node scripts/test-portfolio-knowledge.mjs",
     "case-ids:test": "node scripts/test-case-ids.mjs",
     "verify:04b": "node scripts/verify-04b.cjs",
-    "verify:lookup": "node scripts/verify-lookup-states.cjs"
+    "verify:lookup": "node scripts/verify-lookup-states.cjs",
+    "verify:04c": "node scripts/verify-04c.cjs",
+    "probe:backend": "node scripts/probe-backend.mjs"
   },
   "dependencies": {
     "@upstash/redis": "^1.38.2",

@@ -31,6 +31,23 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [announce, setAnnounce] = useState('');
+  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 700px), (pointer: coarse)').matches);
+  const [disksOpen, setDisksOpen] = useState(false);
+  // the room fades out under the incoming interface instead of cutting (see .ws3d--leaving); it is suspended at once
+  const [shown, setShown] = useState(active);
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => {
+    if (active) { setShown(true); setLeaving(false); return undefined; }
+    setLeaving(true);
+    const t = setTimeout(() => { setShown(false); setLeaving(false); }, 380);
+    return () => clearTimeout(t);
+  }, [active]);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 700px), (pointer: coarse)');
+    const f = () => setCompact(mq.matches);
+    mq.addEventListener('change', f);
+    return () => mq.removeEventListener('change', f);
+  }, []);
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const onLaunchRef = useRef(onLaunch);
   onLaunchRef.current = onLaunch;
@@ -118,7 +135,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   const sessionSlug = ui.session || ui.pending;
 
   return (
-    <div className="ws3d" data-active={active ? 'true' : 'false'} data-view={ui.view} hidden={!active}>
+    <div className={`ws3d${leaving ? ' ws3d--leaving' : ''}`} data-active={active ? 'true' : 'false'} data-view={ui.view} hidden={!(active || shown)}>
       {/* The document's own heading and links: real text for search engines and assistive tech, whatever the canvas shows. */}
       <h1 className="ws3d__sr">Christopher Rivero: portfolio</h1>
       <p className="ws3d__sr">I turn difficult support and mapping workflows into controlled, testable software. I build Python automation and AI tools for support and GIS/CAD work I know firsthand.</p>
@@ -147,36 +164,56 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !sessionSlug && ui.view === 'rest' && (
+      {hover && !sessionSlug && (ui.view === 'rest' || ui.view === 'drive') && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.machine ? 'The computer. Click to use it' : `${hover.label}. Click to load`}
+          {hover.machine ? 'The computer. Click to use it' : hover.tray ? 'The disk tray. Click to look closer' : `${hover.label}. Click to load`}
         </div>
       )}
 
       {engine && (
-        <div className="ws3d__dock" role="group" aria-label="Computer and floppy disks">
-          {ui.view === 'rest' || ui.view === 'drive' ? (
+        <div className={`ws3d__dock${compact ? ' is-compact' : ''}`} role="group" aria-label="Computer and floppy disks">
+          {!sessionSlug && (ui.view === 'rest' || ui.view === 'drive') && (
             <div className="ws3d__row">
               <button type="button" className="ws3d__use" onClick={use}>Use the computer</button>
-              <span className="ws3d__label" id="ws-disks">FLOPPY DISKS</span>
-              {DISK_PROJECTS.map((d) => (
-                <button
-                  key={d.slug}
-                  type="button"
-                  aria-describedby="ws-disks"
-                  aria-pressed={ui.session === d.slug}
-                  onClick={() => ctlRef.current?.load(d.slug)}
-                  title={`${d.label} · case ${d.caseId}`}
-                >{prettyTitle(d.slug)}</button>
-              ))}
+              {compact ? (
+                <button type="button" aria-expanded={disksOpen} aria-controls="ws-disklist" onClick={() => setDisksOpen((v) => !v)}>
+                  Floppy disks <span aria-hidden="true">{disksOpen ? '▾' : '▴'}</span>
+                </button>
+              ) : (
+                <>
+                  <span className="ws3d__label" id="ws-disks">FLOPPY DISKS</span>
+                  {DISK_PROJECTS.map((d) => (
+                    <button
+                      key={d.slug}
+                      type="button"
+                      aria-describedby="ws-disks"
+                      aria-pressed={ui.session === d.slug}
+                      onClick={() => ctlRef.current?.load(d.slug)}
+                      title={`${d.label} · case ${d.caseId}`}
+                    >{prettyTitle(d.slug)}</button>
+                  ))}
+                </>
+              )}
+              {ui.view === 'drive' && <button type="button" onClick={() => ctlRef.current?.back()}>Back to room</button>}
             </div>
-          ) : null}
+          )}
+          {compact && disksOpen && !sessionSlug && (
+            <ul id="ws-disklist" className="ws3d__disklist">
+              {DISK_PROJECTS.map((d) => (
+                <li key={d.slug}>
+                  <button type="button" onClick={() => { setDisksOpen(false); ctlRef.current?.load(d.slug); }}>
+                    <span>{prettyTitle(d.slug)}</span><span className="ws3d__cid">{d.caseId}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           {sessionSlug && (
             <div className="ws3d__row">
               <span className="ws3d__label">A: {TITLES[sessionSlug]}{ui.session ? '' : ' …'}</span>
-              {ui.session && ui.view === 'rest' && <button type="button" onClick={() => ctlRef.current?.approach()}>Approach screen</button>}
-              {ui.session && ui.view === 'crt' && <button type="button" onClick={() => { ctlRef.current?.back(); }}>Return to workspace</button>}
-              <button type="button" onClick={() => ctlRef.current?.eject()}>{ui.session ? 'Eject disk' : 'Cancel & return disk'}</button>
+              {ui.session && ui.view !== 'crt' && <button type="button" onClick={() => ctlRef.current?.approach()}>Approach screen</button>}
+              {ui.session && ui.view === 'crt' && <button type="button" onClick={() => ctlRef.current?.back()}>Return to workspace</button>}
+              <button type="button" onClick={() => ctlRef.current?.eject()}>{ui.session ? 'Eject disk' : 'Cancel'}</button>
             </div>
           )}
           {!sessionSlug && ui.view === 'crt' && (

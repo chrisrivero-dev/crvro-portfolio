@@ -598,6 +598,7 @@ scene.add(screenObj);
   return {
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
+    tray: built.tray,
     driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
     reduceMotion, run, flyTo, setView, markDirty, suspend, resume, dispose, on: listen,
     lockParallax: (v) => { parallaxLocked = v; if (v) { tgt.yaw = tgt.pitch = 0; } },

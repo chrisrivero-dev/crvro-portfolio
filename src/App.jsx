@@ -3,6 +3,8 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import CaseStudy from "./components/CaseStudy.jsx";
 import ExperienceShell from "./components/ExperienceShell.jsx";
+import ClassicExperience from "./components/ClassicExperience.jsx";
+import OsShell from "./components/OsShell.jsx";
 import FlatHome from "./components/FlatHome.jsx";
 import LegacyHome from "./components/LegacyHome.jsx";
 import { PROJECTS, GIS_PROJECTS } from "./data/projects.js";
@@ -10,6 +12,7 @@ import { experienceFromHash } from "./lib/experiences.js";
 import { applyScroll, getSnapshot, navigate, subscribe } from "./lib/location.js";
 import { useParallax } from "./lib/pageEffects.js";
 import "./styles/experience.css";
+import "./styles/os.css";
 
 // Three.js lives in this chunk only; case studies and the 2D pages never download it.
 const Workspace3D = lazy(() => import("./workspace3d/Workspace3D.jsx"));
@@ -36,7 +39,9 @@ function useTheme() {
 
 // Same-origin link clicks become in-app navigation (as before), now through the location store so the hash is a real
 // route on the home page (/#work, /#about, ...) and every history entry remembers its own scroll position.
-function useLinkInterception(homeRef) {
+const supportsWebGL2 = () => { try { return !!document.createElement("canvas").getContext("webgl2"); } catch { return false; } };
+
+function useLinkInterception(homeRef, immersiveRef) {
   useEffect(() => {
     const onClick = (e) => {
       const a = e.target.closest("a");
@@ -48,11 +53,27 @@ function useLinkInterception(homeRef) {
       if (/^(https?:|mailto:|tel:)/i.test(href)) return;
       const url = new URL(a.href, window.location.origin);
       if (url.origin !== window.location.origin) return;
+      // Immersive case study: "Back to all work" means Project World, at the place the visitor left it.
+      if (immersiveRef.current === "case" && a.classList.contains("back-link")) {
+        e.preventDefault();
+        if (window.history.state?.from === "/#work") window.history.back(); else navigate("/#work");
+        return;
+      }
       if (href.startsWith("#")) {
         // in-page anchors are only app routes on the home page; elsewhere (case studies) the browser scrolls natively
         if (!homeRef.current) return;
         // "top" inside an experience means the top of that page, not the 3D room
-        if (href === "#top" && homeRef.current === "experience") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+        if (href === "#top" && homeRef.current.kind === "experience") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+        // Project World's "Skip journey" skips the journey: it goes to what follows the voyage (the Destination Lookup) on the same page.
+        if (homeRef.current.kind === "experience" && homeRef.current.exp === "work" && a.closest(".project-world") && href === "#about") {
+          const next = document.getElementById("navigator");
+          if (next) {
+            e.preventDefault();
+            next.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+            next.querySelector("input")?.focus({ preventScroll: true });
+            return;
+          }
+        }
         url.pathname = window.location.pathname;
         url.search = window.location.search;
       }
@@ -61,7 +82,7 @@ function useLinkInterception(homeRef) {
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
-  }, [homeRef]);
+  }, [homeRef, immersiveRef]);
 }
 
 function parseRoute(path) {
@@ -151,16 +172,20 @@ export default function App() {
   const classic = route.kind === "home" && new URLSearchParams(snap.search).get("classic") === "1";
   const homeKind = route.kind !== "home" ? null : classic ? "classic" : exp ? "experience" : "workspace";
   const homeRef = useRef(null);
-  homeRef.current = homeKind === "classic" ? null : homeKind;
-  useLinkInterception(homeRef);
+  homeRef.current = homeKind === "classic" || !homeKind ? null : { kind: homeKind, exp: exp?.id };
 
   // 3D availability: the visitor's choice, or a reason the engine reported.
   const [prefer2D, setPrefer2D] = useState(() => { try { return localStorage.getItem(PREF_KEY) === "2d"; } catch { return false; } });
-  const [unavailable, setUnavailable] = useState(null);
+  const [unavailable, setUnavailable] = useState(() => (supportsWebGL2() ? null : "no-webgl2"));
   const choose = useCallback((v) => { setPrefer2D(v); try { localStorage.setItem(PREF_KEY, v ? "2d" : "3d"); } catch { /* private mode */ } if (!v) setUnavailable(null); }, []);
   // ?view=2d is a shareable way to ask for the plain page
   useEffect(() => { if (new URLSearchParams(snap.search).get("view") === "2d" && !prefer2D) choose(true); }, [snap.search]); // eslint-disable-line react-hooks/exhaustive-deps
   const use3D = !prefer2D && !unavailable && homeKind !== "classic";
+  // The immersive computer interface wraps experiences and case studies whenever the 3D computer is the site's front door.
+  const immersive = !prefer2D && !unavailable && homeKind !== "classic";
+  const immersiveRef = useRef(null);
+  immersiveRef.current = immersive && route.kind === "case" ? "case" : null;
+  useLinkInterception(homeRef, immersiveRef);
 
   // Keep the room mounted (suspended) once it has been shown, so coming back from an experience or a case study is instant.
   const [roomShown, setRoomShown] = useState(false);
@@ -174,7 +199,13 @@ export default function App() {
   const launch = useCallback((entry) => navigate(`/#${entry.id}`), []);
 
   let content;
-  if (route.kind === "case") {
+  if (route.kind === "case" && immersive) {
+    content = (
+      <OsShell view={{ caseSlug: route.project.slug }}>
+        <CaseStudy project={route.project} />
+      </OsShell>
+    );
+  } else if (route.kind === "case") {
     content = (
       <>
         <Header activeId={null} theme={theme} onToggleTheme={toggleTheme} />
@@ -185,7 +216,7 @@ export default function App() {
   } else if (homeKind === "classic") {
     content = <LegacyHome theme={theme} onToggleTheme={toggleTheme} />;
   } else if (homeKind === "experience") {
-    content = <ExperienceShell exp={exp} theme={theme} onToggleTheme={toggleTheme} />;
+    content = immersive ? <ExperienceShell exp={exp} /> : <ClassicExperience exp={exp} theme={theme} onToggleTheme={toggleTheme} />;
   } else if (!use3D) {
     content = (
       <FlatHome

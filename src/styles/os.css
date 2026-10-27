@@ -1,0 +1,81 @@
+/* The immersive computer interface (OsShell). Phosphor-dark palette built on the site's own dark tokens, so the unchanged
+ * Project World / Lookup / About / Skills / Consultation / Contact / case-study components read as one screen.
+ * Loaded with the main bundle (deep links render the shell without ever loading the 3D chunk). */
+
+body.os-open { background: #0f0c09; }
+
+/* (attribute selector too, so these beat the site's [data-theme="dark"] token block whatever the stylesheet order) */
+.os[data-theme="dark"] {
+  /* tokens: the site's dark set, retuned from slate to phosphor amber */
+  --paper: #14110d; --paper-2: #1b1712; --paper-3: #241f18;
+  --ink: #efe6d4; --graphite: #b9ae9a; --pencil: #9a9080;
+  --rule: #34301f; --rule-strong: #4a4430;
+  --amber: #d9ab5c; --amber-deep: #c49a4e; --accent-gold: #e0b468;
+  --os-glow: rgba(255, 176, 64, 0.1);
+  position: relative;
+  z-index: 50;   /* above the room while it fades out underneath */
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--paper);
+  isolation: isolate;
+}
+.os__bg { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(110% 90% at 50% 0%, #221c13 0%, #14110d 55%, #0d0b08 100%); }
+/* the screen's scanlines, static (no animation) */
+.os__bg::after { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply; background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0.12) 3px); }
+/* the bezel: the same copper-rimmed opening the visitor just flew into */
+.os__frame { position: fixed; inset: 0; z-index: 95; pointer-events: none; border: 10px solid #0a0806; border-radius: 0; box-shadow: inset 0 0 0 2px #6b4a2a, inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 3px rgba(224, 180, 104, 0.18); }
+@media (min-width: 900px) { .os__frame { border-width: 14px; } }
+
+/* bar: same 64px height as the site header, so Project World's sticky stage keeps its geometry */
+.os__bar { position: sticky; top: 0; z-index: 100; height: 64px; display: flex; align-items: center; gap: 18px; padding: 0 28px;
+  background: color-mix(in oklab, #14110d 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid #3a3322;
+  font-family: var(--font-mono); }
+.os__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.os__brand { font-size: 12px; font-weight: 600; letter-spacing: 0.22em; color: var(--amber); }
+.os__path { font-size: 10.5px; letter-spacing: 0.1em; color: var(--pencil); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.os__tabs { display: flex; gap: 2px; margin: 0 auto; overflow-x: auto; scrollbar-width: none; }
+.os__tabs::-webkit-scrollbar { display: none; }
+.os__tab { padding: 8px 10px; font-size: 11.5px; letter-spacing: 0.1em; color: var(--graphite); text-decoration: none; border: 1px solid transparent; border-radius: 3px; white-space: nowrap; }
+.os__tabe { color: var(--amber-deep); }
+.os__tab:hover { color: var(--ink); border-color: #4a4430; }
+.os__tab.is-on { color: var(--ink); background: rgba(217, 171, 92, 0.14); border-color: rgba(217, 171, 92, 0.5); }
+.os__return { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #1d1812; background: var(--amber); border: 1px solid var(--amber); border-radius: 4px; text-decoration: none; }
+.os__return:hover { background: #e8bd73; }
+.os a:focus-visible, .os button:focus-visible { outline: 2px solid #f4eedd; outline-offset: 3px; }
+
+.os__main { position: relative; z-index: 1; padding-bottom: 24px; outline: none; }
+.os__foot { position: relative; z-index: 1; display: flex; gap: 18px; justify-content: center; padding: 28px 24px 40px; font: 11px var(--font-mono); letter-spacing: 0.1em; color: var(--pencil); }
+.os__foot a { color: var(--graphite); }
+
+/* the page "powers on" from the dark screen the camera was just looking at: no bright flash, no filter on the wrapper */
+.os { animation: os-on 0.34s ease-out backwards; }
+@keyframes os-on { from { opacity: 0; } to { opacity: 1; } }
+
+/* retune the unchanged components where they hard-code light/slate colours */
+.os .site-header { display: none; }
+.os .case-back .back-link, .os .back-link { color: var(--amber); }
+.os ::selection { background: rgba(217, 171, 92, 0.35); }
+.os[data-theme="dark"] .project-world { --pw-sea: color-mix(in oklab, #d9ab5c 6%, #15120e); --pw-land: #2a241a; }
+.os .btn-primary { background: var(--amber); color: #1d1812; border-color: var(--amber); }
+
+@media (max-width: 860px) {
+  .os__bar { padding: 0 14px; gap: 10px; }
+  .os__id { display: none; }
+  .os__tabs { margin: 0; flex: 1; }
+  .os__return span:last-child { display: none; }          /* arrow + "Return" fits; full label stays for AT */
+  .os__return::after { content: "Return"; }
+  .os__return { min-height: 44px; padding: 0 12px; }
+  .os__tab { padding: 12px 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .os { animation: none; } }
+
+/* in-page jumps (Skip journey) land below the sticky bar */
+.os [id] { scroll-margin-top: 72px; }
+
+/* Project World's decorative landfall caption says "§ 02 ABOUT"; inside the computer the voyage is followed by the Destination Lookup,
+ * so the (aria-hidden) caption is re-worded here without touching the component. */
+.os .pw-landfall .lab { font-size: 0; }
+.os .pw-landfall .lab::after { content: "MAKE LANDFALL: SYSTEM RETURN"; font-size: 10.5px; }
+
+.os .pwm-mapbtn { background: var(--amber); color: #1d1812; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45); }
