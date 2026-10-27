@@ -1,0 +1,284 @@
+/* CRVRO M1 — still-life page chrome + the live DOM screen.
+ *
+ * The screen element is co-registered in the 3D scene (CSS3DObject),
+ * so it is a full DOM node: crisp at any resolution, natively focusable,
+ * natively clickable. Glass and reflections are drawn in WebGL over it
+ * (the canvas sits above the DOM layer with an alpha hole).
+ */
+
+:root {
+  --ink: #26231f;
+  --ink-dim: #6d675c;
+  --paper: #eae5da;
+  --amber: #d9ab5c;
+  --amber-deep: #b8863b;
+  --screen-bg-0: #221d15;
+  --screen-bg-1: #17140f;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  font-family: var(--mono);
+  color: var(--ink);
+}
+
+.skip-link {
+  position: fixed;
+  left: -9999px;
+  top: 12px;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-decoration: none;
+}
+.skip-link:focus { left: 12px; }
+
+#stage {
+  position: absolute;
+  inset: 0;
+}
+/* The live DOM screen layer sits BEHIND the WebGL canvas; the canvas
+ * punches a transparent hole where the screen is, so the bezel occludes
+ * it from any angle and the glass reflection is drawn over it. */
+#css3d {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  z-index: 1;
+  pointer-events: none;
+}
+#css3d #screen { pointer-events: auto; }
+#stage canvas#gl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 2;
+  pointer-events: none;
+}
+body.is-inspecting { cursor: grab; }
+body.is-dragging { cursor: grabbing; user-select: none; }
+
+/* ── inspection controls (M1 review only) ───────────────────────── */
+.inspect {
+  position: fixed;
+  left: 22px;
+  bottom: 44px;
+  z-index: 30;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.inspect button {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--ink);
+  background: rgba(255, 252, 244, 0.82);
+  border: 1px solid rgba(38, 35, 31, 0.28);
+  border-radius: 4px;
+  padding: 7px 11px;
+  cursor: pointer;
+}
+.inspect button:hover { border-color: var(--ink); }
+.inspect button:focus-visible { outline: 2px solid var(--amber-deep); outline-offset: 2px; }
+#inspect-toggle[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.inspect__bar { display: flex; gap: 6px; align-items: center; }
+.inspect__bar[hidden] { display: none; }
+.inspect__hint { color: var(--ink-dim); margin-right: 6px; }
+
+/* ── HUD (non-interactive label chrome) ─────────────────────────── */
+.hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 22px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-dim);
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+}
+.hud__brand { display: flex; align-items: baseline; gap: 8px; color: var(--ink); }
+.hud__mark { color: var(--amber-deep); }
+.hud__name { font-weight: 700; letter-spacing: 0.22em; }
+.hud__meta { display: flex; align-items: baseline; gap: 10px; }
+.hud__dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.5; align-self: center; }
+
+.footbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 22px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+}
+.footbar code { font-size: 11px; }
+
+/* ── THE SCREEN — real DOM inside the 3D scene ──────────────────── */
+
+#crt-screen, #screen {
+  width: 600px;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(115% 130% at 50% 30%, var(--screen-bg-0) 0%, var(--screen-bg-1) 62%, #0d0b08 100%);
+  box-shadow:
+    inset 0 0 0 2px #050403,
+    inset 0 2px 14px rgba(0, 0, 0, 0.75),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+  padding: 34px 42px 24px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  color: var(--ink);
+  /* phosphor glow over the copy */
+}
+
+/* faint scan texture — static, not animated (M1: no continuous effects
+ * that would force repaints; this is a one-time paint) */
+#screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.0) 0px,
+    rgba(0, 0, 0, 0.0) 2px,
+    rgba(0, 0, 0, 0.06) 3px
+  );
+  pointer-events: none;
+  z-index: 4;
+  mix-blend-mode: multiply;
+}
+
+/* phosphor bloom behind the text block */
+#screen .crt-screen__glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(60% 52% at 42% 46%, rgba(255, 176, 64, 0.14), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#screen .crt-screen__boot {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.07em;
+  color: rgba(240, 232, 216, 0.66);
+}
+
+#screen .crt-screen__rule {
+  position: relative;
+  z-index: 2;
+  height: 1px;
+  margin: 10px 0 12px;
+  background: linear-gradient(to right, rgba(255, 176, 64, 0.5), rgba(255, 176, 64, 0.06) 70%);
+}
+
+#screen .crt-screen__eyebrow {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--amber-deep);
+}
+
+#screen .crt-screen__headline {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 11px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.26;
+  letter-spacing: -0.015em;
+  color: #f3ecde;
+  max-width: 100%;
+}
+
+#screen .crt-screen__sub {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 auto;
+  font-size: 11.5px;
+  line-height: 1.52;
+  color: rgba(244, 235, 218, 0.76);
+}
+
+#screen .crt-screen__cta {
+  position: relative;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-top: 14px;
+  padding: 9px 14px;
+  border: 1px solid rgba(217, 171, 92, 0.85);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  color: var(--amber);
+  background: rgba(217, 171, 92, 0.07);
+  transition: background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+#screen .crt-screen__cta .crt-screen__cta-arrow { letter-spacing: 0; }
+#screen .crt-screen__cta .crt-screen__cta-note {
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  font-size: 10px;
+  color: rgba(236, 228, 211, 0.45);
+}
+#screen .crt-screen__cta:hover,
+#screen .crt-screen__cta:focus-visible {
+  background: rgba(217, 171, 92, 0.18);
+  color: #f4eedd;
+  border-color: rgba(244, 238, 221, 0.9);
+  box-shadow: 0 0 0 3px rgba(217, 171, 92, 0.22), 0 0 26px rgba(255, 176, 64, 0.28);
+}
+#screen .crt-screen__cta:focus-visible {
+  outline: 2px solid rgba(244, 238, 221, 0.95);
+  outline-offset: 3px;
+}
+
+#screen .crt-screen__foot {
+  position: relative;
+  z-index: 2;
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(138, 127, 106, 0.75);
+}
+

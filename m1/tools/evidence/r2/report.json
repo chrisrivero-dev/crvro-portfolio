@@ -1,0 +1,15 @@
+{
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Ultra, Unspecified Version)",
+  "errors": [],
+  "focus": {
+    "id": "cta",
+    "tag": "A",
+    "href": "https://crvro.com/#work"
+  },
+  "ctaHitTest": true,
+  "shots": {
+    "threeQuarter": "01-three-quarter.png",
+    "front": "02-front.png",
+    "side": "03-side.png"
+  }
+}

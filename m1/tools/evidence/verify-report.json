@@ -1,0 +1,127 @@
+{
+  "url": "http://127.0.0.1:8727/index.html",
+  "boot": {
+    "m1": true,
+    "frames": 1,
+    "machineChildren": 43,
+    "gl": true,
+    "css3d": true,
+    "glSize": "3200x2000"
+  },
+  "pageErrs": [],
+  "failedReqs": [],
+  "par": {
+    "cur": {
+      "yaw": 0.003919055451845241,
+      "pitch": 0.0021611341774129197
+    },
+    "tgt": {
+      "yaw": 0,
+      "pitch": 0
+    },
+    "active": true,
+    "frames": 6
+  },
+  "settled": {
+    "cur": {
+      "yaw": 0,
+      "pitch": 0
+    },
+    "active": false,
+    "frames": 16,
+    "position": [
+      120,
+      70,
+      1950
+    ],
+    "quaternion": [
+      -0.02300417950419868,
+      0.03071750273944517,
+      0.000707152047401119,
+      0.9992630998324579
+    ],
+    "screenPosition": [
+      0,
+      70,
+      239.5
+    ]
+  },
+  "focus1": {
+    "id": null,
+    "cls": "skip-link",
+    "tag": "A"
+  },
+  "focus2": {
+    "id": "cta",
+    "tag": "A",
+    "href": "https://crvro.com/#work"
+  },
+  "assets": {
+    "index.html": 4523,
+    "m1.css": 6749,
+    "src/m1.js": 21225,
+    "src/textures.js": 14800,
+    "vendor/three.module.min.js": 691648,
+    "vendor/CSS3DRenderer.js": 8108,
+    "vendor/RoomEnvironment.js": 3622
+  },
+  "totalBytes": 750675,
+  "perf": {
+    "navigationMs": 1846.8999998569489,
+    "domContentLoadedMs": 1845.7999999523163,
+    "loadEventMs": 1846.8999998569489,
+    "renderResponseAvgMs": 260.93000000715256,
+    "renderResponseMaxMs": 378.2000000476837,
+    "measuredRenderRequests": 20,
+    "jsHeapUsedBytes": 5504172,
+    "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+  },
+  "crisp": {
+    "cssPx": 20,
+    "dpr": 2,
+    "devicePx": 40,
+    "visible": true,
+    "inCss3d": true
+  },
+  "stats": {
+    "dims": {
+      "screenW": 600,
+      "screenH": 400,
+      "bezel": 60,
+      "shellW": 760,
+      "shellH": 760,
+      "shellD": 520,
+      "deck": 60,
+      "screenCy": 70,
+      "deskY": -390,
+      "cornerR": 28,
+      "glassR": 14,
+      "glassRecess": 16,
+      "screenCx": 0,
+      "deckTopY": -130,
+      "frontZ": 260
+    },
+    "machineChildren": 43,
+    "textureBytes": 44709376,
+    "totalFrames": 20
+  },
+  "restPose": {
+    "position": [
+      120,
+      70,
+      1950
+    ],
+    "quaternion": [
+      -0.02300417950419868,
+      0.03071750273944517,
+      0.000707152047401119,
+      0.9992630998324579
+    ],
+    "screenPosition": [
+      0,
+      70,
+      239.5
+    ]
+  },
+  "failures": 0
+}
