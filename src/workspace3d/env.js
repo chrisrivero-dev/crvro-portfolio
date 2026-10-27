@@ -52,7 +52,7 @@ function framed(THREE, props, w, h, mat) {
 
 export const target = new THREE.Vector3(-120, -180, 120);
 export const views = {
-  threeQuarter: { yaw: 0.34, pitch: 0.3, dist: 3500, fitW: 1900 },
+  threeQuarter: { yaw: 0.34, pitch: 0.3, dist: 3200, fitW: 1900 },
   front:        { yaw: 0.0,  pitch: 0.3, dist: 3600, fitW: 1900 },
   side:         { yaw: 1.15, pitch: 0.26, dist: 2900 },
   top:          { yaw: 0.15, pitch: 1.15, dist: 3300 },
@@ -60,10 +60,10 @@ export const views = {
   // the disks, the drive and the path between them
   drive:        { yaw: 0.34, pitch: 0.42, dist: 1500, fitW: 1100, target: new THREE.Vector3(-380, -250, 340) },
   // the screen, square-on and filling the frame; fitW keeps all of it visible on a portrait phone
-  crt:          { yaw: 0.0,  pitch: 0.02, dist: 1180, fitW: 650, target: new THREE.Vector3(0, 40, 254) },
+  crt:          { yaw: 0.0,  pitch: 0.02, dist: 1180, fitW: 618, target: new THREE.Vector3(0, 40, 254) },
   // phone portrait: computer + tray fill the width, camera a little lower so the desk (not the wall) fills the frame
   restPortrait: { yaw: 0.3, pitch: 0.26, dist: 3000, fitW: 1150, target: new THREE.Vector3(-170, -110, 150) },
-  mug:          { yaw: 0.2,  pitch: 0.16, dist: 620, target: new THREE.Vector3(1260, -270, 420) },
+  mug:          { yaw: 0.2,  pitch: 0.16, dist: 620, target: new THREE.Vector3(520, -270, 575) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
 
@@ -181,6 +181,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   keys.castShadow = keys.receiveShadow = true;
   KB.add(keys);
   KB.rotation.set(-0.04, -0.06, 0);
+  KB.userData.keyboard = true;
   KB.position.set(40, TOP, 470);
   scene.add(KB);
   const coil = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
@@ -350,9 +351,10 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   mugG.add(mug, coffee, base, rim, handle);
   mugG.traverse((o) => { o.castShadow = o.receiveShadow = true; });
   coffee.castShadow = false;
-  mugG.position.set(1260, TOP + 60, 420);
+  // beside the right end of the keyboard and a little toward the visitor, clear of the plans, the disks and the computer
+  mugG.position.set(520, TOP + 60, 575);
   scene.add(mugG);
-  build.mugTop = new THREE.Vector3(1260, TOP + 112, 420);
+  build.mugTop = new THREE.Vector3(520, TOP + 112, 575);
 
   build.lampAt = bulbWorld;
   build.window = win;

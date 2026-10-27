@@ -187,6 +187,11 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   const use = useCallback(() => { setMenuOpen(true); setApp(null); ctlRef.current?.approach(); setAnnounce('At the computer. Choose an experience.'); }, []);
   // ASK.EXE and CONTACT.TXT run on the physical CRT; everything long-form expands into the full interface
   const pick = useCallback((entry) => { if (entry.id === 'navigator' || entry.id === 'contact') { setApp(entry.id); setAnnounce(`${entry.label} on the computer screen.`); return; } ctlRef.current?.launch(entry); }, []);
+  // one tap to a readable, full-size view of whatever the CRT is showing (the in-world screen stays the primary surface)
+  const expandView = () => {
+    if (app) { expand(app); return; }
+    if (ui.session) { rememberOrigin('/#computer'); onLaunchRef.current({ id: 'case', href: `/projects/${ui.session}` }); }
+  };
   const expand = useCallback((id) => { const e = EXPERIENCES.find((x) => x.id === id); setApp(null); ctlRef.current?.launch(e); }, []);
   disksOpenRef.current = disksOpen;
   const sessionSlug = ui.session || ui.pending;
@@ -199,7 +204,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       const d = DISK_PROJECTS.find((x) => x.slug === ui.held);
       return (
         <div className="ws3d__row ws3d__row--ctx">
-          <span className="ws3d__label">{d.caseId} · {TITLES[ui.held]}</span>
+          <span className="ws3d__label ws3d__label--hold">{d.caseId} · {TITLES[ui.held]}</span>
           <button type="button" className="ws3d__use" onClick={() => ctl()?.load(ui.held)}>Insert into drive</button>
           <button type="button" onClick={() => { rememberOrigin(`/#disk/${ui.held}`); onLaunchRef.current({ id: 'case', href: `/projects/${ui.held}` }); }}>Read case study</button>
           <button type="button" onClick={() => ctl()?.putBack()}>Put back</button>
@@ -209,6 +214,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     if (ui.view === 'crt') return (
       <div className="ws3d__row ws3d__row--ctx">
         {ui.session && <span className="ws3d__label">A: {TITLES[ui.session]}</span>}
+        {(app || (ui.session && !menuOpen)) && <button type="button" className="ws3d__use" onClick={expandView}>Expanded view ↗</button>}
         {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject disk</button>}
         <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
       </div>
@@ -238,7 +244,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         {EXPERIENCES.map((e) => <a key={e.id} className="ws3d__skip" href={hrefFor(e)}>{e.label}</a>)}
       </nav>
 
-      <button type="button" className="ws3d__flat" onClick={onPrefer2D} aria-label="Switch to the LO-FI (2D) portfolio" title="Switch to the plain 2D portfolio">HI-FI · <span>LO-FI</span></button>
+      <div className="ws3d__mode" role="group" aria-label="Portfolio mode"><span className="ws3d__mode-on" aria-current="true">HI-FI <small>3D studio</small></span><button type="button" onClick={onPrefer2D} title="Switch to the plain 2D portfolio">LO-FI <small>plain 2D</small></button></div>
 
       <div className="ws3d__stage" ref={stageRef} />
       {engine && createPortal(

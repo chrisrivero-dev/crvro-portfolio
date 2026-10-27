@@ -311,7 +311,8 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
 
   /* ── 13. 2D choice + no-WebGL2 browser ── */
   page = await open(browser, '/');
-  await page.click('.ws3d__flat');
+  check('the HI-FI | LO-FI switch is visible, marks HI-FI as current and is 44px tall', await page.evaluate(() => { const m = document.querySelector('.ws3d__mode'); return !!m && /HI-FI/.test(m.querySelector('[aria-current]').textContent) && m.getBoundingClientRect().height >= 44; }));
+  await page.click('.ws3d__mode button');
   await waitFor(page, () => !!document.querySelector('.flat-home'), null, 6000); await sleep(400);
   await shot(page, '19-flat-home');
   check('"2D view" shows the plain page (one h1, no canvas, no retro computer)', await page.evaluate(() => document.querySelectorAll('h1').length === 1 && !document.querySelector('canvas') && !document.querySelector('.retro-crt')));
@@ -320,8 +321,9 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   check('plain-page links open the same real experiences', true);
   await page.goto(BASE + '/', { waitUntil: 'networkidle0' }); await sleep(600);
   check('the 2D choice persists', await page.evaluate(() => !!document.querySelector('.flat-home')));
-  await page.click('.flat-home button.btn'); await page.waitForFunction(() => window.__WS__, { timeout: 20000 });
-  check('"Try the 3D workspace" returns to the room', true);
+  check('the LO-FI page shows the mirrored switch with LO-FI current', await page.evaluate(() => /LO-FI/.test(document.querySelector('.flat-modeswitch [aria-current]').textContent)));
+  await page.click('.flat-modeswitch button'); await page.waitForFunction(() => window.__WS__, { timeout: 20000 });
+  check('the HI-FI switch on the LO-FI page returns to the room', true);
   await page.close();
 
   const nogl = await puppeteer.launch({ headless: 'new', args: ['--disable-3d-apis', '--disable-gpu'] });

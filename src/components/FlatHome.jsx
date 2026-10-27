@@ -19,7 +19,7 @@ export default function FlatHome({ theme, onToggleTheme, notice, canTry3D, onTry
           <p className="flat-eyebrow">SUPPORT AUTOMATION · AI OPERATIONS · GIS SYSTEMS</p>
           <h1 className="flat-h1">I turn difficult support and mapping workflows into controlled, testable software.</h1>
           <p className="flat-sub">I build Python automation and AI tools for support and GIS/CAD work I know firsthand.</p>
-          {canTry3D && <p><button type="button" className="btn" onClick={onTry3D}>Switch to HI-FI (the 3D studio)</button> <span className="flat-mode">You are viewing the LO-FI portfolio.</span></p>}
+          <div className="flat-modeswitch" role="group" aria-label="Portfolio mode"><button type="button" onClick={onTry3D}>HI-FI <small>3D studio</small></button><span aria-current="true">LO-FI <small>plain 2D</small></span></div>
 
           <h2 className="flat-h2">Explore</h2>
           <ul className="flat-list">

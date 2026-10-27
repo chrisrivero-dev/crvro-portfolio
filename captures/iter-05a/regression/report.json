@@ -16,7 +16,7 @@
     {
       "name": "room focus order: skip/quick links, then the HI-FI/LO-FI switch, the CRT control, then the stations",
       "ok": true,
-      "detail": "[\"Browse without 3D\",\"Project World\",\"Ask about my work\",\"About\",\"Skills\",\"AI consultation\",\"Contact\",\"Switch to the LO-FI (2D) portfolio\",\"USE THE COMPUTER→ [CRT]\",\"Desk\",\"Computer\",\"Disk tray\",\"(function () { var stored = localStorage\"]"
+      "detail": "[\"Browse without 3D\",\"Project World\",\"Ask about my work\",\"About\",\"Skills\",\"AI consultation\",\"Contact\",\"LO-FI plain 2D\",\"USE THE COMPUTER→ [CRT]\",\"Desk\",\"Computer\",\"Disk tray\",\"(function () { var stored = localStorage\"]"
     },
     {
       "name": "screen shows the production hero sentence",
@@ -64,7 +64,7 @@
     {
       "name": "Back from the case study returns to the room with the disk still seated",
       "ok": true,
-      "detail": "{\"view\":\"crt\",\"session\":\"zarvin-one\",\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":null,\"locs\":{\"zarvin-one\":\"drive\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":349,\"suspended\":false}"
+      "detail": "{\"view\":\"crt\",\"session\":\"zarvin-one\",\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":null,\"locs\":{\"zarvin-one\":\"drive\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":347,\"suspended\":false}"
     },
     {
       "name": "eject returns the disk to its slot and leaves the camera at the organizer",
@@ -73,7 +73,7 @@
     {
       "name": "CRT menu appears at once (no typing or staged loading)",
       "ok": true,
-      "detail": "29ms"
+      "detail": "31ms"
     },
     {
       "name": "CRT menu lists the experiences",
@@ -152,7 +152,7 @@
     {
       "name": "\"Computer\" returns to the room at the CRT menu (not the start)",
       "ok": true,
-      "detail": "{\"view\":\"crt\",\"session\":null,\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":\"work\",\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":668,\"suspended\":false}"
+      "detail": "{\"view\":\"crt\",\"session\":null,\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":\"work\",\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":667,\"suspended\":false}"
     },
     {
       "name": "focus returns to the WORLD.MAP entry",
@@ -263,7 +263,7 @@
     {
       "name": "reduced motion: the whole hand-off to Project World is a jump cut",
       "ok": true,
-      "detail": "76ms (menu 27ms)"
+      "detail": "70ms (menu 25ms)"
     },
     {
       "name": "mobile: every dock control is at least 44px tall",
@@ -277,7 +277,7 @@
     {
       "name": "mobile: menu text renders at 9px or larger and the screen fits the viewport",
       "ok": true,
-      "detail": "{\"px\":9.6166357421875,\"sw\":360.62384033203125}"
+      "detail": "{\"px\":12.012148132324217,\"sw\":379.33099365234375}"
     },
     {
       "name": "mobile: Project World is the real mobile journey",
@@ -309,6 +309,10 @@
       "ok": true
     },
     {
+      "name": "the HI-FI | LO-FI switch is visible, marks HI-FI as current and is 44px tall",
+      "ok": true
+    },
+    {
       "name": "\"2D view\" shows the plain page (one h1, no canvas, no retro computer)",
       "ok": true
     },
@@ -325,7 +329,11 @@
       "ok": true
     },
     {
-      "name": "\"Try the 3D workspace\" returns to the room",
+      "name": "the LO-FI page shows the mirrored switch with LO-FI current",
+      "ok": true
+    },
+    {
+      "name": "the HI-FI switch on the LO-FI page returns to the room",
       "ok": true
     },
     {
@@ -479,7 +487,7 @@
     "Skills",
     "AI consultation",
     "Contact",
-    "Switch to the LO-FI (2D) portfolio",
+    "LO-FI plain 2D",
     "USE THE COMPUTER→ [CRT]",
     "Desk",
     "Computer",

@@ -97,6 +97,7 @@ export default function OsShell({ view, children }) {
       </main>
       <footer className="os__foot">
         <span>CRVRO-OS · {path}</span>
+        <a href="/?view=2d">LO-FI version</a>
         <a href="mailto:christopherarivero@gmail.com">email</a>
         <a href="https://github.com/chrisrivero-dev" target="_blank" rel="noreferrer">github</a>
       </footer>

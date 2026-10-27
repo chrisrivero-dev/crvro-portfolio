@@ -1,0 +1,704 @@
+{
+ "desktop": {
+  "desk": {
+   "controls": [
+    {
+     "t": "Drag to look around · click ",
+     "w": 450,
+     "h": 28,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "Look around, then click the ",
+     "w": 485,
+     "h": 12,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 84,
+   "dockPct": 8.8
+  },
+  "computerMenu": {
+   "controls": [
+    {
+     "t": "C computer · D disk tray · ←",
+     "w": 374,
+     "h": 14,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 141,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 108,
+   "dockPct": 11.4
+  },
+  "menuText": {
+   "scale": 1.05,
+   "menuItem": 13.1,
+   "fileBtn": 13.1
+  },
+  "askText": {
+   "scale": 1.32,
+   "body": 17.2
+  },
+  "askControls": {
+   "controls": [
+    {
+     "t": "C computer · D disk tray · ←",
+     "w": 374,
+     "h": 14,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "Expanded view ↗",
+     "w": 186,
+     "h": 46,
+     "font": 13,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 141,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 118,
+   "dockPct": 12.4
+  },
+  "contactText": {
+   "scale": 1.32,
+   "body": 17.2,
+   "link": 18.5
+  },
+  "tray": {
+   "controls": [
+    {
+     "t": "C computer · D disk tray · ←",
+     "w": 374,
+     "h": 14,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "Click a disk to lift it",
+     "w": 200,
+     "h": 12,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Disk list ▴",
+     "w": 105,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 141,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 108,
+   "dockPct": 11.4
+  },
+  "held": {
+   "controls": [
+    {
+     "t": "C computer · D disk tray · ←",
+     "w": 374,
+     "h": 14,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "C-06 · ZARVIN ONE",
+     "w": 151,
+     "h": 12,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Insert into drive",
+     "w": 205,
+     "h": 46,
+     "font": 13,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Read case study",
+     "w": 134,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Put back",
+     "w": 84,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 118,
+   "dockPct": 12.4
+  },
+  "clearance": {
+   "hits": {
+    "crt": false,
+    "organizer": false,
+    "keyboard": false
+   },
+   "distToCamera": 659
+  },
+  "putBackExact": true,
+  "dirText": {
+   "scale": 1.32,
+   "menuItem": 16.5,
+   "body": 16.5,
+   "fileBtn": 16.5
+  },
+  "dirControls": {
+   "controls": [
+    {
+     "t": "C computer · D disk tray · ←",
+     "w": 374,
+     "h": 14,
+     "font": 11,
+     "contrastWorst": 14.9,
+     "tag": "P"
+    },
+    {
+     "t": "A: ZARVIN ONE",
+     "w": 118,
+     "h": 12,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Expanded view ↗",
+     "w": 186,
+     "h": 46,
+     "font": 13,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Eject disk",
+     "w": 98,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 141,
+     "h": 36,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 56,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 83,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 89,
+     "h": 36,
+     "font": 11,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 118,
+   "dockPct": 12.4
+  }
+ },
+ "mobile": {
+  "desk": {
+   "controls": [
+    {
+     "t": "Drag to look · tap the compu",
+     "w": 356,
+     "h": 30,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 96,
+   "dockPct": 11.4
+  },
+  "computerMenu": {
+   "controls": [
+    {
+     "t": "Back to the desk",
+     "w": 356,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 110,
+   "dockPct": 13
+  },
+  "menuText": {
+   "scale": 0.53,
+   "menuItem": 10.1,
+   "fileBtn": 10.1
+  },
+  "askText": {
+   "scale": 0.63,
+   "body": 10.7
+  },
+  "askControls": {
+   "controls": [
+    {
+     "t": "Expanded view ↗",
+     "w": 174,
+     "h": 46,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 174,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 112,
+   "dockPct": 13.3
+  },
+  "contactText": {
+   "scale": 0.63,
+   "body": 10.1,
+   "link": 10.7
+  },
+  "tray": {
+   "controls": [
+    {
+     "t": "Tap a disk to lift it",
+     "w": 356,
+     "h": 15,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Disk list ▴",
+     "w": 174,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 174,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 133,
+   "dockPct": 15.8
+  },
+  "held": {
+   "controls": [
+    {
+     "t": "Insert into drive",
+     "w": 113,
+     "h": 46,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Read case study",
+     "w": 113,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Put back",
+     "w": 113,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 112,
+   "dockPct": 13.3
+  },
+  "clearance": {
+   "hits": {
+    "crt": false,
+    "organizer": false,
+    "keyboard": false
+   },
+   "distToCamera": 944
+  },
+  "putBackExact": true,
+  "dirText": {
+   "scale": 0.63,
+   "menuItem": 10.7,
+   "body": 12,
+   "fileBtn": 10.7
+  },
+  "dirControls": {
+   "controls": [
+    {
+     "t": "A: ZARVIN ONE",
+     "w": 356,
+     "h": 15,
+     "font": 12,
+     "contrastWorst": 13.8,
+     "tag": "SPAN"
+    },
+    {
+     "t": "Expanded view ↗",
+     "w": 113,
+     "h": 46,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Eject disk",
+     "w": 113,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Back to the desk",
+     "w": 113,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 12.2,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Desk",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Computer",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.3,
+     "tag": "BUTTON"
+    },
+    {
+     "t": "Disk tray",
+     "w": 117,
+     "h": 44,
+     "font": 12,
+     "contrastWorst": 8.5,
+     "tag": "BUTTON"
+    }
+   ],
+   "dockH": 135,
+   "dockPct": 16
+  }
+ }
+}
