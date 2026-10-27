@@ -1,0 +1,292 @@
+diff --git a/server/corpus.json b/server/corpus.json
+index 8eecd45..7e32fe9 100644
+--- a/server/corpus.json
++++ b/server/corpus.json
+@@ -1,5 +1,5 @@
+ {
+-  "generatedAt": "2026-09-06T20:13:17.150Z",
++  "generatedAt": "2026-10-27T18:11:43.802Z",
+   "destinations": {
+     "work": {
+       "label": "Project World",
+@@ -45,6 +45,10 @@
+       "label": "GroundRules",
+       "href": "/projects/groundrules"
+     },
++    "proof-first": {
++      "label": "Proof First",
++      "href": "/projects/proof-first"
++    },
+     "parcel-engine": {
+       "label": "Parcel Engine",
+       "href": "/projects/parcel-engine"
+@@ -175,7 +179,7 @@
+       "id": "zarvin-one-summary-13",
+       "section": "project",
+       "slug": "zarvin-one",
+-      "text": "Zarvin One: One place to get things done. A personal AI operator. Ask for an outcome, and Zarvin coordinates specialists, models, tools, permissions, execution, verification, and follow-up underneath.",
++      "text": "Zarvin One: A personal AI operating system. A personal AI operating system that takes responsibility for work. Each request becomes a durable responsibility that Zarvin owns, advances, stops for approval when it matters, and only closes with verified evidence.",
+       "tags": [
+         "AI Product / Personal Automation",
+         "zarvin-one"
+@@ -185,7 +189,7 @@
+       "id": "zarvin-one-outcome-14",
+       "section": "project",
+       "slug": "zarvin-one",
+-      "text": "A personal AI operator that connects real calendar, email, and meeting-notes tools, executes approved actions, verifies the result against the provider, and keeps an evidence-backed record of what actually happened — not just what it says happened.",
++      "text": "A personal AI operating system where work is tracked as durable responsibilities: owned, resumed after restarts, gated by approval for consequential actions, and marked complete only with verified evidence.",
+       "tags": [
+         "zarvin-one",
+         "outcome"
+@@ -207,7 +211,7 @@
+       "id": "zarvin-one-status-16",
+       "section": "project",
+       "slug": "zarvin-one",
+-      "text": "Active live build — running daily on my own hardware, not a demo. Real connected accounts: Google Calendar, two Gmail accounts, Granola meeting notes. Consequential actions are approval-gated, executed, and independently verified against the provider. Some newer capabilities are still being hardened, or are intentionally off by default until they earn their way on.",
++      "text": "Active live build: running daily on my own hardware, not a demo. Work is tracked as durable responsibilities that survive restarts and only complete with verified evidence. Aven is the assistant I talk to; Ava decides internally which owned work needs attention. Consequential actions wait for my approval. The newest engineering loop is still validating in development.",
+       "tags": [
+         "zarvin-one",
+         "status",
+@@ -396,38 +400,87 @@
+       ]
+     },
+     {
+-      "id": "groundrules-demo-35",
++      "id": "groundrules-learned-35",
+       "section": "project",
+       "slug": "groundrules",
+-      "text": "Interactive demo: https://www.usegroundrules.com/",
++      "text": "Public records are messier than they look. Zoning codes, parcel data, and hazard layers often disagree with each other or contain stale information: the report has to acknowledge this rather than paper over it. Plain-English output is harder to get right than structured output. The goal is something someone can actually read and act on, not a JSON dump of zoning fields. Source citations matter a lot. Users need to know where a finding came from before they can trust it.",
+       "tags": [
+         "groundrules",
+-        "demo",
+-        "try"
++        "learned"
+       ]
+     },
+     {
+-      "id": "groundrules-learned-36",
++      "id": "groundrules-stack-36",
+       "section": "project",
+       "slug": "groundrules",
+-      "text": "Public records are messier than they look. Zoning codes, parcel data, and hazard layers often disagree with each other or contain stale information: the report has to acknowledge this rather than paper over it. Plain-English output is harder to get right than structured output. The goal is something someone can actually read and act on, not a JSON dump of zoning fields. Source citations matter a lot. Users need to know where a finding came from before they can trust it.",
++      "text": "Frontend: Next.js, React, CSS · AI / data: LLM API for report generation, Public parcel and zoning data, GIS data sources · Infrastructure: Vercel",
+       "tags": [
+         "groundrules",
++        "stack"
++      ]
++    },
++    {
++      "id": "proof-first-summary-37",
++      "section": "project",
++      "slug": "proof-first",
++      "text": "Proof First: Software repair, proven before payment. Proof First repairs a broken software behavior, reruns the same agreed test, and shows the before and after evidence before the customer pays. A code change is not proof that the problem is fixed.",
++      "tags": [
++        "Product / Software repair",
++        "proof-first"
++      ]
++    },
++    {
++      "id": "proof-first-problem-38",
++      "section": "project",
++      "slug": "proof-first",
++      "text": "A tool, an AI, or a developer says something is fixed while the part that mattered is still broken. A code change is not proof that the problem is fixed. Proof First treats a repair as unfinished until the same test that failed before the repair passes after it.",
++      "tags": [
++        "proof-first",
++        "problem"
++      ]
++    },
++    {
++      "id": "proof-first-built-39",
++      "section": "project",
++      "slug": "proof-first",
++      "text": "A controlled intake that validates, signs, and stores each submission as a private record. A worker that turns a verified submission into one resumable job. Reproduction and test runs inside a disposable sandbox with no network. A frozen test: criteria, commands, and scripts are hashed before the repair starts.",
++      "tags": [
++        "proof-first",
++        "built"
++      ]
++    },
++    {
++      "id": "proof-first-outcome-40",
++      "section": "project",
++      "slug": "proof-first",
++      "text": "A working repair and proof workflow: reproduce the failure, freeze the test, repair, rerun the same test in a sandbox, and package the before and after evidence for review.",
++      "tags": [
++        "proof-first",
++        "outcome"
++      ]
++    },
++    {
++      "id": "proof-first-learned-41",
++      "section": "project",
++      "slug": "proof-first",
++      "text": "A repair needs evidence. Saying it worked is a claim, and the rerun is the proof. The test has to be fixed before the repair starts, or the result cannot be trusted. Models can propose. Only the same test passing counts.",
++      "tags": [
++        "proof-first",
+         "learned"
+       ]
+     },
+     {
+-      "id": "groundrules-stack-37",
++      "id": "proof-first-stack-42",
+       "section": "project",
+-      "slug": "groundrules",
+-      "text": "Frontend: Next.js, React, CSS · AI / data: LLM API for report generation, Public parcel and zoning data, GIS data sources · Infrastructure: Vercel",
++      "slug": "proof-first",
++      "text": "Site and intake: JavaScript, Vercel, Private Blob storage · Worker: Python, Docker sandbox, Local models via Ollama",
+       "tags": [
+-        "groundrules",
++        "proof-first",
+         "stack"
+       ]
+     },
+     {
+-      "id": "parcel-engine-summary-38",
++      "id": "parcel-engine-summary-43",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Parcel Engine: Local metes-and-bounds parser and parcel geometry validator. A local Python tool that parses metes-and-bounds legal descriptions into structured COGO calls, builds preview geometry, checks closure/misclosure, and exports DXF or GeoJSON for mapping workflow testing. No official County data, real APNs, private legal descriptions, Q-drive files, or production records are included.",
+@@ -437,7 +490,7 @@
+       ]
+     },
+     {
+-      "id": "parcel-engine-problem-39",
++      "id": "parcel-engine-problem-44",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Legal descriptions are dense, inconsistent, and easy to misread. Mapping workflows often require interpreting bearings, distances, curve calls, and closure behavior manually. This project explores whether a local tool can assist with that process without relying on official production data.",
+@@ -447,7 +500,7 @@
+       ]
+     },
+     {
+-      "id": "parcel-engine-built-40",
++      "id": "parcel-engine-built-45",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Structured parser for line calls and selected curve calls Bearing and distance parsing for quadrant, compact, and cardinal formats Coordinate geometry builder Closure / misclosure validation",
+@@ -457,7 +510,7 @@
+       ]
+     },
+     {
+-      "id": "parcel-engine-outcome-41",
++      "id": "parcel-engine-outcome-46",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Local research tool for parsing, validating, and exporting metes-and-bounds legal descriptions for mapping workflow testing.",
+@@ -467,7 +520,7 @@
+       ]
+     },
+     {
+-      "id": "parcel-engine-learned-42",
++      "id": "parcel-engine-learned-47",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Legal descriptions are more varied than they appear. Handling the full range of bearing formats and notation styles is the bulk of the parsing problem. Closure validation is the most reliable feedback signal for whether a description was interpreted correctly.",
+@@ -477,7 +530,7 @@
+       ]
+     },
+     {
+-      "id": "parcel-engine-stack-43",
++      "id": "parcel-engine-stack-48",
+       "section": "project",
+       "slug": "parcel-engine",
+       "text": "Core: Python, COGO parsing, Geometry validation · Export: DXF, GeoJSON · Workflow: Desktop preview, OCR / Tesseract, Source-span review",
+@@ -487,7 +540,7 @@
+       ]
+     },
+     {
+-      "id": "about-bio-44",
++      "id": "about-bio-49",
+       "section": "about",
+       "slug": "about",
+       "text": "I'm Christopher. I build practical AI systems and internal tools for support, automation, and GIS/CAD. Most of them start with problems I've dealt with myself. I started in GIS/CAD support and gradually moved deeper into automation and human-supervised AI. I built my own local AI workstation and use Hermes every day to organize projects, investigate problems, and troubleshoot bugs. I still make the final calls. I usually have more ideas than time. I keep improving the systems I already use and start new projects when I see a problem worth solving.",
+@@ -498,7 +551,7 @@
+       ]
+     },
+     {
+-      "id": "about-facts-45",
++      "id": "about-facts-50",
+       "section": "about",
+       "slug": "about",
+       "text": "Based in Lakewood, CA (Pacific time). Currently building automation and AI tooling. Open to automation, AI support, and GIS/CAD ops work. Background in CAD/GIS, Python, and on-device AI.",
+@@ -509,7 +562,7 @@
+       ]
+     },
+     {
+-      "id": "skills-languages-46",
++      "id": "skills-languages-51",
+       "section": "skills",
+       "slug": "skills",
+       "text": "languages: Python, JavaScript, SQL, Bash, HTML / CSS",
+@@ -519,7 +572,7 @@
+       ]
+     },
+     {
+-      "id": "skills-data-infra-47",
++      "id": "skills-data-infra-52",
+       "section": "skills",
+       "slug": "skills",
+       "text": "data & infra: SQLite, Postgres, JSON / JSONL, Git / GitHub, Railway, REST APIs",
+@@ -529,7 +582,7 @@
+       ]
+     },
+     {
+-      "id": "skills-AI-support-systems-48",
++      "id": "skills-AI-support-systems-53",
+       "section": "skills",
+       "slug": "skills",
+       "text": "AI & support systems: OpenAI API, OpenClaw, KB-grounded drafting, RAG-style retrieval, Prompt guardrails, Canned response workflows",
+@@ -539,7 +592,7 @@
+       ]
+     },
+     {
+-      "id": "skills-GIS-CAD-49",
++      "id": "skills-GIS-CAD-54",
+       "section": "skills",
+       "slug": "skills",
+       "text": "GIS & CAD: ArcGIS Pro, QGIS, PostGIS, AutoCAD, MicroStation, Civil 3D, Shapefile / GeoPackage",
+@@ -549,7 +602,7 @@
+       ]
+     },
+     {
+-      "id": "skills-automation-50",
++      "id": "skills-automation-55",
+       "section": "skills",
+       "slug": "skills",
+       "text": "automation: Telegram Bot API, GitHub Actions, cron / scheduled jobs, Python scripts, Excel automation, pandas / openpyxl",
+@@ -559,7 +612,7 @@
+       ]
+     },
+     {
+-      "id": "skills-ops-testing-51",
++      "id": "skills-ops-testing-56",
+       "section": "skills",
+       "slug": "skills",
+       "text": "ops & testing: Structured logging, CLI tools, curl / API testing, Railway deploy logs, Local test scripts, Lightweight dashboards",
+@@ -569,7 +622,7 @@
+       ]
+     },
+     {
+-      "id": "contact-email-52",
++      "id": "contact-email-57",
+       "section": "contact",
+       "slug": "contact",
+       "text": "Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.",
+@@ -579,7 +632,7 @@
+       ]
+     },
+     {
+-      "id": "contact-github-53",
++      "id": "contact-github-58",
+       "section": "contact",
+       "slug": "contact",
+       "text": "GitHub: github.com/chrisrivero-dev",
+@@ -589,7 +642,7 @@
+       ]
+     },
+     {
+-      "id": "contact-linkedin-54",
++      "id": "contact-linkedin-59",
+       "section": "contact",
+       "slug": "contact",
+       "text": "LinkedIn: https://www.linkedin.com/in/christopherarivero",

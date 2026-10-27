@@ -48,6 +48,6 @@ const json = (r, status, body) => (r.method() === 'OPTIONS' ? r.respond({ status
   note('unresolved -> shown as a legitimate result, not as loading', o.text, /no evidence/.test(o.text));
   o = await run('expired', (r) => (r.method() === 'POST' ? json(r, 200, { request_id: 'sim4' }) : json(r, 404, { status: 'expired' })), { wait: 3500 });
   note('result expired (404) -> offline block', o.text, /offline/i.test(o.text));
-  fs.writeFileSync(path.join(__dirname, '..', 'captures', 'iter-04c', 'lookup-states.json'), JSON.stringify(results, null, 2));
+  fs.writeFileSync(path.join(__dirname, '..', 'captures', 'iter-04d', 'lookup-states.json'), JSON.stringify(results, null, 2));
   console.log(`${results.filter((r) => r.ok).length}/${results.length} observed as expected`);
 })();

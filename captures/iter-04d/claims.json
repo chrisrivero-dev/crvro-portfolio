@@ -1,0 +1,546 @@
+[
+  {
+    "slug": "zarvin-one",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      }
+    },
+    "links": {
+      "demo": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "sameText": true
+  },
+  {
+    "slug": "proof-first",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Site and intake/JavaScript": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Site and intake/Vercel": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Site and intake/Private Blob storage": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Worker/Python": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Worker/Docker sandbox": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Worker/Local models via Ollama": {
+        "onFloppy": true,
+        "onCasePage": false
+      }
+    },
+    "links": {
+      "site": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "sameText": true
+  },
+  {
+    "slug": "parcel-engine",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Core/Python": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Core/COGO parsing": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Core/Geometry validation": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Export/DXF": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Export/GeoJSON": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Workflow/Desktop preview": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Workflow/OCR / Tesseract": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Workflow/Source-span review": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "links": {
+      "repo": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "sameText": true
+  },
+  {
+    "slug": "openclaw",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:AI / model routing/Hermes local gateway": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / model routing/Ollama: local models on a Mac Studio workstation": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / model routing/Cloud LLM API routing": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / model routing/Local model registry: benchmarking and health checks": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Development tooling/Repository inspection + code review": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Development tooling/Automated testing": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Development tooling/Git + GitHub": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Development tooling/Build + deployment verification": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Integrations/Telegram Bot API": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Integrations/Browser + terminal automation": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Integrations/File + desktop-assisted tools": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Integrations/Web research tools": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Runtime/Python": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Runtime/FastAPI": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Runtime/Typed tool schemas": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Runtime/Append-only audit log": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "links": {},
+    "sameText": true
+  },
+  {
+    "slug": "sidecar",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Backend/Python": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Backend/Flask": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Backend/kb.json as KB source": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/JavaScript": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/Sidecar UI panel": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:KB workflow/Telegram Bot API": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:KB workflow/OpenClaw agent for KB drafting": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:KB workflow/GitHub for version control": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:KB workflow/Railway for deploys": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Testing/Freshdesk test tickets": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Testing/curl / manual API tests": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Testing/End-to-end KB deploy verification": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "links": {},
+    "sameText": true
+  },
+  {
+    "slug": "groundrules",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Frontend/Next.js": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/React": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/CSS": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / data/LLM API for report generation": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / data/Public parcel and zoning data": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:AI / data/GIS data sources": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Infrastructure/Vercel": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "links": {},
+    "sameText": true
+  },
+  {
+    "slug": "help-nearby",
+    "fields": {
+      "titleEm": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "kind": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "year": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "desc": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "status": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "role": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "outcome": {
+        "onFloppy": false,
+        "onCasePage": true
+      },
+      "tags": {
+        "onFloppy": true,
+        "onCasePage": false
+      },
+      "stack:Frontend/React / Next.js": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/CSS": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Frontend/Responsive UI": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Data/Structured resource records": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Data/Admin-maintained resource records": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Data/Category/topic mapping": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Data/Resource detail fields": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Product/EN/ES toggle": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Product/ZIP search UI": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Product/Expandable help cards": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Product/Alert/update panels": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Product/Map/directions UI": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Planned/Verified-date tracking": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Planned/Source refresh workflow": {
+        "onFloppy": true,
+        "onCasePage": true
+      },
+      "stack:Planned/Coverage report by ZIP/category": {
+        "onFloppy": true,
+        "onCasePage": true
+      }
+    },
+    "links": {},
+    "sameText": true
+  }
+]

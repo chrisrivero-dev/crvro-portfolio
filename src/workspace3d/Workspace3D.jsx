@@ -24,6 +24,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   const engineRef = useRef(null);
   const ctlRef = useRef(null);
   const activeRef = useRef(active);
+  const disksOpenRef = useRef(false);
   activeRef.current = active;
   const [engine, setEngine] = useState(null);
   const [ui, setUi] = useState({ view: 'rest', session: null, pending: null, lastEntry: null, locs: {} });
@@ -31,8 +32,10 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [announce, setAnnounce] = useState('');
-  const [compact, setCompact] = useState(() => window.matchMedia('(max-width: 700px), (pointer: coarse)').matches);
   const [disksOpen, setDisksOpen] = useState(false);
+  const diskListRef = useRef(null);
+  // opening the list moves keyboard focus into it; Escape closes it and returns focus to its button
+  useEffect(() => { if (disksOpen) diskListRef.current?.querySelector('button')?.focus({ preventScroll: true }); }, [disksOpen]);
   // the room fades out under the incoming interface instead of cutting (see .ws3d--leaving); it is suspended at once
   const [shown, setShown] = useState(active);
   const [leaving, setLeaving] = useState(false);
@@ -42,12 +45,6 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
     const t = setTimeout(() => { setShown(false); setLeaving(false); }, 380);
     return () => clearTimeout(t);
   }, [active]);
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 700px), (pointer: coarse)');
-    const f = () => setCompact(mq.matches);
-    mq.addEventListener('change', f);
-    return () => mq.removeEventListener('change', f);
-  }, []);
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const onLaunchRef = useRef(onLaunch);
   onLaunchRef.current = onLaunch;
@@ -71,7 +68,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
         eng = await createWorkspace({ stage: stageRef.current, quality: lowQuality() ? 'low' : 'high' });
         if (cancelled) { eng.dispose(); return; }
         ctl = createController(eng, {
-          onChange: (s) => { setUi(s); if (s.session) setMenuOpen(false); },
+          onChange: (s) => { setUi(s); if (s.session) { setMenuOpen(false); setDisksOpen(false); } },
           onHover: setHover,
           onLaunch: (entry) => onLaunchRef.current(entry),
         });
@@ -121,6 +118,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   useEffect(() => {
     const onKey = (e) => {
       if (e.key !== 'Escape' || !activeRef.current) return;
+      if (disksOpenRef.current) { e.preventDefault(); setDisksOpen(false); document.querySelector('.ws3d__disks')?.focus({ preventScroll: true }); return; }
       const ctl = ctlRef.current;
       if (ctl && (ctl.state.view === 'crt')) { e.preventDefault(); ctl.back(); setAnnounce('Back at the workspace.'); }
     };
@@ -132,6 +130,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
 
   const use = useCallback(() => { setMenuOpen(true); ctlRef.current?.approach(); setAnnounce('At the computer. Choose an experience.'); }, []);
   const pick = useCallback((entry) => ctlRef.current?.launch(entry), []);
+  disksOpenRef.current = disksOpen;
   const sessionSlug = ui.session || ui.pending;
 
   return (
@@ -171,34 +170,24 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
       )}
 
       {engine && (
-        <div className={`ws3d__dock${compact ? ' is-compact' : ''}`} role="group" aria-label="Computer and floppy disks">
+        <div className="ws3d__dock" role="group" aria-label="Computer and floppy disks">
           {!sessionSlug && (ui.view === 'rest' || ui.view === 'drive') && (
             <div className="ws3d__row">
               <button type="button" className="ws3d__use" onClick={use}>Use the computer</button>
-              {compact ? (
-                <button type="button" aria-expanded={disksOpen} aria-controls="ws-disklist" onClick={() => setDisksOpen((v) => !v)}>
-                  Floppy disks <span aria-hidden="true">{disksOpen ? '▾' : '▴'}</span>
-                </button>
-              ) : (
-                <>
-                  <span className="ws3d__label" id="ws-disks">FLOPPY DISKS</span>
-                  {DISK_PROJECTS.map((d) => (
-                    <button
-                      key={d.slug}
-                      type="button"
-                      aria-describedby="ws-disks"
-                      aria-pressed={ui.session === d.slug}
-                      onClick={() => ctlRef.current?.load(d.slug)}
-                      title={`${d.label} · case ${d.caseId}`}
-                    >{prettyTitle(d.slug)}</button>
-                  ))}
-                </>
-              )}
+              <button
+                type="button"
+                className="ws3d__disks"
+                aria-expanded={disksOpen}
+                aria-controls="ws-disklist"
+                onClick={() => setDisksOpen((v) => !v)}
+              >
+                Floppy disks <span aria-hidden="true">{disksOpen ? '▾' : '▴'}</span>
+              </button>
               {ui.view === 'drive' && <button type="button" onClick={() => ctlRef.current?.back()}>Back to room</button>}
             </div>
           )}
-          {compact && disksOpen && !sessionSlug && (
-            <ul id="ws-disklist" className="ws3d__disklist">
+          {disksOpen && !sessionSlug && (
+            <ul id="ws-disklist" className="ws3d__disklist" aria-label="Floppy disks, one per project" ref={diskListRef}>
               {DISK_PROJECTS.map((d) => (
                 <li key={d.slug}>
                   <button type="button" onClick={() => { setDisksOpen(false); ctlRef.current?.load(d.slug); }}>

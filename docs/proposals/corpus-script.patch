@@ -1,0 +1,64 @@
+diff --git a/scripts/build-corpus.mjs b/scripts/build-corpus.mjs
+index 36381bc..061303b 100644
+--- a/scripts/build-corpus.mjs
++++ b/scripts/build-corpus.mjs
+@@ -15,6 +15,7 @@ import { writeFileSync } from 'node:fs';
+ import { fileURLToPath } from 'node:url';
+ import path from 'node:path';
+ import { PROJECTS, GIS_PROJECTS } from '../src/data/projects.js';
++import { DESTINATIONS as SITE_DESTINATIONS } from '../src/data/portfolioNavigator.js';
+ 
+ const __dirname = path.dirname(fileURLToPath(import.meta.url));
+ const OUT_PATH = path.join(__dirname, '..', 'server', 'corpus.json');
+@@ -86,24 +87,12 @@ add('contact', 'contact', 'email', 'Email is the fastest way to reach Christophe
+ add('contact', 'contact', 'github', 'GitHub: github.com/chrisrivero-dev', ['contact', 'github']);
+ add('contact', 'contact', 'linkedin', 'LinkedIn: https://www.linkedin.com/in/christopherarivero', ['contact', 'linkedin']);
+ 
+-// Destination allowlist — mirrors src/data/portfolioNavigator.js DESTINATIONS.
+-// Duplicated intentionally: the worker process must not import site source at
+-// request time, so this is the worker's own frozen copy, kept in sync by
+-// this build script.
+-const DESTINATIONS = {
+-  work: { label: 'Project World', href: '/#work' },
+-  about: { label: 'About', href: '/#about' },
+-  skills: { label: 'Skills', href: '/#skills' },
+-  contact: { label: 'Contact', href: '/#contact' },
+-  openclaw: { label: 'OpenClaw / Hermes', href: '/projects/openclaw' },
+-  'zarvin-one': { label: 'Zarvin One', href: '/projects/zarvin-one' },
+-  'zarvin-demo': { label: 'Try Zarvin One', href: 'https://zarvin-one-mobile.expo.app/' },
+-  'zarvin-guided-tour': { label: 'Zarvin One guided tour', href: 'https://zarvin-one-mobile.expo.app/guided-demo' },
+-  sidecar: { label: 'Sidecar', href: '/projects/sidecar' },
+-  'help-nearby': { label: 'Help Nearby', href: '/projects/help-nearby' },
+-  groundrules: { label: 'GroundRules', href: '/projects/groundrules' },
+-  'parcel-engine': { label: 'Parcel Engine', href: '/projects/parcel-engine' },
+-};
++// Destination allowlist: derived from the site's own destination registry (src/data/portfolioNavigator.js), so the worker can never
++// drift from what the browser can route to. (It used to be a hand-copied list that silently lacked 'proof-first'.) The worker process still
++// reads only the generated JSON at request time, never site source.
++const DESTINATIONS = Object.fromEntries(
++  Object.entries(SITE_DESTINATIONS).map(([key, d]) => [key, { label: d.label, href: d.href }]),
++);
+ 
+ const corpus = {
+   generatedAt: new Date().toISOString(),
+diff --git a/scripts/test-corpus.mjs b/scripts/test-corpus.mjs
+new file mode 100644
+index 0000000..8e8b318
+--- /dev/null
++++ b/scripts/test-corpus.mjs
+@@ -0,0 +1,15 @@
++// Guards the worker corpus against drifting from the site: every destination the browser can route to must be in the corpus allowlist,
++// every registry project must have entries, and the summaries must match the current registry text (catches a stale snapshot).
++// Run after `npm run corpus:build`:  node scripts/test-corpus.mjs
++import assert from 'node:assert/strict';
++import { readFileSync } from 'node:fs';
++import { PROJECTS, GIS_PROJECTS } from '../src/data/projects.js';
++import { DESTINATIONS } from '../src/data/portfolioNavigator.js';
++
++const corpus = JSON.parse(readFileSync(new URL('../server/corpus.json', import.meta.url), 'utf8'));
++for (const key of Object.keys(DESTINATIONS)) assert.ok(corpus.destinations[key], `corpus.destinations is missing "${key}"`);
++const slugs = new Set(corpus.entries.map((e) => e.slug));
++for (const p of [...PROJECTS, ...GIS_PROJECTS]) assert.ok(slugs.has(p.slug), `corpus has no entries for project "${p.slug}"`);
++const summaries = new Map(corpus.entries.filter((e) => e.id.includes('-summary-')).map((e) => [e.slug, e.text]));
++for (const p of [...PROJECTS, ...GIS_PROJECTS]) assert.equal(summaries.get(p.slug), `${p.title}: ${p.titleEm} ${p.desc}`, `corpus summary for "${p.slug}" is stale`);
++console.log(`corpus ok: ${corpus.entries.length} entries, ${Object.keys(corpus.destinations).length} destinations`);

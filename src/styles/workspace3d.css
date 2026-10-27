@@ -47,14 +47,21 @@
 /* the room fades under the incoming interface (hand-off) */
 .ws3d--leaving { opacity: 0; transition: opacity 0.34s ease-out; pointer-events: none; }
 
-/* compact dock (phones / touch): one slim row; the disk list opens on demand above it */
-.ws3d__dock.is-compact { bottom: 12px; gap: 6px; width: calc(100vw - 20px); }
-.ws3d__dock.is-compact .ws3d__row { width: 100%; flex-wrap: nowrap; padding: 6px; background: rgba(20, 17, 14, 0.62); border-color: rgba(74, 66, 56, 0.7); }
-.ws3d__dock.is-compact .ws3d__row > button { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 8px 6px; font-size: 11.5px; letter-spacing: 0.05em; }
-.ws3d__dock.is-compact .ws3d__row > .ws3d__label { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ws3d__disklist { list-style: none; margin: 0; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; background: rgba(20, 17, 14, 0.9); border: 1px solid #4a4238; border-radius: 6px; }
+/* dock: "Use the computer" leads; the floppy choices stay collapsed until asked for (the tray in the room is the primary way in) */
+.ws3d__dock .ws3d__use { min-height: 46px; padding: 10px 22px; font-size: 13px; letter-spacing: 0.12em; }
+.ws3d__disklist { list-style: none; margin: 0; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: min(440px, calc(100vw - 24px)); background: rgba(20, 17, 14, 0.94); border: 1px solid #4a4238; border-radius: 6px; }
 .ws3d__disklist button { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; min-height: 48px; font-size: 11.5px; }
 .ws3d__cid { color: var(--ws-amber); opacity: 0.85; }
+
+/* phones and touch: a slim full-width row */
+@media (max-width: 700px), (pointer: coarse) {
+  .ws3d__dock { bottom: 12px; gap: 6px; width: calc(100vw - 20px); }
+  .ws3d__row { width: 100%; flex-wrap: nowrap; padding: 6px; background: rgba(20, 17, 14, 0.62); border-color: rgba(74, 66, 56, 0.7); }
+  .ws3d__row > button { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 8px 6px; font-size: 11.5px; letter-spacing: 0.05em; }
+  .ws3d__row > .ws3d__label { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ws3d__dock .ws3d__use { padding: 8px 6px; font-size: 11.5px; }
+  .ws3d__disklist { width: 100%; }
+}
 
 /* ── the screen: a real DOM element inside the 3D scene ── */
 .ws3d-screen {

@@ -23,14 +23,22 @@ body.os-open { background: #0f0c09; }
   background: radial-gradient(110% 90% at 50% 0%, #221c13 0%, #14110d 55%, #0d0b08 100%); }
 /* the screen's scanlines, static (no animation) */
 .os__bg::after { content: ""; position: absolute; inset: 0; mix-blend-mode: multiply; background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0.12) 3px); }
-/* the bezel: the same copper-rimmed opening the visitor just flew into */
-.os__frame { position: fixed; inset: 0; z-index: 95; pointer-events: none; border: 10px solid #0a0806; border-radius: 0; box-shadow: inset 0 0 0 2px #6b4a2a, inset 0 0 40px rgba(0, 0, 0, 0.7), inset 0 0 0 3px rgba(224, 180, 104, 0.18); }
-@media (min-width: 900px) { .os__frame { border-width: 14px; } }
 
-/* bar: same 64px height as the site header, so Project World's sticky stage keeps its geometry */
-.os__bar { position: sticky; top: 0; z-index: 100; height: 64px; display: flex; align-items: center; gap: 18px; padding: 0 28px;
-  background: color-mix(in oklab, #14110d 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid #3a3322;
+/* The monitor. The glass is the rounded opening; the bezel is everything outside it (one huge spread shadow), with the copper ring of
+ * the 3D screen opening, a dark moulding line, a vignette and a faint highlight on the glass. No distortion: content stays flat and sharp. */
+.os { --os-b: 16px; --os-bb: 36px; --os-r: 26px; }
+.os__glass { position: fixed; z-index: 95; pointer-events: none; inset: var(--os-b) var(--os-b) var(--os-bb) var(--os-b); border-radius: var(--os-r); overflow: hidden;
+  box-shadow: 0 0 0 3px #8a5f33, 0 0 0 7px #17110b, 0 0 0 100vmax #0b0907, inset 0 0 90px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(224, 180, 104, 0.16); }
+.os__glass::after { content: ""; position: absolute; inset: 0; background: linear-gradient(158deg, rgba(255, 240, 210, 0.05) 0%, rgba(255, 240, 210, 0) 24%), radial-gradient(120% 90% at 50% 40%, rgba(255, 176, 64, 0.035), transparent 60%); }
+.os__badge { position: fixed; z-index: 96; left: 0; right: 0; bottom: 0; height: var(--os-bb); display: flex; align-items: center; justify-content: center; gap: 10px; pointer-events: none;
+  font: 700 12px var(--font-mono); letter-spacing: 0.34em; color: #7d7261; text-shadow: 0 1px 0 #000, 0 -1px 0 rgba(255, 255, 255, 0.05); }
+.os__led { width: 7px; height: 7px; border-radius: 50%; background: #ffcf8a; box-shadow: 0 0 7px 2px rgba(255, 176, 64, 0.55); }
+
+/* bar: inside the glass, 64px tall like the site header, so Project World's sticky stage keeps its geometry */
+.os__bar { position: sticky; top: var(--os-b); z-index: 100; height: 64px; margin: var(--os-b) var(--os-b) 0; display: flex; align-items: center; gap: 18px; padding: 0 22px;
+  border-radius: var(--os-r) var(--os-r) 0 0; background: color-mix(in oklab, #14110d 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid #3a3322;
   font-family: var(--font-mono); }
+.os { padding-top: 0; }
 .os__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .os__brand { font-size: 12px; font-weight: 600; letter-spacing: 0.22em; color: var(--amber); }
 .os__path { font-size: 10.5px; letter-spacing: 0.1em; color: var(--pencil); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -40,12 +48,14 @@ body.os-open { background: #0f0c09; }
 .os__tabe { color: var(--amber-deep); }
 .os__tab:hover { color: var(--ink); border-color: #4a4430; }
 .os__tab.is-on { color: var(--ink); background: rgba(217, 171, 92, 0.14); border-color: rgba(217, 171, 92, 0.5); }
+.os__files { display: none; }
 .os__return { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #1d1812; background: var(--amber); border: 1px solid var(--amber); border-radius: 4px; text-decoration: none; }
 .os__return:hover { background: #e8bd73; }
 .os a:focus-visible, .os button:focus-visible { outline: 2px solid #f4eedd; outline-offset: 3px; }
+:root:has(body.os-open) { scrollbar-width: thin; scrollbar-color: #4a4430 #0b0907; }
 
-.os__main { position: relative; z-index: 1; padding-bottom: 24px; outline: none; }
-.os__foot { position: relative; z-index: 1; display: flex; gap: 18px; justify-content: center; padding: 28px 24px 40px; font: 11px var(--font-mono); letter-spacing: 0.1em; color: var(--pencil); }
+.os__main { position: relative; padding-bottom: 24px; outline: none; }
+.os__foot { position: relative; display: flex; gap: 18px; justify-content: center; padding: 28px 24px calc(40px + var(--os-bb)); font: 11px var(--font-mono); letter-spacing: 0.1em; color: var(--pencil); }
 .os__foot a { color: var(--graphite); }
 
 /* the page "powers on" from the dark screen the camera was just looking at: no bright flash, no filter on the wrapper */
@@ -59,19 +69,10 @@ body.os-open { background: #0f0c09; }
 .os[data-theme="dark"] .project-world { --pw-sea: color-mix(in oklab, #d9ab5c 6%, #15120e); --pw-land: #2a241a; }
 .os .btn-primary { background: var(--amber); color: #1d1812; border-color: var(--amber); }
 
-@media (max-width: 860px) {
-  .os__bar { padding: 0 14px; gap: 10px; }
-  .os__id { display: none; }
-  .os__tabs { margin: 0; flex: 1; }
-  .os__return span:last-child { display: none; }          /* arrow + "Return" fits; full label stays for AT */
-  .os__return::after { content: "Return"; }
-  .os__return { min-height: 44px; padding: 0 12px; }
-  .os__tab { padding: 12px 8px; }
-}
 @media (prefers-reduced-motion: reduce) { .os { animation: none; } }
 
 /* in-page jumps (Skip journey) land below the sticky bar */
-.os [id] { scroll-margin-top: 72px; }
+.os [id] { scroll-margin-top: calc(80px + var(--os-b)); }
 
 /* Project World's decorative landfall caption says "§ 02 ABOUT"; inside the computer the voyage is followed by the Destination Lookup,
  * so the (aria-hidden) caption is re-worded here without touching the component. */
@@ -79,3 +80,45 @@ body.os-open { background: #0f0c09; }
 .os .pw-landfall .lab::after { content: "MAKE LANDFALL: SYSTEM RETURN"; font-size: 10.5px; }
 
 .os .pwm-mapbtn { background: var(--amber); color: #1d1812; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45); }
+
+/* Project World's desktop stage was sized for a 64px header at the top of the viewport; the bezel takes a little more */
+.os .pw-stage { top: calc(64px + var(--os-b)); height: min(calc(100vh - 72px - var(--os-b) - var(--os-bb)), 820px); }
+.os .pw-stage .pw-map { max-height: calc(100vh - 110px - var(--os-b) - var(--os-bb)); }
+.os .pw-side { max-height: calc(100vh - 100px - var(--os-b) - var(--os-bb)); }
+
+/* very subtle phosphor glow on headings (no blur, no distortion) */
+.os :is(h1, h2, h3, .case-title, .section-head .h) { text-shadow: 0 0 22px rgba(255, 176, 64, 0.08); }
+
+/* phones: slimmer bezel with a taller lower bezel that hosts the badge and Project World's map control; file menu instead of tabs */
+@media (max-width: 860px) {
+  .os { --os-b: 7px; --os-bb: 46px; --os-r: 18px; }
+  .os__bar { height: 56px; gap: 10px; padding: 0 10px; margin: var(--os-b) var(--os-b) 0; }
+  .os__id, .os__tabs { display: none; }
+  .os__files { display: inline-flex; align-items: center; gap: 8px; flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; font: 600 11.5px var(--font-mono); letter-spacing: 0.08em; color: var(--ink); background: rgba(217, 171, 92, 0.1); border: 1px solid rgba(217, 171, 92, 0.45); border-radius: 4px; cursor: pointer; text-align: left; }
+  .os__filesk { color: var(--amber); letter-spacing: 0.18em; }
+  .os__filescur { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--graphite); }
+  .os__return { min-height: 44px; padding: 0 12px; }
+  .os__returnt { display: none; }
+  .os__return::after { content: "Return"; }
+  .os__filepanel { position: absolute; left: 0; right: 0; top: 100%; display: grid; background: #14110d; border: 1px solid #4a4430; border-top: 0; border-radius: 0 0 14px 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6); padding: 6px; }
+  .os__file { display: grid; gap: 2px; min-height: 48px; padding: 8px 12px; color: var(--ink); text-decoration: none; border-radius: 4px; border-bottom: 1px solid #2a2418; }
+  .os__file:last-child { border-bottom: 0; }
+  .os__file.is-on, .os__file:hover { background: rgba(217, 171, 92, 0.14); }
+  .os__filen { font: 600 13px var(--font-mono); letter-spacing: 0.1em; }
+  .os__fileb { font-size: 12px; color: var(--graphite); }
+  /* Project World's floating "World map" button lives in the lower bezel, so it never covers content */
+  .os .pwm-mapbtn { z-index: 97; right: 14px; bottom: calc((var(--os-bb) - 36px) / 2); height: 36px; padding: 0 12px; font-size: 11px; background: var(--amber); color: #1d1812; border: 1px solid #1d1812; box-shadow: none; }
+  .os__badge { justify-content: flex-start; padding-left: 18px; }
+  /* spacing tuned for a phone inside the monitor */
+  .os .work { padding: 14px 0 36px; }
+  .os .section-head { gap: 8px; padding-bottom: 10px; margin-bottom: 10px; }
+  .os .section-head .h { font-size: 32px; line-height: 1.12; }
+  .os .pw-intro { margin-top: 0; }
+  .os .pw-intro p { font-size: 15px; }
+  .os .pw-topctl { margin: 12px 0 4px; }
+  .os .pwm-stop { padding: 20px 0 22px 46px; }
+  .os .pwm-vig { margin-bottom: 10px; }
+  .os .pw-landfall { padding: 20px 20px 0; }
+  .os .pw-landfall .line { height: 22px; margin-top: 8px; }
+  .os .portfolio-navigator { padding: 28px 0; }
+}
