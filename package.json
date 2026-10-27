@@ -12,7 +12,10 @@
     "worker": "node worker/public-captain.mjs",
     "worker:test": "node --test worker/polling.test.mjs",
     "captain:test": "node worker/adversarial-tests.mjs",
-    "portfolio:test": "node scripts/test-portfolio-knowledge.mjs"
+    "portfolio:test": "node scripts/test-portfolio-knowledge.mjs",
+    "case-ids:test": "node scripts/test-case-ids.mjs",
+    "verify:04b": "node scripts/verify-04b.cjs",
+    "verify:lookup": "node scripts/verify-lookup-states.cjs"
   },
   "dependencies": {
     "@upstash/redis": "^1.38.2",
@@ -21,7 +24,8 @@
     "framer-motion": "^11.18.2",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "three": "0.170.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

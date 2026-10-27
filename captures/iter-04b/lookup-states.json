@@ -1,0 +1,37 @@
+[
+  {
+    "name": "POST /api/ask -> 429 rate_limited",
+    "observed": "> portfolio intelligence temporarily offline You can still explore the projects manually: [AI] [GIS] [Support] [About] [Contact]",
+    "ok": true
+  },
+  {
+    "name": "POST /api/ask -> 500",
+    "observed": "> portfolio intelligence temporarily offline You can still explore the projects manually: [AI] [GIS] [Support] [About] [Contact]",
+    "ok": true
+  },
+  {
+    "name": "/api returns HTML (no backend deployed)",
+    "observed": "> portfolio intelligence temporarily offline You can still explore the projects manually: [AI] [GIS] [Support] [About] [Contact]",
+    "ok": true
+  },
+  {
+    "name": "queued -> processing (polls /api/result/:id every 1.5 s)",
+    "observed": "> consulting portfolio intelligence… | calls: OPTIONS /api/ask, POST /api/ask, GET /api/result/sim1, GET /api/result/sim1",
+    "ok": true
+  },
+  {
+    "name": "answered -> answer + destination links from the client registry",
+    "observed": "SIMULATED ANSWER (test double). resolved via CAPTAIN Proof First → Project World →",
+    "ok": true
+  },
+  {
+    "name": "unresolved -> shown as a legitimate result, not as loading",
+    "observed": "SIMULATED: no evidence for that.",
+    "ok": true
+  },
+  {
+    "name": "result expired (404) -> offline block",
+    "observed": "> portfolio intelligence temporarily offline You can still explore the projects manually: [AI] [GIS] [Support] [About] [Contact]",
+    "ok": true
+  }
+]

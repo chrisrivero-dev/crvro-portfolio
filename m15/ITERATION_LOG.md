@@ -29,3 +29,6 @@
 - Browser verification: `node tools/capture-03.cjs` (32 checks, real pointer/keyboard/touch input, desktop + reduced motion + 390x844 touch).
 
 **Iteration 03 APPROVED by the user.** Preserved at tag `m15-iter-03-approved` (e0a3aed). Do not overwrite; later work goes in iteration 04+.
+
+## Iteration 04B (production-shaped code lives in `src/`, see `docs/iteration-04b.md`)
+The approved iteration-03 room was ported to `src/workspace3d/` and mounted as the React home page; this `m15/` archive is unchanged.

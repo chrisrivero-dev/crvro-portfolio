@@ -1,0 +1,32 @@
+/* Full-page experiences opened from the CRT, the return link, and the plain 2D home. Loaded with the main bundle
+ * (deep links render these without ever loading the 3D chunk). */
+/* ── hand-off into a full-page experience: the page "powers on" ── */
+.xp { animation: xp-on 0.38s ease-out backwards; }
+@keyframes xp-on { from { opacity: 0; } 40% { opacity: 1; } }
+/* a brief phosphor flash as the screen hands over to the page (opacity only: a filter/transform on .xp would make the fixed return link scroll with the page) */
+.xp::before { content: ""; position: fixed; inset: 0; z-index: 90; pointer-events: none; background: #d9ab5c; opacity: 0; animation: xp-flash 0.38s ease-out; }
+@keyframes xp-flash { 0% { opacity: 0.55; } 100% { opacity: 0; } }
+.xp-main:focus { outline: none; }
+.xp-return {
+  position: fixed; left: 14px; bottom: 14px; z-index: 45; display: inline-flex; gap: 8px; align-items: center;
+  padding: 11px 16px; min-height: 44px; font: 600 12px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #efe6d4; background: #2a2520; border: 1px solid #7d7466; border-radius: 6px; text-decoration: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.xp-return:hover { border-color: #d9ab5c; color: #fff; }
+.xp-return:focus-visible { outline: 2px solid #f4eedd; outline-offset: 3px; }
+
+/* ── the plain 2D home: semantic, readable, not a second computer ── */
+.flat-home { padding: 120px 0 72px; }
+.flat-eyebrow { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; letter-spacing: 0.18em; opacity: 0.7; margin: 0 0 14px; }
+.flat-h1 { font-family: var(--font-serif, Georgia, serif); font-weight: 500; font-size: clamp(30px, 5vw, 52px); line-height: 1.12; margin: 0 0 14px; max-width: 22em; }
+.flat-sub { font-size: 18px; line-height: 1.5; max-width: 34em; margin: 0 0 22px; }
+.flat-h2 { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; margin: 40px 0 12px; opacity: 0.75; }
+.flat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.flat-list li { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--rule, rgba(128, 128, 128, 0.25)); }
+.flat-list a { color: inherit; }
+.flat-list span { opacity: 0.72; }
+.flat-notice { padding: 12px 14px; margin: 0 0 22px; border: 1px solid var(--rule, rgba(128, 128, 128, 0.4)); border-radius: 6px; font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .xp, .xp::before { animation: none; }
+}

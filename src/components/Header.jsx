@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Icon from "./Icon.jsx";
 
-const links = [
+const DEFAULT_LINKS = [
   { id: "work",    n: "01", label: "work" },
   { id: "about",   n: "02", label: "about" },
   { id: "skills",  n: "03", label: "skills" },
   { id: "contact", n: "04", label: "contact" },
 ];
 
-export default function Header({ activeId, theme, onToggleTheme }) {
+// `links` lets the redesigned home page list its own experiences; every other page keeps the original four.
+export default function Header({ activeId, theme, onToggleTheme, links = DEFAULT_LINKS }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 

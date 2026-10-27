@@ -1,0 +1,124 @@
+/* The 3D-first home page (src/workspace3d), the CRT screen UI, the dock, and the plain 2D home.
+ * Ported from m15/m15.css + m15/i3.css (iteration 03, approved); selectors are scoped so nothing leaks into the rest of the site. */
+
+.ws3d {
+  --ws-ink: #efe6d4;
+  --ws-dim: #b8ad9a;
+  --ws-amber: #d9ab5c;
+  --ws-amber-deep: #b8863b;
+  --ws-bg-0: #221d15;
+  --ws-bg-1: #17140f;
+  --ws-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #17130f;
+  color: var(--ws-ink);
+  font-family: var(--ws-mono);
+  overflow: hidden;
+}
+.ws3d[hidden] { display: none; }
+.ws3d__stage { position: absolute; inset: 0; }
+/* the DOM screen layer sits BEHIND the WebGL canvas; the canvas punches a transparent hole where the screen is */
+.ws3d #css3d { position: absolute; inset: 0; overflow: visible; z-index: 1; pointer-events: none; }
+.ws3d #css3d #screen { pointer-events: auto; }
+.ws3d canvas#gl { position: absolute; inset: 0; display: block; z-index: 2; pointer-events: none; }
+
+.ws3d__sr, .ws3d__skip:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ws3d__quick { position: absolute; top: 10px; left: 10px; z-index: 60; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100vw - 120px); }
+.ws3d__skip:focus { position: static; width: auto; height: auto; clip: auto; padding: 8px 12px; background: #efe6d4; color: #1d1812; border-radius: 4px; font-size: 13px; text-decoration: none; }
+.ws3d__loading { position: absolute; inset: auto 0 45% 0; z-index: 50; margin: 0; text-align: center; font-size: 13px; letter-spacing: 0.12em; color: var(--ws-dim); }
+.ws3d__flat { position: absolute; top: 12px; right: 14px; z-index: 55; font: 11px/1 var(--ws-mono); letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 10px; color: var(--ws-dim); background: rgba(20, 17, 14, 0.7); border: 1px solid #4a4238; border-radius: 4px; cursor: pointer; }
+.ws3d__flat:hover { color: #fff; border-color: var(--ws-amber); }
+.ws3d__tag { position: fixed; left: 0; top: 0; z-index: 70; pointer-events: none; font: 12px var(--ws-mono); background: #f2ede1; color: #1d2430; padding: 6px 10px; border-radius: 3px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+
+/* ── dock: the visitor's controls (keyboard, pointer, touch) ── */
+.ws3d__dock { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: calc(100vw - 24px); font: 12px/1 var(--ws-mono); letter-spacing: 0.08em; }
+.ws3d__row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(20, 17, 14, 0.8); border: 1px solid #4a4238; border-radius: 6px; backdrop-filter: blur(4px); }
+.ws3d__label { color: var(--ws-dim); padding: 0 6px; font-size: 11px; }
+.ws3d__dock button { font: inherit; min-height: 36px; padding: 8px 12px; color: var(--ws-ink); background: #2a2520; border: 1px solid #7d7466; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+.ws3d__dock button:hover { border-color: var(--ws-amber); color: #fff; }
+.ws3d__dock button[aria-pressed="true"] { background: var(--ws-amber); color: #1d1812; border-color: var(--ws-amber); }
+.ws3d__dock .ws3d__use { background: var(--ws-amber); color: #1d1812; border-color: var(--ws-amber); font-weight: 700; }
+.ws3d button:focus-visible, .ws3d a:focus-visible { outline: 2px solid #f4eedd; outline-offset: 2px; }
+.ws3d[data-view="crt"] .ws3d__dock, .ws3d[data-view="fill"] .ws3d__dock { bottom: 20px; }
+.ws3d[data-view="fill"] .ws3d__dock, .ws3d[data-view="fill"] .ws3d__flat { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+
+/* ── the screen: a real DOM element inside the 3D scene ── */
+.ws3d-screen {
+  width: 600px; height: 400px; position: relative; overflow: hidden; border-radius: 12px;
+  background: radial-gradient(115% 130% at 50% 30%, var(--ws-bg-0) 0%, var(--ws-bg-1) 62%, #0d0b08 100%);
+  box-shadow: inset 0 0 0 2px #050403, inset 0 2px 14px rgba(0, 0, 0, 0.75), inset 0 0 60px rgba(0, 0, 0, 0.5);
+  padding: 30px 42px 22px; display: flex; flex-direction: column;
+  font-family: var(--ws-mono); color: var(--ws-ink); text-align: left;
+}
+.ws3d-screen::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 4; mix-blend-mode: multiply; background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.06) 3px); }
+.ws-screen-inner { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.ws-pane { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.ws-ps { color: var(--ws-amber); }
+.ws-cursor { display: inline-block; width: 0.6em; height: 1.05em; margin-left: 3px; vertical-align: -0.17em; background: var(--ws-amber); opacity: 0.85; animation: ws-blink 1.1s steps(1) infinite; }
+@keyframes ws-blink { 50% { opacity: 0; } }
+
+.ws-boot { margin: 0; font-size: 10px; line-height: 1.55; letter-spacing: 0.07em; color: rgba(240, 232, 216, 0.66); }
+.ws-rule { height: 1px; margin: 10px 0 12px; background: linear-gradient(to right, rgba(255, 176, 64, 0.5), rgba(255, 176, 64, 0.06) 70%); }
+.ws-eyebrow { margin: 0 0 10px; font-size: 10px; font-weight: 600; letter-spacing: 0.22em; color: var(--ws-amber-deep); }
+.ws-headline { margin: 0 0 11px; font-size: 20px; font-weight: 600; line-height: 1.26; letter-spacing: -0.015em; color: #f3ecde; }
+.ws-sub { margin: 0 0 auto; font-size: 11.5px; line-height: 1.52; color: rgba(244, 235, 218, 0.76); }
+.ws-idle { margin: 8px 0 0; font-size: 12px; letter-spacing: 0.1em; color: rgba(244, 235, 218, 0.8); }
+.ws-cta { display: inline-flex; align-items: center; gap: 10px; width: fit-content; margin-top: 12px; padding: 9px 14px; font: 600 12px/1 var(--ws-mono); letter-spacing: 0.2em; color: var(--ws-amber); background: rgba(217, 171, 92, 0.07); border: 1px solid rgba(217, 171, 92, 0.85); border-radius: 4px; cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s; }
+.ws-cta:hover, .ws-cta:focus-visible { background: rgba(217, 171, 92, 0.18); color: #f4eedd; box-shadow: 0 0 0 3px rgba(217, 171, 92, 0.22), 0 0 26px rgba(255, 176, 64, 0.28); }
+.ws-hint { margin: 10px 0 0; font-size: 10px; letter-spacing: 0.12em; color: rgba(138, 127, 106, 0.85); }
+
+.ws-prompt { font-size: 12.5px; letter-spacing: 0.1em; color: #f3ecde; margin-bottom: 8px; }
+.ws-vol { font-size: 10.5px; letter-spacing: 0.06em; color: rgba(244, 235, 218, 0.62); line-height: 1.5; }
+.ws-body { display: grid; grid-template-columns: 150px 1fr; gap: 16px; flex: 1; min-height: 0; margin-top: 10px; }
+.ws-list { display: flex; flex-direction: column; gap: 2px; align-self: start; }
+.ws-list--menu { margin-top: 10px; align-self: stretch; }
+.ws-file { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 5px 8px; font: 600 12.5px/1.2 var(--ws-mono); letter-spacing: 0.1em; color: #e8dfc9; background: transparent; border: 1px solid transparent; border-radius: 2px; cursor: pointer; text-align: left; }
+.ws-fe { color: rgba(217, 171, 92, 0.8); font-weight: 500; }
+.ws-file:hover, .ws-file.is-on { background: rgba(217, 171, 92, 0.16); border-color: rgba(217, 171, 92, 0.45); }
+.ws-file--menu { justify-content: flex-start; align-items: baseline; padding: 6px 8px; }
+.ws-file--menu .ws-fn { width: 86px; }
+.ws-file--menu .ws-fe { width: 36px; }
+.ws-fb { font-weight: 400; letter-spacing: 0.02em; font-size: 11px; color: rgba(244, 235, 218, 0.7); }
+.ws-file:focus-visible, .ws-view:focus-visible, .ws-link:focus-visible, .ws-linkbtn:focus-visible { outline: 2px solid rgba(244, 238, 221, 0.95); outline-offset: 2px; }
+.ws-view { overflow: auto; padding: 2px 4px 2px 0; min-width: 0; scrollbar-width: thin; }
+.ws-vhead { font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; color: var(--ws-amber); margin-bottom: 8px; }
+.ws-vp { margin: 0 0 8px; font-size: 12.5px; line-height: 1.5; color: rgba(244, 235, 218, 0.92); }
+.ws-link { display: inline-block; margin-top: 6px; padding: 8px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-decoration: none; color: var(--ws-amber); border: 1px solid rgba(217, 171, 92, 0.85); border-radius: 4px; background: rgba(217, 171, 92, 0.07); }
+.ws-link:hover { background: rgba(217, 171, 92, 0.2); color: #f4eedd; }
+.ws-note { margin-left: 10px; font-size: 10px; color: rgba(236, 228, 211, 0.45); }
+.ws-sum { margin: auto 0 0; padding-top: 8px; font-size: 10px; letter-spacing: 0.1em; color: rgba(138, 127, 106, 0.95); }
+.ws-sum b { color: #e8dfc9; }
+.ws-linkbtn { font: inherit; letter-spacing: inherit; color: var(--ws-amber); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+
+/* phone portrait: the 600 px screen must fit ~390 px, so type is scaled up and the file list becomes a row */
+@media (max-width: 700px), (max-aspect-ratio: 4/5) {
+  .ws3d-screen { padding: 22px 26px 16px; }
+  .ws-prompt { font-size: 18px; margin-bottom: 6px; }
+  .ws-vol { display: none; }
+  .ws-body { grid-template-columns: 1fr; gap: 8px; margin-top: 4px; }
+  .ws-list:not(.ws-list--menu) { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .ws-file { width: auto; padding: 5px 9px; font-size: 17px; gap: 6px; }
+  .ws-list--menu .ws-file { width: 100%; font-size: 16px; padding: 5px 8px; }
+  .ws-file--menu .ws-fn { width: 96px; }
+  .ws-fb { display: none; }
+  .ws-vhead { font-size: 15px; margin-bottom: 5px; }
+  .ws-vp { font-size: 19px; line-height: 1.36; margin-bottom: 6px; }
+  .ws-link { font-size: 18px; }
+  .ws-note, .ws-sum { font-size: 13px; }
+  .ws-headline { font-size: 26px; }
+  .ws-sub, .ws-idle { font-size: 16px; }
+  .ws-cta { font-size: 16px; }
+  .ws-eyebrow, .ws-boot { font-size: 12px; }
+  .ws-hint { font-size: 12px; }
+  .ws3d__quick, .ws3d__flat { font-size: 10px; }
+  .ws3d__dock { bottom: 14px; width: calc(100vw - 20px); }
+  .ws3d__row { width: 100%; }
+  .ws3d__dock button { flex: 1 1 auto; min-height: 44px; font-size: 12px; }
+}
+@media (pointer: coarse) { .ws3d__dock button { min-height: 44px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ws-cursor { animation: none; opacity: 0.85; }
+}

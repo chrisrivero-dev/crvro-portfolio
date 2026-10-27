@@ -1,15 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { Suspense, lazy, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Header from "./components/Header.jsx";
-import Hero from "./components/Hero.jsx";
-import ProjectWorld from "./components/ProjectWorld.jsx";
-import PortfolioNavigator from "./components/PortfolioNavigator.jsx";
-import About from "./components/About.jsx";
-import Skills from "./components/Skills.jsx";
-import AIConsultation from "./components/AIConsultation.jsx";
-import Contact from "./components/Contact.jsx";
 import Footer from "./components/Footer.jsx";
 import CaseStudy from "./components/CaseStudy.jsx";
+import ExperienceShell from "./components/ExperienceShell.jsx";
+import FlatHome from "./components/FlatHome.jsx";
+import LegacyHome from "./components/LegacyHome.jsx";
 import { PROJECTS, GIS_PROJECTS } from "./data/projects.js";
+import { experienceFromHash } from "./lib/experiences.js";
+import { applyScroll, getSnapshot, navigate, subscribe } from "./lib/location.js";
+import { useParallax } from "./lib/pageEffects.js";
+import "./styles/experience.css";
+
+// Three.js lives in this chunk only; case studies and the 2D pages never download it.
+const Workspace3D = lazy(() => import("./workspace3d/Workspace3D.jsx"));
 
 function useTheme() {
   const [theme, setTheme] = useState(
@@ -30,48 +33,35 @@ function useTheme() {
   return [theme, toggleTheme];
 }
 
-function usePathRoute() {
-  const [path, setPath] = useState(() => window.location.pathname || "/");
+
+// Same-origin link clicks become in-app navigation (as before), now through the location store so the hash is a real
+// route on the home page (/#work, /#about, ...) and every history entry remembers its own scroll position.
+function useLinkInterception(homeRef) {
   useEffect(() => {
-    const onPop = () => setPath(window.location.pathname || "/");
-    window.addEventListener("popstate", onPop);
-    // Intercept same-origin link clicks so we get SPA navigation
-    // without changing every <a> in the codebase.
     const onClick = (e) => {
       const a = e.target.closest("a");
       if (!a) return;
       const href = a.getAttribute("href");
       if (!href) return;
-      // ignore: external, hash-only, mailto/tel, target=_blank, modifier-clicks
       if (a.target && a.target !== "_self") return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       if (/^(https?:|mailto:|tel:)/i.test(href)) return;
-      if (href.startsWith("#")) return;
-      // only handle our own paths
       const url = new URL(a.href, window.location.origin);
       if (url.origin !== window.location.origin) return;
+      if (href.startsWith("#")) {
+        // in-page anchors are only app routes on the home page; elsewhere (case studies) the browser scrolls natively
+        if (!homeRef.current) return;
+        // "top" inside an experience means the top of that page, not the 3D room
+        if (href === "#top" && homeRef.current === "experience") { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+        url.pathname = window.location.pathname;
+        url.search = window.location.search;
+      }
       e.preventDefault();
-      if (url.pathname !== window.location.pathname || url.search !== window.location.search) {
-        window.history.pushState({}, "", url.pathname + url.search + url.hash);
-        setPath(url.pathname);
-      }
-      if (url.hash) {
-        // allow in-page anchor scroll after route swap
-        setTimeout(() => {
-          const el = document.getElementById(url.hash.slice(1));
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 60);
-      } else {
-        window.scrollTo({ top: 0, behavior: "instant" });
-      }
+      navigate(url.pathname + url.search + url.hash);
     };
     document.addEventListener("click", onClick);
-    return () => {
-      window.removeEventListener("popstate", onPop);
-      document.removeEventListener("click", onClick);
-    };
-  }, []);
-  return path;
+    return () => document.removeEventListener("click", onClick);
+  }, [homeRef]);
 }
 
 function parseRoute(path) {
@@ -141,119 +131,86 @@ function useRouteMeta(route) {
   }, [route.kind, route.kind === "case" ? route.project.slug : null]);
 }
 
+
+const PREF_KEY = "crvro.view";
+const UNAVAILABLE_COPY = {
+  "no-webgl2": "This browser can't run the 3D workspace, so here is the plain version of the same site.",
+  "init-failed": "The 3D workspace couldn't start, so here is the plain version of the same site.",
+  "context-lost": "The graphics were reset and didn't recover, so here is the plain version of the same site.",
+};
+
 export default function App() {
-  const path = usePathRoute();
-  const route = parseRoute(path);
-  const [activeId, setActiveId] = useState("work");
+  const snap = useSyncExternalStore(subscribe, getSnapshot);
+  const route = parseRoute(snap.path);
   const [theme, toggleTheme] = useTheme();
   useRouteMeta(route);
+  useParallax();
 
-  // Scroll to top whenever a route change happens (case ↔ home)
-  useEffect(() => {
-    if (route.kind === "case") window.scrollTo({ top: 0, behavior: "instant" });
-  }, [route.kind, route.kind === "case" ? route.project.slug : null]);
+  // What the home route is showing: the 3D room, a full-page experience, or the preserved classic page.
+  const exp = route.kind === "home" ? experienceFromHash(snap.hash) : null;
+  const classic = route.kind === "home" && new URLSearchParams(snap.search).get("classic") === "1";
+  const homeKind = route.kind !== "home" ? null : classic ? "classic" : exp ? "experience" : "workspace";
+  const homeRef = useRef(null);
+  homeRef.current = homeKind === "classic" ? null : homeKind;
+  useLinkInterception(homeRef);
 
-  // After navigating to home, scroll to the hash target (e.g. /#work from a project page)
-  useEffect(() => {
-    if (route.kind !== "home") return;
-    const hash = window.location.hash.slice(1);
-    if (!hash) return;
-    const rafId = requestAnimationFrame(() => {
-      const el = document.getElementById(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-    return () => cancelAnimationFrame(rafId);
-  }, [path]);
+  // 3D availability: the visitor's choice, or a reason the engine reported.
+  const [prefer2D, setPrefer2D] = useState(() => { try { return localStorage.getItem(PREF_KEY) === "2d"; } catch { return false; } });
+  const [unavailable, setUnavailable] = useState(null);
+  const choose = useCallback((v) => { setPrefer2D(v); try { localStorage.setItem(PREF_KEY, v ? "2d" : "3d"); } catch { /* private mode */ } if (!v) setUnavailable(null); }, []);
+  // ?view=2d is a shareable way to ask for the plain page
+  useEffect(() => { if (new URLSearchParams(snap.search).get("view") === "2d" && !prefer2D) choose(true); }, [snap.search]); // eslint-disable-line react-hooks/exhaustive-deps
+  const use3D = !prefer2D && !unavailable && homeKind !== "classic";
 
-  // Scrollspy + staggered reveal — home page
-  useEffect(() => {
-    if (route.kind !== "home") return;
-    const ids = ["work", "about", "skills", "contact"];
-    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActiveId(e.target.id)),
-      { rootMargin: "-40% 0px -50% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => obs.observe(s));
+  // Keep the room mounted (suspended) once it has been shown, so coming back from an experience or a case study is instant.
+  const [roomShown, setRoomShown] = useState(false);
+  useEffect(() => { if (use3D && homeKind === "workspace") setRoomShown(true); }, [use3D, homeKind]);
+  useEffect(() => { if (!use3D) setRoomShown(false); }, [use3D]);
 
-    // Staggered reveal: elements inside [data-stagger] fire together with delays
-    const firedGroups = new Set();
-    const revealObs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          const el = e.target;
-          const group = el.closest("[data-stagger]");
-          if (group) {
-            if (firedGroups.has(group)) return;
-            firedGroups.add(group);
-            Array.from(group.querySelectorAll(".reveal")).forEach((child, i) => {
-              child.style.setProperty("--reveal-delay", `${i * 55}ms`);
-              child.classList.add("visible");
-              revealObs.unobserve(child);
-            });
-          } else {
-            el.classList.add("visible");
-            revealObs.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.06 }
-    );
-    document.querySelectorAll(".reveal").forEach((el) => revealObs.observe(el));
+  // Scroll: restore on Back/Forward, top on a new page.
+  useEffect(() => { applyScroll(snap); }, [snap]);
 
-    return () => { obs.disconnect(); revealObs.disconnect(); };
-  }, [route.kind]);
+  // Case-study scroll-to-top is covered by applyScroll; keep route-kind transitions focus-friendly.
+  const launch = useCallback((entry) => navigate(`/#${entry.id}`), []);
 
-  // Subtle parallax — runs on all pages, lightweight rAF-based
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let rafId;
-    const onScroll = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        document.querySelectorAll("[data-parallax]").forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          const centerOffset = (rect.top + rect.height / 2) - window.innerHeight / 2;
-          const factor = parseFloat(el.dataset.parallax) || 0.04;
-          const raw = centerOffset * factor;
-          // Clamp to ±36px so off-screen elements don't have jarring pre-offset
-          const py = Math.max(-36, Math.min(36, raw));
-          el.style.setProperty("--py", `${py}px`);
-        });
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
+  let content;
   if (route.kind === "case") {
-    return (
+    content = (
       <>
         <Header activeId={null} theme={theme} onToggleTheme={toggleTheme} />
         <CaseStudy project={route.project} />
         <Footer />
       </>
     );
+  } else if (homeKind === "classic") {
+    content = <LegacyHome theme={theme} onToggleTheme={toggleTheme} />;
+  } else if (homeKind === "experience") {
+    content = <ExperienceShell exp={exp} theme={theme} onToggleTheme={toggleTheme} />;
+  } else if (!use3D) {
+    content = (
+      <FlatHome
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        notice={unavailable ? UNAVAILABLE_COPY[unavailable] : null}
+        canTry3D={prefer2D || !!unavailable}
+        onTry3D={() => choose(false)}
+      />
+    );
   }
 
   return (
     <>
-      <Header activeId={activeId} theme={theme} onToggleTheme={toggleTheme} />
-      <main>
-        <Hero />
-        <ProjectWorld />
-        <PortfolioNavigator />
-        <About />
-        <Skills />
-        <AIConsultation />
-        <Contact />
-      </main>
-      <Footer />
+      {use3D && (roomShown || homeKind === "workspace") && (
+        <Suspense fallback={<p className="ws3d__loading" role="status">Loading the workspace…</p>}>
+          <Workspace3D
+            active={homeKind === "workspace"}
+            onLaunch={launch}
+            onUnavailable={setUnavailable}
+            onPrefer2D={() => choose(true)}
+          />
+        </Suspense>
+      )}
+      {content}
     </>
   );
 }
