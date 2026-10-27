@@ -12,6 +12,8 @@ import { createController } from './controller.js';
 import CrtScreen from './CrtScreen.jsx';
 import { DISK_PROJECTS } from '../data/caseIds.js';
 import { EXPERIENCES, hrefFor } from '../lib/experiences.js';
+import { navigate } from '../lib/location.js';
+import { STATIONS, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
 import '../styles/workspace3d.css';
 
 const supportsWebGL2 = () => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; } };
@@ -19,7 +21,7 @@ const lowQuality = () => window.matchMedia('(pointer: coarse)').matches || windo
 const TITLES = Object.fromEntries(DISK_PROJECTS.map((d) => [d.slug, d.label]));
 const prettyTitle = (slug) => TITLES[slug].replace(/\b([A-Z])([A-Z]+)/g, (m, a, b) => a + b.toLowerCase());
 
-export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2D }) {
+export default function Workspace3D({ active, station = 'desk', onLaunch, onUnavailable, onPrefer2D }) {
   const stageRef = useRef(null);
   const engineRef = useRef(null);
   const ctlRef = useRef(null);
@@ -27,7 +29,11 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
   const disksOpenRef = useRef(false);
   activeRef.current = active;
   const [engine, setEngine] = useState(null);
-  const [ui, setUi] = useState({ view: 'rest', session: null, pending: null, lastEntry: null, locs: {} });
+  const [ui, setUi] = useState({ view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, locs: {} });
+  const [app, setApp] = useState(null);           // a program running on the CRT (ask / contact)
+  const stationRef = useRef(station);
+  stationRef.current = station;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
   const [hover, setHover] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -70,7 +76,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
         ctl = createController(eng, {
           onChange: (s) => { setUi(s); if (s.session) { setMenuOpen(false); setDisksOpen(false); } },
           onHover: setHover,
-          onLaunch: (entry) => onLaunchRef.current(entry),
+          onLaunch: (entry) => { rememberOrigin('/#computer'); onLaunchRef.current(entry); },
         });
         eng.on('contextlost', () => {
           setPaused(true);
@@ -114,24 +120,113 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
     }
   }, [active, engine]);
 
-  /* ── keyboard: Escape pulls back from the screen ──────────────── */
+  /* ── keyboard: Escape steps back; C / D / arrows are secondary aids to the physical objects ── */
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key !== 'Escape' || !activeRef.current) return;
-      if (disksOpenRef.current) { e.preventDefault(); setDisksOpen(false); document.querySelector('.ws3d__disks')?.focus({ preventScroll: true }); return; }
+      if (!activeRef.current || e.metaKey || e.ctrlKey || e.altKey) return;
       const ctl = ctlRef.current;
-      if (ctl && (ctl.state.view === 'crt')) { e.preventDefault(); ctl.back(); setAnnounce('Back at the workspace.'); }
+      if (!ctl) return;
+      const typing = e.target.closest?.('input, textarea, [contenteditable="true"]');
+      if (e.key === 'Escape') {
+        if (disksOpenRef.current) { e.preventDefault(); setDisksOpen(false); document.querySelector('.ws3d__disks')?.focus({ preventScroll: true }); return; }
+        const v = ctl.state.view;
+        if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
+        if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
+        return;
+      }
+      if (typing || e.target.closest?.('#screen')) return;          // the CRT's own lists use the arrow keys
+      const k = e.key.toLowerCase();
+      if (k === 'c') { e.preventDefault(); goStation('computer'); }
+      else if (k === 'd') { e.preventDefault(); goStation('disks'); }
+      else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.shiftKey && ctl.state.view === 'rest') { e.preventDefault(); ctl.nudgeLook(e.key === 'ArrowLeft' ? 0.12 : -0.12, 0); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        if (e.target.closest?.('.ws3d__stations')) return;          // the switcher handles its own arrows
+        e.preventDefault();
+        const cur = baseStation(stationOfUi(ctl.state)) || 'desk';
+        const i = STATIONS.indexOf(cur), n = STATIONS.length;
+        goStation(STATIONS[(i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n]);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  /* ── stations <-> URL. A visitor action writes the new station; Back/Forward (or a link) drives the room to it. ── */
+  function goStation(s) {
+    const ctl = ctlRef.current;
+    if (!ctl) return;
+    setDisksOpen(false);
+    if (s === 'desk') ctl.back();
+    else if (s === 'computer') { setMenuOpen(true); ctl.approach(); }
+    else if (s === 'disks') { if (ctl.state.held) ctl.putBack(); else ctl.focusTray(); }
+    else if (s.startsWith('disk/')) ctl.pickUp(s.slice(5));
+  }
+  const syncedRef = useRef(false);                 // the room writes the URL only after it has first applied the URL it was opened with
+  useEffect(() => {                                // URL -> room
+    const ctl = ctlRef.current;
+    if (!ctl || !active || !station) return;
+    syncedRef.current = true;
+    const cur = stationOfUi(ctl.state);
+    if (cur === station || ctl.state.busy || ctl.state.pending) return;
+    if (ctl.state.view === 'fill') return;        // returning from the expanded interface handles itself
+    goStation(station);
+  }, [station, engine, active]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {                                // room -> URL (only settled states; push so Back retraces the visit)
+    if (!activeRef.current || !syncedRef.current || !engineRef.current || !ctlRef.current) return;
+    const s = stationOfUi(ctlRef.current.state);   // the live state, not a render that may already be stale
+    if (s && s !== stationRef.current) navigate(hrefForStation(s));
+  }, [ui]);
+
+  // leaving the screen: keyboard focus must not stay on a control that is no longer in view; it moves to the current station
+  useEffect(() => {
+    if (ui.view === 'crt' || ui.view === 'fill' || ui.busy) return;
+    if (document.activeElement?.closest('#screen')) document.querySelector('.ws3d__stations [aria-current]')?.focus({ preventScroll: true });
+  }, [ui.view, ui.busy]);
   useEffect(() => { if (ui.session) setAnnounce(`${prettyTitle(ui.session)} loaded. Directory shown on the screen.`); }, [ui.session]);
 
-  const use = useCallback(() => { setMenuOpen(true); ctlRef.current?.approach(); setAnnounce('At the computer. Choose an experience.'); }, []);
-  const pick = useCallback((entry) => ctlRef.current?.launch(entry), []);
+  const use = useCallback(() => { setMenuOpen(true); setApp(null); ctlRef.current?.approach(); setAnnounce('At the computer. Choose an experience.'); }, []);
+  // ASK.EXE and CONTACT.TXT run on the physical CRT; everything long-form expands into the full interface
+  const pick = useCallback((entry) => { if (entry.id === 'navigator' || entry.id === 'contact') { setApp(entry.id); setAnnounce(`${entry.label} on the computer screen.`); return; } ctlRef.current?.launch(entry); }, []);
+  const expand = useCallback((id) => { const e = EXPERIENCES.find((x) => x.id === id); setApp(null); ctlRef.current?.launch(e); }, []);
   disksOpenRef.current = disksOpen;
   const sessionSlug = ui.session || ui.pending;
+  const ctl = () => ctlRef.current;
+  // the actions that make sense where the visitor is standing; the room itself stays the primary way to act
+  function ContextRow() {
+    if (ui.busy && !ui.pending) return <div className="ws3d__row ws3d__row--ctx"><span className="ws3d__label">…</span></div>;
+    if (ui.pending) return (<div className="ws3d__row ws3d__row--ctx"><span className="ws3d__label">Inserting {TITLES[ui.pending]} …</span><button type="button" onClick={() => ctl()?.eject()}>Cancel</button></div>);
+    if (ui.view === 'hold') {
+      const d = DISK_PROJECTS.find((x) => x.slug === ui.held);
+      return (
+        <div className="ws3d__row ws3d__row--ctx">
+          <span className="ws3d__label">{d.caseId} · {TITLES[ui.held]}</span>
+          <button type="button" className="ws3d__use" onClick={() => ctl()?.load(ui.held)}>Insert into drive</button>
+          <button type="button" onClick={() => { rememberOrigin(`/#disk/${ui.held}`); onLaunchRef.current({ id: 'case', href: `/projects/${ui.held}` }); }}>Read case study</button>
+          <button type="button" onClick={() => ctl()?.putBack()}>Put back</button>
+        </div>
+      );
+    }
+    if (ui.view === 'crt') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        {ui.session && <span className="ws3d__label">A: {TITLES[ui.session]}</span>}
+        {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject disk</button>}
+        <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
+    if (ui.view === 'drive') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">{coarse ? 'Tap a disk to lift it' : 'Click a disk to lift it'}</span>
+        <button type="button" className="ws3d__disks" aria-expanded={disksOpen} aria-controls="ws-disklist" onClick={() => setDisksOpen((v) => !v)}>Disk list <span aria-hidden="true">{disksOpen ? '▾' : '▴'}</span></button>
+        <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
+    return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer or the disk organizer' : 'Look around, then click the computer or the disk organizer'}</span>
+        {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject {TITLES[ui.session]}</button>}
+      </div>
+    );
+  }
 
   return (
     <div className={`ws3d${leaving ? ' ws3d--leaving' : ''}`} data-active={active ? 'true' : 'false'} data-view={ui.view} hidden={!(active || shown)}>
@@ -143,7 +238,7 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
         {EXPERIENCES.map((e) => <a key={e.id} className="ws3d__skip" href={hrefFor(e)}>{e.label}</a>)}
       </nav>
 
-      <button type="button" className="ws3d__flat" onClick={onPrefer2D}>2D view</button>
+      <button type="button" className="ws3d__flat" onClick={onPrefer2D} aria-label="Switch to the LO-FI (2D) portfolio" title="Switch to the plain 2D portfolio">HI-FI · <span>LO-FI</span></button>
 
       <div className="ws3d__stage" ref={stageRef} />
       {engine && createPortal(
@@ -155,7 +250,9 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
           onUse={use}
           onPick={pick}
           onOpenDisk={() => setMenuOpen(false)}
-          onMenu={() => setMenuOpen(true)}
+          onMenu={() => { setMenuOpen(true); setApp(null); }}
+          app={app}
+          onExpand={expand}
         />,
         engine.screenEl,
       )}
@@ -163,52 +260,38 @@ export default function Workspace3D({ active, onLaunch, onUnavailable, onPrefer2
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !sessionSlug && (ui.view === 'rest' || ui.view === 'drive') && (
+      {hover && !ui.busy && (ui.view === 'rest' || ui.view === 'drive') && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.machine ? 'The computer. Click to use it' : hover.tray ? 'The disk tray. Click to look closer' : `${hover.label}. Click to load`}
+          {hover.machine ? 'The computer · click to use it' : hover.tray ? 'Floppy organizer · click to look closer' : `${hover.caseId} · ${hover.label} · click to lift`}
         </div>
       )}
 
-      {engine && (
-        <div className="ws3d__dock" role="group" aria-label="Computer and floppy disks">
-          {!sessionSlug && (ui.view === 'rest' || ui.view === 'drive') && (
-            <div className="ws3d__row">
-              <button type="button" className="ws3d__use" onClick={use}>Use the computer</button>
-              <button
-                type="button"
-                className="ws3d__disks"
-                aria-expanded={disksOpen}
-                aria-controls="ws-disklist"
-                onClick={() => setDisksOpen((v) => !v)}
-              >
-                Floppy disks <span aria-hidden="true">{disksOpen ? '▾' : '▴'}</span>
-              </button>
-              {ui.view === 'drive' && <button type="button" onClick={() => ctlRef.current?.back()}>Back to room</button>}
-            </div>
-          )}
-          {disksOpen && !sessionSlug && (
-            <ul id="ws-disklist" className="ws3d__disklist" aria-label="Floppy disks, one per project" ref={diskListRef}>
-              {DISK_PROJECTS.map((d) => (
-                <li key={d.slug}>
-                  <button type="button" onClick={() => { setDisksOpen(false); ctlRef.current?.load(d.slug); }}>
-                    <span>{prettyTitle(d.slug)}</span><span className="ws3d__cid">{d.caseId}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {sessionSlug && (
-            <div className="ws3d__row">
-              <span className="ws3d__label">A: {TITLES[sessionSlug]}{ui.session ? '' : ' …'}</span>
-              {ui.session && ui.view !== 'crt' && <button type="button" onClick={() => ctlRef.current?.approach()}>Approach screen</button>}
-              {ui.session && ui.view === 'crt' && <button type="button" onClick={() => ctlRef.current?.back()}>Return to workspace</button>}
-              <button type="button" onClick={() => ctlRef.current?.eject()}>{ui.session ? 'Eject disk' : 'Cancel'}</button>
-            </div>
-          )}
-          {!sessionSlug && ui.view === 'crt' && (
-            <div className="ws3d__row"><button type="button" onClick={() => ctlRef.current?.back()}>Return to workspace</button></div>
-          )}
-        </div>
+      {engine && active && (
+        <>
+          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look around · click an object · ' : ''}C computer · D disk tray · ←/→ stations · Esc back</p>}
+          <div className="ws3d__dock" role="group" aria-label="Studio controls">
+            {ContextRow()}
+            {disksOpen && !sessionSlug && !ui.held && (
+              <ul id="ws-disklist" className="ws3d__disklist" aria-label="Floppy disks, one per project" ref={diskListRef}>
+                {DISK_PROJECTS.map((d) => (
+                  <li key={d.slug}>
+                    <button type="button" onClick={() => { setDisksOpen(false); ctlRef.current?.pickUp(d.slug); }}>
+                      <span>{prettyTitle(d.slug)}</span><span className="ws3d__cid">{d.caseId}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <nav className="ws3d__stations" aria-label="Stations">
+              {STATIONS.map((s) => {
+                const cur = baseStation(stationOfUi(ui)) === s;
+                return (
+                  <button key={s} type="button" aria-current={cur ? 'location' : undefined} className={cur ? 'is-on' : ''} onClick={() => goStation(s)}>{STATION_LABEL[s]}</button>
+                );
+              })}
+            </nav>
+          </div>
+        </>
       )}
       <p className="ws3d__sr" role="status" aria-live="polite">{announce}</p>
     </div>

@@ -11,6 +11,7 @@ import { PROJECTS, GIS_PROJECTS } from "./data/projects.js";
 import { experienceFromHash } from "./lib/experiences.js";
 import { applyScroll, getSnapshot, navigate, subscribe } from "./lib/location.js";
 import { useParallax } from "./lib/pageEffects.js";
+import { stationFromHash } from "./lib/stations.js";
 import "./styles/experience.css";
 import "./styles/os.css";
 
@@ -196,7 +197,7 @@ export default function App() {
   useEffect(() => { applyScroll(snap); }, [snap]);
 
   // Case-study scroll-to-top is covered by applyScroll; keep route-kind transitions focus-friendly.
-  const launch = useCallback((entry) => navigate(`/#${entry.id}`), []);
+  const launch = useCallback((entry) => navigate(entry.href || `/#${entry.id}`), []);
 
   let content;
   if (route.kind === "case" && immersive) {
@@ -235,6 +236,7 @@ export default function App() {
         <Suspense fallback={<p className="ws3d__loading" role="status">Loading the workspace…</p>}>
           <Workspace3D
             active={homeKind === "workspace"}
+            station={homeKind === "workspace" ? stationFromHash(snap.hash) || "desk" : null}
             onLaunch={launch}
             onUnavailable={setUnavailable}
             onPrefer2D={() => choose(true)}

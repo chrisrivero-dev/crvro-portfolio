@@ -1,0 +1,220 @@
+{
+  "checks": [
+    {
+      "name": "mouse 1: enter the studio at the desk station",
+      "ok": true
+    },
+    {
+      "name": "mouse 2: dragging looks around the room (yaw/pitch change, no navigation)",
+      "ok": true,
+      "detail": "{\"look1\":{\"yaw\":0.256,\"pitch\":0.032},\"look2\":{\"yaw\":-0.043,\"pitch\":-0.011}}"
+    },
+    {
+      "name": "mouse 2b: looking around is limited to the room (no free flight)",
+      "ok": true,
+      "detail": "{\"yaw\":-0.45,\"pitch\":0.16}"
+    },
+    {
+      "name": "mouse 3a: hovering the computer names it",
+      "ok": true
+    },
+    {
+      "name": "mouse 3: selecting the computer moves the camera to its screen (/#computer) with a readable menu",
+      "ok": true
+    },
+    {
+      "name": "mouse 4: back in the room at the same viewpoint the visitor left",
+      "ok": true,
+      "detail": "{\"deskLook\":{\"yaw\":-0.343,\"pitch\":0.16},\"ret1\":{\"yaw\":-0.343,\"pitch\":0.16}}"
+    },
+    {
+      "name": "mouse 5a: hovering the organizer names it",
+      "ok": true
+    },
+    {
+      "name": "mouse 5: selecting the floppy organizer moves to it (/#disks)",
+      "ok": true
+    },
+    {
+      "name": "mouse 6a: hovering a disk names its case ID and project",
+      "ok": true
+    },
+    {
+      "name": "mouse 6: the existing 3D disk is lifted out of the organizer and held in front of the camera (/#disk/zarvin-one)",
+      "ok": true,
+      "detail": "{\"distToCamera\":659,\"inTray\":false}"
+    },
+    {
+      "name": "mouse 7: inserted physically and the project is readable on the CRT (registry text, case ID)",
+      "ok": true,
+      "detail": "{\"vol\":\"Volume in drive A is ZARVIN ONE  ·  CASE C-06\",\"view\":\"ZARVIN ONE · AI Product / Personal Automation\\n\\nA personal AI operating system.\\n\\nA personal AI operating system that takes responsibility for work. Each request becomes a durable responsibility that Zarvin owns, advances, stops for approval when it matters, and only closes with verified evidence.\",\"url\":\"#computer\",\"seated\":\"drive\"}"
+    },
+    {
+      "name": "mouse 8: Escape returns to the room at the previous viewpoint; the disk stays in the drive",
+      "ok": true,
+      "detail": "{\"view\":\"rest\",\"held\":null,\"session\":\"zarvin-one\",\"busy\":false,\"look\":{\"yaw\":-0.343,\"pitch\":0.16},\"url\":\"/\"}"
+    },
+    {
+      "name": "Back returns to the computer station with the disk still loaded",
+      "ok": true
+    },
+    {
+      "name": "Forward returns to the desk at the same viewpoint",
+      "ok": true,
+      "detail": "{\"view\":\"rest\",\"held\":null,\"session\":\"zarvin-one\",\"busy\":false,\"look\":{\"yaw\":-0.343,\"pitch\":0.16},\"url\":\"/\"}"
+    },
+    {
+      "name": "ASK.EXE runs on the physical CRT (existing navigator; deterministic answer, no network)",
+      "ok": true
+    },
+    {
+      "name": "CONTACT.TXT runs on the physical CRT with the real links",
+      "ok": true
+    },
+    {
+      "name": "Read case study opens the expanded interface for long content",
+      "ok": true
+    },
+    {
+      "name": "Return from the case study lands back on the held disk (state preserved)",
+      "ok": true,
+      "detail": "{\"view\":\"hold\",\"held\":\"proof-first\",\"session\":null,\"busy\":false,\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#disk/proof-first\"}"
+    },
+    {
+      "name": "keyboard 2: Shift+arrows look around the room",
+      "ok": true,
+      "detail": "{\"yaw\":0.24,\"pitch\":0}"
+    },
+    {
+      "name": "keyboard 3: C selects the computer; focus moves into the CRT menu",
+      "ok": true
+    },
+    {
+      "name": "keyboard 4: Escape returns to the room at the previous viewpoint",
+      "ok": true
+    },
+    {
+      "name": "keyboard 5: D (or ←/→) selects the floppy organizer",
+      "ok": true
+    },
+    {
+      "name": "keyboard 6a: the disk list opens and takes focus",
+      "ok": true
+    },
+    {
+      "name": "keyboard 6: Enter lifts the disk to the camera (/#disk/zarvin-one)",
+      "ok": true
+    },
+    {
+      "name": "keyboard 7: Insert into drive -> project on the CRT; focus in its file list",
+      "ok": true
+    },
+    {
+      "name": "keyboard 7b: arrow keys read the next file (STATUS.TXT)",
+      "ok": true
+    },
+    {
+      "name": "keyboard 8: Escape returns to the room at the previous viewpoint",
+      "ok": true
+    },
+    {
+      "name": "touch 2: dragging a finger looks around the room",
+      "ok": true,
+      "detail": "{\"yaw\":0.45,\"pitch\":0.082}"
+    },
+    {
+      "name": "touch 3: tapping the computer moves to its screen",
+      "ok": true
+    },
+    {
+      "name": "touch 4: Back to the desk restores the viewpoint",
+      "ok": true
+    },
+    {
+      "name": "touch 5: tapping the organizer moves to it",
+      "ok": true
+    },
+    {
+      "name": "touch 6: tapping a disk lifts it to the camera",
+      "ok": true
+    },
+    {
+      "name": "touch 6b: the actions are 44px touch targets",
+      "ok": true
+    },
+    {
+      "name": "touch 7: inserted; the project is readable on the CRT",
+      "ok": true
+    },
+    {
+      "name": "touch 8: the Desk station returns to the room at the previous viewpoint",
+      "ok": true
+    },
+    {
+      "name": "direct link /#computer opens that station",
+      "ok": true,
+      "detail": "{\"view\":\"crt\",\"held\":null,\"session\":null,\"busy\":false,\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#computer\"}"
+    },
+    {
+      "name": "direct link /#disks opens that station",
+      "ok": true,
+      "detail": "{\"view\":\"drive\",\"held\":null,\"session\":null,\"busy\":false,\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#disks\"}"
+    },
+    {
+      "name": "direct link /#disk/proof-first opens that station",
+      "ok": true,
+      "detail": "{\"view\":\"hold\",\"held\":\"proof-first\",\"session\":null,\"busy\":false,\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#disk/proof-first\"}"
+    },
+    {
+      "name": "no uncaught page errors",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "errors": [],
+  "frames": {
+    "mouse": [
+      "01-enter-studio.png",
+      "02-look-left.png",
+      "03-look-right.png",
+      "04-hover-computer.png",
+      "05-camera-moving-to-crt.png",
+      "06-at-the-crt.png",
+      "07-back-in-the-room.png",
+      "08-camera-moving-to-organizer.png",
+      "09-at-the-organizer.png",
+      "10-hover-disk.png",
+      "11-disk-lifting.png",
+      "12-disk-rising-to-camera.png",
+      "13-disk-in-hand.png",
+      "14-disk-travelling-to-drive.png",
+      "15-disk-entering-slot.png",
+      "16-project-on-the-crt.png",
+      "17-back-in-the-room-disk-still-seated.png",
+      "18-ask-on-the-crt.png",
+      "19-contact-on-the-crt.png",
+      "20-case-study-expanded.png",
+      "21-returned-to-the-held-disk.png"
+    ],
+    "keyboard": [
+      "01-enter-studio.png",
+      "02-look-around-shift-arrows.png",
+      "03-C-at-the-crt.png",
+      "04-esc-back-in-room.png",
+      "05-D-at-the-organizer.png",
+      "06-disk-in-hand.png",
+      "07-project-on-the-crt.png",
+      "08-esc-back-in-room.png"
+    ],
+    "touch": [
+      "01-enter-studio.png",
+      "02-drag-to-look.png",
+      "03-tap-computer.png",
+      "04-back-in-room.png",
+      "05-tap-organizer.png",
+      "06-disk-in-hand.png",
+      "07-project-on-the-crt.png",
+      "08-back-in-room.png"
+    ]
+  }
+}

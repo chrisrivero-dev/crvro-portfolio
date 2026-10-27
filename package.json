@@ -19,7 +19,9 @@
     "verify:04c": "node scripts/verify-04c.cjs",
     "probe:backend": "node scripts/probe-backend.mjs",
     "verify:04d": "node scripts/verify-04d.cjs",
-    "verify:claims": "node scripts/verify-claims.cjs"
+    "verify:claims": "node scripts/verify-claims.cjs",
+    "verify:05a": "node scripts/verify-05a.cjs",
+    "verify:regression": "node scripts/verify-regression.cjs"
   },
   "dependencies": {
     "@upstash/redis": "^1.38.2",

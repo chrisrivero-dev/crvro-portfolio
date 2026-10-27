@@ -96,10 +96,12 @@ const orbit = { ...REST };
 delete orbit.target;
 
 // Views may declare fitW: the world width (units) that must stay visible. On a portrait phone that pushes the camera back instead of cropping.
+// `look` is the visitor's own look-around offset (drag), layered on the station's pose and kept within limits by the controller.
+const look = { yaw: 0, pitch: 0 };
 function applyPose(dYaw = 0, dPitch = 0) {
   const dist = Math.max(orbit.dist, orbit.fitW ? orbit.fitW / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect) : 0);
-  const yaw = orbit.yaw + dYaw;
-  const pitch = THREE.MathUtils.clamp(orbit.pitch + dPitch, -0.05, 1.35);
+  const yaw = orbit.yaw + look.yaw + dYaw;
+  const pitch = THREE.MathUtils.clamp(orbit.pitch + look.pitch + dPitch, -0.05, 1.35);
   camera.position.set(
     TARGET.x + dist * Math.sin(yaw) * Math.cos(pitch),
     TARGET.y + dist * Math.sin(pitch),
@@ -509,23 +511,28 @@ scene.add(screenObj);
     });
   }
   const viewOf = (name) => VIEWS[env.resolveView(name)] || VIEWS[name];
-  function flyTo(view, ms = 1000, alive) {
+  /** Fly to a view. `endLook` is where the look-around offset ends up (default: centred on the view). */
+  function flyTo(view, ms = 1000, alive, endLook = { yaw: 0, pitch: 0 }) {
     const { target, ...pose } = typeof view === 'string' ? viewOf(view) : view;
-    const from = { yaw: orbit.yaw, pitch: orbit.pitch, dist: orbit.dist, fitW: orbit.fitW || 0, t: TARGET.clone() };
+    const from = { yaw: orbit.yaw, pitch: orbit.pitch, dist: orbit.dist, fitW: orbit.fitW || 0, t: TARGET.clone(), ly: look.yaw, lp: look.pitch };
     const to = { fitW: 0, ...pose };
     const tt = (target || BASE_TARGET).clone();
     cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
     return run(ms, (e) => {
       for (const k of ['yaw', 'pitch', 'dist', 'fitW']) orbit[k] = from[k] + (to[k] - from[k]) * e;
       TARGET.lerpVectors(from.t, tt, e);
+      look.yaw = from.ly + (endLook.yaw - from.ly) * e;
+      look.pitch = from.lp + (endLook.pitch - from.lp) * e;
       applyPose();
     }, alive);
   }
+  function setLook(yaw, pitch) { look.yaw = yaw; look.pitch = pitch; applyPose(); markDirty(); }
   function setView(name) {
     const { target, ...pose } = viewOf(name);
     TARGET.copy(target || BASE_TARGET);
     Object.assign(orbit, pose);
     orbit.fitW = pose.fitW;
+    look.yaw = look.pitch = 0;
     cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
     applyPose();
     markDirty();
@@ -601,6 +608,7 @@ scene.add(screenObj);
     tray: built.tray,
     driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
     reduceMotion, run, flyTo, setView, markDirty, suspend, resume, dispose, on: listen,
+    look, setLook,
     lockParallax: (v) => { parallaxLocked = v; if (v) { tgt.yaw = tgt.pitch = 0; } },
     get frames() { return frames; },
     get suspended() { return suspended; },

@@ -11,6 +11,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 import { CASE_IDS } from '../data/caseIds.js';
 import { EXPERIENCES } from '../lib/experiences.js';
+import PortfolioNavigator from '../components/PortfolioNavigator.jsx';
+import Contact from '../components/Contact.jsx';
 
 const SITE = 'https://crvro.com';
 const BY_SLUG = Object.fromEntries([...PROJECTS, ...GIS_PROJECTS].map((p) => [p.slug, p]));
@@ -170,12 +172,41 @@ function DiskPane({ slug, active, onMenu }) {
   );
 }
 
-export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, onUse, onPick, onOpenDisk, onMenu }) {
+/* ── programs that run on the physical CRT (05A): the existing components, unchanged, in a scrolling screen pane ── */
+const APPS = {
+  navigator: { title: 'ASK.EXE', Body: () => <PortfolioNavigator direct />, full: '/#navigator' },
+  contact: { title: 'CONTACT.TXT', Body: () => <Contact />, full: '/#contact' },
+};
+function AppPane({ app, active, onMenu, onExpand }) {
+  const a = APPS[app];
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!active) return;
+    const t = setTimeout(() => (ref.current?.querySelector('input, a[href], button') || ref.current)?.focus({ preventScroll: true }), 60);
+    return () => clearTimeout(t);
+  }, [active, app]);
+  return (
+    <div className="ws-pane ws-apppane">
+      <div className="ws-apphead">
+        <span><span className="ws-ps">A:\&gt;</span> {a.title}</span>
+        <span className="ws-appactions">
+          <button type="button" className="ws-linkbtn" onClick={() => onExpand(app)}>FULL SCREEN ↗</button>
+          <button type="button" className="ws-linkbtn" onClick={onMenu}>MENU</button>
+        </span>
+      </div>
+      <div className="ws-app" ref={ref} tabIndex={-1}><a.Body /></div>
+    </div>
+  );
+}
+
+export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, app, onUse, onPick, onOpenDisk, onMenu, onExpand }) {
   const atScreen = ui.view === 'crt' || ui.view === 'fill';
   const showDisk = ui.session && !menuOpen;
   return (
     <div className={`ws-screen-inner${atScreen ? ' is-near' : ''}`}>
-      {showDisk ? (
+      {app && atScreen && !showDisk ? (
+        <AppPane app={app} active={ui.view === 'crt'} onMenu={onMenu} onExpand={onExpand} />
+      ) : showDisk ? (
         <DiskPane slug={ui.session} active={ui.view === 'crt'} onMenu={onMenu} />
       ) : atScreen ? (
         <MenuPane loaded={ui.session} focusEntry={focusEntry} onPick={onPick} onOpenDisk={onOpenDisk} active={ui.view === 'crt'} />

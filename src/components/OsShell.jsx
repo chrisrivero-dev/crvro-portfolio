@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { EXPERIENCES } from "../lib/experiences.js";
 import { CASE_IDS } from "../data/caseIds.js";
 import { useReveal } from "../lib/pageEffects.js";
+import { originHref } from "../lib/stations.js";
 import { PROJECTS, GIS_PROJECTS } from "../data/projects.js";
 
 const BY_SLUG = Object.fromEntries([...PROJECTS, ...GIS_PROJECTS].map((p) => [p.slug, p]));
@@ -77,7 +78,7 @@ export default function OsShell({ view, children }) {
           <span className="os__filescur">{path}</span>
           <span aria-hidden="true">{filesOpen ? "▾" : "▸"}</span>
         </button>
-        <a className="os__return" href="/" aria-label="Return to workspace">
+        <a className="os__return" href={originHref()} aria-label="Return to workspace">
           <span aria-hidden="true">◂</span> <span className="os__returnt">Return to workspace</span>
         </a>
         {filesOpen && (

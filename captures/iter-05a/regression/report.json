@@ -1,0 +1,501 @@
+{
+  "checks": [
+    {
+      "name": "home is the 3D room (no old CSS computer in the DOM)",
+      "ok": true
+    },
+    {
+      "name": "exactly one computer, and the 3D tray holds seven registry disks",
+      "ok": true
+    },
+    {
+      "name": "station switcher lists Desk, Computer, Disk tray with the current one marked",
+      "ok": true,
+      "detail": "[\"Desk*\",\"Computer\",\"Disk tray\"]"
+    },
+    {
+      "name": "room focus order: skip/quick links, then the HI-FI/LO-FI switch, the CRT control, then the stations",
+      "ok": true,
+      "detail": "[\"Browse without 3D\",\"Project World\",\"Ask about my work\",\"About\",\"Skills\",\"AI consultation\",\"Contact\",\"Switch to the LO-FI (2D) portfolio\",\"USE THE COMPUTER→ [CRT]\",\"Desk\",\"Computer\",\"Disk tray\",\"(function () { var stored = localStorage\"]"
+    },
+    {
+      "name": "screen shows the production hero sentence",
+      "ok": true
+    },
+    {
+      "name": "document has one h1 and real text for crawlers/AT",
+      "ok": true
+    },
+    {
+      "name": "idle room renders no frames (on-demand) apart from steam in view",
+      "ok": true,
+      "detail": "18 frames/1.2s"
+    },
+    {
+      "name": "hover over a disk labels it and does not move the camera",
+      "ok": true
+    },
+    {
+      "name": "disk label/volume carries its stable case ID (Zarvin One = C-06)",
+      "ok": true,
+      "detail": "Volume in drive A is ZARVIN ONE  ·  CASE C-06"
+    },
+    {
+      "name": "directory content is the registry description",
+      "ok": true
+    },
+    {
+      "name": "CASE.LNK is the real in-app route /projects/zarvin-one",
+      "ok": true
+    },
+    {
+      "name": "case study opens inside the same immersive interface",
+      "ok": true
+    },
+    {
+      "name": "3D is suspended while a case study is open",
+      "ok": true
+    },
+    {
+      "name": "suspended engine renders zero frames (steam stopped too)",
+      "ok": true,
+      "detail": "0 frames"
+    },
+    {
+      "name": "Back from the case study returns to the room with the disk still seated",
+      "ok": true,
+      "detail": "{\"view\":\"crt\",\"session\":\"zarvin-one\",\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":null,\"locs\":{\"zarvin-one\":\"drive\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":349,\"suspended\":false}"
+    },
+    {
+      "name": "eject returns the disk to its slot and leaves the camera at the organizer",
+      "ok": true
+    },
+    {
+      "name": "CRT menu appears at once (no typing or staged loading)",
+      "ok": true,
+      "detail": "29ms"
+    },
+    {
+      "name": "CRT menu lists the experiences",
+      "ok": true,
+      "detail": "[\"WORLD.MAP\",\"ASK.EXE\",\"ABOUT.TXT\",\"SKILLS.TXT\",\"CONSULT.EXE\",\"CONTACT.TXT\"]"
+    },
+    {
+      "name": "keyboard focus lands in the menu",
+      "ok": true
+    },
+    {
+      "name": "hand-off is a crossfade: the interface mounts while the room fades out underneath",
+      "ok": true,
+      "detail": "{\"os\":true,\"roomStillUnder\":true,\"dark\":\"rgb(15, 12, 9)\"}"
+    },
+    {
+      "name": "Project World runs inside the immersive computer interface (dark phosphor frame, tabs, return action)",
+      "ok": true
+    },
+    {
+      "name": "\"Skip journey\" skips to the Destination Lookup that follows the voyage (not About), staying in Project World",
+      "ok": true,
+      "detail": "{\"hash\":\"#work\",\"navTop\":410,\"inView\":true,\"about\":false,\"stillWorld\":true}"
+    },
+    {
+      "name": "post-journey Lookup keeps its original \"journey complete\" intro after Project World",
+      "ok": true
+    },
+    {
+      "name": "WORLD.MAP opens the existing Project World at /#work",
+      "ok": true
+    },
+    {
+      "name": "Project World is the real component (map, ship, voyage log controls)",
+      "ok": true
+    },
+    {
+      "name": "no second computer in the experience (hero CSS computer absent)",
+      "ok": true
+    },
+    {
+      "name": "Project World is a real full-viewport stage (sticky, not a tiny CRT)",
+      "ok": true
+    },
+    {
+      "name": "focus moved to the new experience (main)",
+      "ok": true
+    },
+    {
+      "name": "room is suspended behind Project World (0 frames)",
+      "ok": true
+    },
+    {
+      "name": "the destination lookup follows the voyage (post-journey placement preserved)",
+      "ok": true
+    },
+    {
+      "name": "journey advanced to stop 03",
+      "ok": true,
+      "detail": "STOP 03 / 07: ZARVIN ONE"
+    },
+    {
+      "name": "stop card has the real case-study link",
+      "ok": true
+    },
+    {
+      "name": "Back from a case study restores the journey stop",
+      "ok": true,
+      "detail": "STOP 03 / 07: ZARVIN ONE -> STOP 03 / 07: ZARVIN ONE"
+    },
+    {
+      "name": "Back restores window.scrollY",
+      "ok": true,
+      "detail": "2255 -> 2255"
+    },
+    {
+      "name": "\"Computer\" returns to the room at the CRT menu (not the start)",
+      "ok": true,
+      "detail": "{\"view\":\"crt\",\"session\":null,\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":\"work\",\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":668,\"suspended\":false}"
+    },
+    {
+      "name": "focus returns to the WORLD.MAP entry",
+      "ok": true
+    },
+    {
+      "name": "room renders again after resume",
+      "ok": true
+    },
+    {
+      "name": "browser Back moves through the real history (room <-> World)",
+      "ok": true
+    },
+    {
+      "name": "ASK.EXE opens on the physical CRT",
+      "ok": true
+    },
+    {
+      "name": "ASK.EXE opens the existing PortfolioNavigator",
+      "ok": true
+    },
+    {
+      "name": "deterministic matching answers instantly with no network call",
+      "ok": true,
+      "detail": "{\"det\":\"/#contact\",\"api\":[]}"
+    },
+    {
+      "name": "a lookup result link opens the Contact experience in-app",
+      "ok": true
+    },
+    {
+      "name": "open-ended question went to POST /api/ask (the real broker route)",
+      "ok": true,
+      "detail": "[\"POST /api/ask\"]"
+    },
+    {
+      "name": "with no backend the page says \"temporarily offline\" and keeps manual categories",
+      "ok": true
+    },
+    {
+      "name": "offline fallback category still resolves deterministically",
+      "ok": true
+    },
+    {
+      "name": "ABOUT opens the real section and its content is visible",
+      "ok": true
+    },
+    {
+      "name": "SKILLS opens the real section and its content is visible",
+      "ok": true
+    },
+    {
+      "name": "AI-CONSULTATION opens the real section and its content is visible",
+      "ok": true
+    },
+    {
+      "name": "CONTACT opens the real section and its content is visible",
+      "ok": true
+    },
+    {
+      "name": "deep link /#work (no 3D mounted) works",
+      "ok": true
+    },
+    {
+      "name": "deep link /#navigator works",
+      "ok": true
+    },
+    {
+      "name": "deep link /#about works",
+      "ok": true
+    },
+    {
+      "name": "deep link /projects/proof-first works",
+      "ok": true
+    },
+    {
+      "name": "deep link /projects/predmkt-bot (unlisted, direct link) works",
+      "ok": true
+    },
+    {
+      "name": "deep link /projects/parcel-engine works",
+      "ok": true
+    },
+    {
+      "name": "the original stacked home page is preserved at /?classic=1",
+      "ok": true
+    },
+    {
+      "name": "first Tab stop is the skip/quick-link nav",
+      "ok": true
+    },
+    {
+      "name": "arrow keys move through the CRT menu",
+      "ok": true
+    },
+    {
+      "name": "Escape pulls back from the screen to the room",
+      "ok": true
+    },
+    {
+      "name": "Enter on a menu entry opens it and focuses the page",
+      "ok": true
+    },
+    {
+      "name": "the \"Computer\" return link is reachable by keyboard",
+      "ok": true
+    },
+    {
+      "name": "reduced motion: the whole hand-off to Project World is a jump cut",
+      "ok": true,
+      "detail": "76ms (menu 27ms)"
+    },
+    {
+      "name": "mobile: every dock control is at least 44px tall",
+      "ok": true,
+      "detail": 44
+    },
+    {
+      "name": "mobile: the computer is inside the viewport at rest",
+      "ok": true
+    },
+    {
+      "name": "mobile: menu text renders at 9px or larger and the screen fits the viewport",
+      "ok": true,
+      "detail": "{\"px\":9.6166357421875,\"sw\":360.62384033203125}"
+    },
+    {
+      "name": "mobile: Project World is the real mobile journey",
+      "ok": true
+    },
+    {
+      "name": "mobile: \"Computer\" returns to the room",
+      "ok": true
+    },
+    {
+      "name": "mobile: Back restores the scroll position in Project World",
+      "ok": true,
+      "detail": "1500 -> 1500"
+    },
+    {
+      "name": "context loss shows a status message instead of a frozen canvas",
+      "ok": true
+    },
+    {
+      "name": "a restored context recovers the room (no fallback)",
+      "ok": true
+    },
+    {
+      "name": "rendering continues after restore",
+      "ok": true
+    },
+    {
+      "name": "a context that never returns falls back to the plain 2D page with an explanation",
+      "ok": true
+    },
+    {
+      "name": "\"2D view\" shows the plain page (one h1, no canvas, no retro computer)",
+      "ok": true
+    },
+    {
+      "name": "plain page lists every experience and the registry case studies",
+      "ok": true
+    },
+    {
+      "name": "plain-page links open the same real experiences",
+      "ok": true
+    },
+    {
+      "name": "the 2D choice persists",
+      "ok": true
+    },
+    {
+      "name": "\"Try the 3D workspace\" returns to the room",
+      "ok": true
+    },
+    {
+      "name": "a browser without WebGL2 gets the plain page with a notice",
+      "ok": true
+    },
+    {
+      "name": "no-WebGL2 browser: a case-study deep link renders the original page (no 3D dependency)",
+      "ok": true
+    },
+    {
+      "name": "ASK.EXE entered directly does not claim a completed journey",
+      "ok": true
+    },
+    {
+      "name": "HTTP 429 shows an accurate rate-limit message, not \"offline\" (simulated response)",
+      "ok": true,
+      "detail": "> too many questions in a short time The assistant answers a limited number of questions per minute. Please wait about a minute and ask again. Meanwhile you can explore the projects manually: [AI] [GIS] [Support] [About] [Contact]"
+    },
+    {
+      "name": "rate-limit message keeps the manual categories",
+      "ok": true
+    },
+    {
+      "name": "hovering the computer labels it",
+      "ok": true
+    },
+    {
+      "name": "clicking the computer itself approaches the CRT",
+      "ok": true
+    },
+    {
+      "name": "hovering the tray labels it",
+      "ok": true
+    },
+    {
+      "name": "clicking the tray frames the disks and the drive without loading anything",
+      "ok": true
+    },
+    {
+      "name": "from the tray close-up, a disk is lifted and then inserted",
+      "ok": true
+    },
+    {
+      "name": "\"Back to all work\" in a case study returns to Project World at the same stop and scroll",
+      "ok": true,
+      "detail": "STOP 04 / 07: SIDECAR 2953 -> STOP 04 / 07: SIDECAR 2953"
+    },
+    {
+      "name": "Back then Forward restores the same journey stop",
+      "ok": true,
+      "detail": "STOP 04 / 07: SIDECAR"
+    },
+    {
+      "name": "mobile: the resting controls (actions + station switcher) stay under 16% of the viewport height",
+      "ok": true,
+      "detail": "96px"
+    },
+    {
+      "name": "mobile: the disk list opens on demand with all seven case IDs",
+      "ok": true
+    },
+    {
+      "name": "mobile: a disk loads by touch and shows its directory",
+      "ok": true
+    },
+    {
+      "name": "mobile: the immersive interface bar fits (tabs scroll, Return is 44px, no horizontal overflow)",
+      "ok": true
+    },
+    {
+      "name": "2D mode: case studies are the original light pages (no immersive shell)",
+      "ok": true
+    },
+    {
+      "name": "2D mode: Project World opens in the original page layout",
+      "ok": true
+    },
+    {
+      "name": "desktop interface is a monitor: rounded glass, copper ring, bezel inset, bar inside the glass, CRVRO badge + LED",
+      "ok": true,
+      "detail": "{\"radius\":26,\"inset\":[16,16,16,36],\"barInside\":true,\"badge\":\"CRVRO\",\"led\":true,\"shadow\":true}"
+    },
+    {
+      "name": "content is still real, full-size HTML (h-level text selectable, no transform/filter on the page)",
+      "ok": true
+    },
+    {
+      "name": "mobile World: heading starts within 40px of the bar (was ~96px of dead space)",
+      "ok": true,
+      "detail": "{\"headTopBelowBar\":14,\"firstStop\":410,\"tabsHidden\":true,\"filesVisible\":true,\"filesH\":44,\"mapTopVsGlassBottom\":5,\"mapH\":36,\"overflowX\":0}"
+    },
+    {
+      "name": "mobile World: first island starts above 470px (was 537px)",
+      "ok": true,
+      "detail": "{\"headTopBelowBar\":14,\"firstStop\":410,\"tabsHidden\":true,\"filesVisible\":true,\"filesH\":44,\"mapTopVsGlassBottom\":5,\"mapH\":36,\"overflowX\":0}"
+    },
+    {
+      "name": "mobile World: the floating WORLD MAP control sits in the lower bezel, below the glass, so it covers no content",
+      "ok": true,
+      "detail": "{\"headTopBelowBar\":14,\"firstStop\":410,\"tabsHidden\":true,\"filesVisible\":true,\"filesH\":44,\"mapTopVsGlassBottom\":5,\"mapH\":36,\"overflowX\":0}"
+    },
+    {
+      "name": "mobile World: no horizontal overflow",
+      "ok": true,
+      "detail": "{\"headTopBelowBar\":14,\"firstStop\":410,\"tabsHidden\":true,\"filesVisible\":true,\"filesH\":44,\"mapTopVsGlassBottom\":5,\"mapH\":36,\"overflowX\":0}"
+    },
+    {
+      "name": "mobile: tabs are replaced by a 44px FILES button",
+      "ok": true,
+      "detail": "{\"headTopBelowBar\":14,\"firstStop\":410,\"tabsHidden\":true,\"filesVisible\":true,\"filesH\":44,\"mapTopVsGlassBottom\":5,\"mapH\":36,\"overflowX\":0}"
+    },
+    {
+      "name": "FILES button is collapsed by default and names the current file",
+      "ok": true
+    },
+    {
+      "name": "file menu lists all six files with descriptions, marks the current page, takes focus and has 44px+ targets",
+      "ok": true,
+      "detail": "{\"exp\":\"true\",\"n\":6,\"cur\":\"WORLD.MAPThe illustrated journey through the systems I build.\",\"focusIn\":true,\"minH\":54.1875}"
+    },
+    {
+      "name": "Escape closes the file menu and returns focus to the FILES button",
+      "ok": true
+    },
+    {
+      "name": "tapping outside closes the file menu",
+      "ok": true
+    },
+    {
+      "name": "choosing ASK.EXE navigates, closes the menu and focuses the content",
+      "ok": true
+    },
+    {
+      "name": "mobile interface: focus starts on the content; Shift+Tab reaches Return to workspace then FILES; forward Tab returns to Return then the content",
+      "ok": true,
+      "detail": "{\"startsAt\":\"main\",\"shiftTab\":[\"Return to workspace\",\"FILESASK.EXE▸\"],\"thenForward\":[\"Return to workspace\",\"INPUT\",\"> I'm hiring for support operations.\"]}"
+    },
+    {
+      "name": "no uncaught page errors in any run",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "errors": [],
+  "focusOrderRoom": [
+    "Browse without 3D",
+    "Project World",
+    "Ask about my work",
+    "About",
+    "Skills",
+    "AI consultation",
+    "Contact",
+    "Switch to the LO-FI (2D) portfolio",
+    "USE THE COMPUTER→ [CRT]",
+    "Desk",
+    "Computer",
+    "Disk tray",
+    "(function () { var stored = localStorage"
+  ],
+  "focusOrderMobileShell": {
+    "startsAt": "main",
+    "shiftTab": [
+      "Return to workspace",
+      "FILESASK.EXE▸"
+    ],
+    "thenForward": [
+      "Return to workspace",
+      "INPUT",
+      "> I'm hiring for support operations."
+    ]
+  }
+}
