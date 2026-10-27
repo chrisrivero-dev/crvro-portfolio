@@ -1,0 +1,153 @@
+{
+  "checks": [
+    {
+      "name": "hover shows a label and does not move the camera",
+      "ok": true
+    },
+    {
+      "name": "click moves the disk into the drive",
+      "ok": true
+    },
+    {
+      "name": "seated disk sits at the drive slot height and x",
+      "ok": true,
+      "detail": "{\"seated\":[-205,-294,241.1],\"slot\":[-205,-294,309.1]}"
+    },
+    {
+      "name": "directory lists real files from the registry",
+      "ok": true,
+      "detail": "[\"READMETXT\",\"STATUSTXT\",\"ROLETXT\",\"STACKTXT\",\"CASELNK\",\"DEMOLNK\"]"
+    },
+    {
+      "name": "README text equals the registry description",
+      "ok": true
+    },
+    {
+      "name": "camera is at the CRT and focus moved into the screen",
+      "ok": true,
+      "detail": "dos__file is-on"
+    },
+    {
+      "name": "ArrowDown selects STATUS.TXT with the registry status",
+      "ok": true,
+      "detail": "ACTIVE LIVE BUILD\n\nActive live build: running on my own hard"
+    },
+    {
+      "name": "case-study link is a real anchor to /projects/zarvin-one",
+      "ok": true,
+      "detail": "{\"href\":\"https://crvro.com/projects/zarvin-one\",\"target\":\"_blank\",\"rel\":\"noopener noreferrer\"}"
+    },
+    {
+      "name": "Escape returns to the workspace with the disk still seated",
+      "ok": true
+    },
+    {
+      "name": "Approach screen button is offered while the disk is loaded",
+      "ok": true
+    },
+    {
+      "name": "Approach screen flies back to the CRT",
+      "ok": true
+    },
+    {
+      "name": "eject returns the disk to its organizer slot exactly",
+      "ok": true,
+      "detail": "{\"home0\":[-439.8,-270,526.1],\"homeAfter\":[-439.8,-270,526.1]}"
+    },
+    {
+      "name": "eject returns the camera to the rest pose",
+      "ok": true,
+      "detail": "{\"cam0\":[995,854,3272],\"camAfter\":[995,854,3272]}"
+    },
+    {
+      "name": "screen returns to the home pane and the session ends",
+      "ok": true
+    },
+    {
+      "name": "Proof First loads from the keyboard with its own registry content",
+      "ok": true,
+      "detail": "[\"READMETXT\",\"STATUSTXT\",\"ROLETXT\",\"STACKTXT\",\"CASELNK\",\"SITELNK\"]"
+    },
+    {
+      "name": "STACK.TXT lists the registry stack groups",
+      "ok": true,
+      "detail": "BUILT WITH\n\nnode · python · docker sandbox · local models\n\nSite and intake: JavaScript, Vercel, Private Blob storage\n\nWo"
+    },
+    {
+      "name": "loading a second disk ejects the first",
+      "ok": true
+    },
+    {
+      "name": "mid-load the disk is in flight and a cancel control is shown",
+      "ok": true,
+      "detail": "free"
+    },
+    {
+      "name": "cancelling mid-load returns the disk to the tray (nothing stranded)",
+      "ok": true
+    },
+    {
+      "name": "switching disks mid-load leaves exactly one disk out",
+      "ok": true,
+      "detail": "{\"zarvin-one\":\"drive\",\"proof-first\":\"home\"}"
+    },
+    {
+      "name": "steam region changes between frames (it animates)",
+      "ok": true
+    },
+    {
+      "name": "steam renders ~15 fps while the mug is in frame",
+      "ok": true,
+      "detail": "30 frames / 2 s"
+    },
+    {
+      "name": "no frames at all when the mug is out of frame",
+      "ok": true,
+      "detail": "0 frames / 2 s"
+    },
+    {
+      "name": "reduced motion: steam does not animate",
+      "ok": true
+    },
+    {
+      "name": "reduced motion: load is a jump cut (no tweens, no typing)",
+      "ok": true,
+      "detail": "28 ms"
+    },
+    {
+      "name": "reduced motion: cursor does not blink",
+      "ok": true,
+      "detail": "none"
+    },
+    {
+      "name": "mobile: dock buttons are at least 44 px tall",
+      "ok": true,
+      "detail": "{\"w\":108.59375,\"h\":44}"
+    },
+    {
+      "name": "mobile: computer and the disk tray are both inside the viewport",
+      "ok": true,
+      "detail": "{\"disk\":{\"x\":-0.6797675275775625,\"y\":-0.1928671556911791,\"z\":0.9964568533966626},\"machine\":{\"x\":0.35417439417812563,\"y\":0.10309247880077449,\"z\":0.9968234792704744}}"
+    },
+    {
+      "name": "mobile: screen fits horizontally in the viewport and uses the compact layout",
+      "ok": true,
+      "detail": "{\"w\":360.62384033203125,\"h\":239.94854736328125,\"left\":14.688070297241211,\"right\":375.31191062927246,\"compact\":true}"
+    },
+    {
+      "name": "mobile: directory body text renders at 10 px or larger",
+      "ok": true,
+      "detail": "{\"rendered\":11.4}"
+    },
+    {
+      "name": "mobile: eject by touch returns the disk home",
+      "ok": true
+    },
+    {
+      "name": "no page errors in any run",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "errors": []
+}

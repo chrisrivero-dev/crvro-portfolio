@@ -81,13 +81,15 @@ const REST = VIEWS.threeQuarter;
 const orbit = { ...REST };
 delete orbit.target;
 
+// Views may declare fitW: the world width (units) that must stay visible. On a portrait phone that pushes the camera back instead of cropping.
 function applyPose(dYaw = 0, dPitch = 0) {
+  const dist = Math.max(orbit.dist, orbit.fitW ? orbit.fitW / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect) : 0);
   const yaw = orbit.yaw + dYaw;
   const pitch = THREE.MathUtils.clamp(orbit.pitch + dPitch, -0.05, 1.35);
   camera.position.set(
-    TARGET.x + orbit.dist * Math.sin(yaw) * Math.cos(pitch),
-    TARGET.y + orbit.dist * Math.sin(pitch),
-    TARGET.z + orbit.dist * Math.cos(yaw) * Math.cos(pitch),
+    TARGET.x + dist * Math.sin(yaw) * Math.cos(pitch),
+    TARGET.y + dist * Math.sin(pitch),
+    TARGET.z + dist * Math.cos(yaw) * Math.cos(pitch),
   );
   camera.lookAt(TARGET);
 }
@@ -497,10 +499,12 @@ let framePending = false;
 let frames = 0;
 let lastDraw = 0;
 
+const renderHooks = [];
 function renderOnce() {
   renderer.render(scene, camera);
   cssRenderer.render(scene, camera);
   placePins();
+  for (const h of renderHooks) h();
   frames++;
   lastDraw = performance.now();
 }
@@ -521,9 +525,10 @@ const tgt = { yaw: 0, pitch: 0 };
 let settleTimer = 0;
 let active = false;
 let inspecting = false;
+let parallaxLocked = false;
 
 function setPointer(nx, ny) {
-  if (inspecting) return;
+  if (inspecting || parallaxLocked) return;
   tgt.yaw = -nx * PARALLAX.yaw * 0.6;
   tgt.pitch = ny * PARALLAX.pitch * 0.6;
   clearTimeout(settleTimer);
@@ -549,14 +554,46 @@ function ease() {
   requestAnimationFrame(ease);
 }
 
+/* ── tween + camera fly-to (iteration 03; used only by variants that activate()) ── */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const EASE = { io: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2), out: (t) => 1 - Math.pow(1 - t, 3) };
+/** Runs step(e) over ms. Resolves true when finished, false when alive() went false first. Reduced motion: one jump-cut step. */
+function run(ms, step, alive = () => true, easing = EASE.io) {
+  return new Promise((res) => {
+    if (reduceMotion.matches || ms <= 0) { step(1); markDirty(); res(alive()); return; }
+    const t0 = performance.now();
+    const f = (now) => {
+      if (!alive()) { res(false); return; }
+      const t = Math.min(1, (now - t0) / ms);
+      step(easing(t));
+      markDirty();
+      if (t < 1) requestAnimationFrame(f); else res(true);
+    };
+    requestAnimationFrame(f);
+  });
+}
+function flyTo(view, ms = 1000, alive) {
+  const { target, ...pose } = typeof view === 'string' ? VIEWS[env.resolveView?.(view) || view] : view;
+  const from = { yaw: orbit.yaw, pitch: orbit.pitch, dist: orbit.dist, fitW: orbit.fitW || 0, t: TARGET.clone() };
+  const to = { fitW: 0, ...pose };
+  const tt = (target || BASE_TARGET).clone();
+  cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
+  return run(ms, (e) => {
+    for (const k of ['yaw', 'pitch', 'dist', 'fitW']) orbit[k] = from[k] + (to[k] - from[k]) * e;
+    TARGET.lerpVectors(from.t, tt, e);
+    applyPose();
+  }, alive);
+}
+
 /* ── inspection mode (M1 review tool, not the final experience) ──── */
 const inspectBtn = document.getElementById('inspect-toggle');
 const inspectBar = document.getElementById('inspect-bar');
 
 function setView(name) {
-  const { target, ...pose } = VIEWS[name];
+  const { target, ...pose } = VIEWS[env.resolveView?.(name) || name];
   TARGET.copy(target || BASE_TARGET);
   Object.assign(orbit, pose);
+  orbit.fitW = pose.fitW;
   cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
   applyPose();
   markDirty();
@@ -624,6 +661,7 @@ if (cta) {
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+  applyPose();
   renderer.setSize(window.innerWidth, window.innerHeight);
   cssRenderer.setSize(window.innerWidth, window.innerHeight);
   markDirty();
@@ -645,6 +683,7 @@ window.__M1__ = {
     const { target, ...pose } = REST;
     TARGET.copy(target || BASE_TARGET);
     Object.assign(orbit, pose);
+    orbit.fitW = pose.fitW;
     applyPose();
     markDirty();
   },
@@ -653,5 +692,14 @@ window.__M1__ = {
   restPose: { position: camera.position.toArray(), target: TARGET.toArray() },
   textureBytes: [grainTex, shadowTex].reduce((b, t) => b + (t.image?.width || 0) * (t.image?.height || 0) * 4, 0),
 };
+
+if (env.activate) {
+  await env.activate({
+    THREE, scene, camera, renderer, machine, D, props, built, markDirty, run, flyTo, EASE, reduceMotion, renderHooks, VIEWS,
+    screenEl, orbit, TARGET, setView, setInspect, isInspecting: () => inspecting,
+    lockParallax: (v) => { parallaxLocked = v; if (v) { tgt.yaw = tgt.pitch = 0; } },
+    driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
+  });
+}
 
 console.info(`[M1.5] variant ${VARIANT} ready`, { machineChildren: machine.children.length, frames });

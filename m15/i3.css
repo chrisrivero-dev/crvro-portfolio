@@ -1,0 +1,82 @@
+/* Iteration 03: dock, directory screen, mobile, reduced motion. Loaded after m15.css; A–D pages do not load this file. */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── dock: the visitor's controls, always reachable by keyboard, pointer and touch ── */
+#dock {
+  position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); z-index: 30;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: calc(100vw - 24px);
+  font: 12px/1 var(--mono); letter-spacing: 0.08em;
+}
+.dock__row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(20, 17, 14, 0.78); border: 1px solid #4a4238; border-radius: 6px; backdrop-filter: blur(4px); }
+.dock__row[hidden] { display: none; }
+.dock__label { color: #b8ad9a; padding: 0 6px; font-size: 11px; }
+#dock button {
+  font: inherit; min-height: 36px; padding: 8px 14px; color: #efe6d4; background: #2a2520; border: 1px solid #7d7466; border-radius: 4px; cursor: pointer; text-transform: uppercase;
+}
+#dock button:hover { border-color: #d9ab5c; color: #fff; }
+#dock button[aria-pressed="true"] { background: #d9ab5c; color: #1d1812; border-color: #d9ab5c; }
+#dock button:focus-visible { outline: 2px solid #f4eedd; outline-offset: 2px; }
+#dock button[hidden] { display: none; }
+body.is-pick { cursor: pointer; }
+/* with the camera at the CRT the dock steps aside so the screen owns the frame */
+body[data-view="crt"] #dock .dock__row:first-child { display: none; }   /* the disk picker steps aside; Return / Eject stay */
+body[data-view="crt"] #dock { bottom: 34px; }
+.inspect { left: 22px; bottom: 44px; }
+
+/* ── directory screen ── */
+#screen .pane { position: relative; z-index: 2; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#screen .pane[hidden] { display: none; }
+.dos__ps { color: #d9ab5c; }
+.dos__idle { margin: 6px 0 0; font-size: 12px; letter-spacing: 0.1em; color: rgba(244, 235, 218, 0.8); }
+.dos__cursor { display: inline-block; width: 0.6em; height: 1.05em; margin-left: 3px; vertical-align: -0.17em; background: #d9ab5c; opacity: 0.85; animation: dos-blink 1.1s steps(1) infinite; }
+@keyframes dos-blink { 50% { opacity: 0; } }
+.dos__prompt { font-size: 12.5px; letter-spacing: 0.1em; color: #f3ecde; margin-bottom: 8px; }
+.dos__vol { font-size: 10.5px; letter-spacing: 0.06em; color: rgba(244, 235, 218, 0.62); line-height: 1.5; }
+.dos__body { display: grid; grid-template-columns: 150px 1fr; gap: 16px; flex: 1; min-height: 0; margin-top: 10px; }
+.dos__list { display: flex; flex-direction: column; gap: 2px; align-self: start; }
+.dos__file { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 5px 8px; font: 600 12.5px/1.2 var(--mono); letter-spacing: 0.1em; color: #e8dfc9; background: transparent; border: 1px solid transparent; border-radius: 2px; cursor: pointer; text-align: left; }
+.dos__fe { color: rgba(217, 171, 92, 0.8); font-weight: 500; }
+.dos__file:hover, .dos__file.is-on { background: rgba(217, 171, 92, 0.16); border-color: rgba(217, 171, 92, 0.45); }
+.dos__file:focus-visible, .dos__view:focus-visible, .dos__link:focus-visible { outline: 2px solid rgba(244, 238, 221, 0.95); outline-offset: 2px; }
+.dos__view { overflow: auto; padding: 2px 4px 2px 0; min-width: 0; scrollbar-width: thin; }
+.dos__vhead { font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; color: #d9ab5c; margin-bottom: 8px; }
+.dos__vp { margin: 0 0 8px; font-size: 12.5px; line-height: 1.5; color: rgba(244, 235, 218, 0.92); }
+.dos__link { display: inline-block; margin-top: 6px; padding: 8px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-decoration: none; color: #d9ab5c; border: 1px solid rgba(217, 171, 92, 0.85); border-radius: 4px; background: rgba(217, 171, 92, 0.07); }
+.dos__link:hover { background: rgba(217, 171, 92, 0.2); color: #f4eedd; }
+.dos__note { margin-left: 10px; font-size: 10px; color: rgba(236, 228, 211, 0.45); }
+.dos__sum { margin-top: 8px; font-size: 10px; letter-spacing: 0.1em; color: rgba(138, 127, 106, 0.9); }
+
+/* phone portrait: the 600 px screen must fit ~390 px, so type is scaled up, the file list becomes a row and the volume lines are dropped */
+#screen.is-compact { padding: 22px 26px 16px; }
+#screen.is-compact .dos__prompt { font-size: 18px; margin-bottom: 6px; }
+#screen.is-compact .dos__vol { display: none; }
+#screen.is-compact .dos__body { grid-template-columns: 1fr; gap: 8px; margin-top: 4px; }
+#screen.is-compact .dos__list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+#screen.is-compact .dos__file { width: auto; padding: 5px 9px; font-size: 17px; gap: 6px; }
+#screen.is-compact .dos__vhead { font-size: 15px; margin-bottom: 5px; }
+#screen.is-compact .dos__vp { font-size: 19px; line-height: 1.36; margin-bottom: 6px; }
+#screen.is-compact .dos__link { font-size: 18px; }
+#screen.is-compact .dos__note, #screen.is-compact .dos__sum { font-size: 13px; }
+#screen.is-compact .crt-screen__headline { font-size: 26px; }
+#screen.is-compact .crt-screen__sub, #screen.is-compact .dos__idle { font-size: 16px; }
+#screen.is-compact .crt-screen__cta { font-size: 16px; }
+#screen.is-compact .crt-screen__eyebrow, #screen.is-compact .crt-screen__boot { font-size: 12px; }
+
+@media (max-width: 700px) {
+  .hud__meta, .footbar span:last-child, .variants, .hud__dim, .variant-label { display: none; }
+  .footbar { justify-content: center; }
+  #dock { bottom: 56px; width: calc(100vw - 20px); }
+  .dock__row { width: 100%; }
+  #dock button { flex: 1 1 auto; min-height: 44px; font-size: 13px; }
+  .inspect { bottom: auto; top: 44px; left: 10px; }
+  .inspect #pins-toggle { display: none; }
+  .inspect__hint { display: none; }
+}
+@media (pointer: coarse) {
+  #dock button, .inspect button { min-height: 44px; }
+  body.is-inspecting #stage { touch-action: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dos__cursor { animation: none; opacity: 0.85; }
+  * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
