@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRVRO · M1.5 A · GIS drafting workstation</title>
+<meta name="description" content="M1 prototype: a physically-modelled CRVRO computer, amber CRT, live DOM screen. Isolated worktree, not production." />
+<link rel="preconnect" href="https://fonts.jetbrains.com" />
+<link href="https://fonts.jetbrains.com/mono?subset=latin" rel="stylesheet" crossorigin="anonymous" />
+<style>
+@font-face {
+  font-family: "JetBrains Mono";
+  src: local("JetBrains Mono"), local("JetBrainsMono");
+  font-display: swap;
+}
+</style>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="m15.css" />
+</head>
+<body data-variant="a">
+
+<!-- skip link: first focusable element, keyboard-reachable -->
+<a class="skip-link" href="#screen">Skip to terminal</a>
+
+<div id="stage" role="img" aria-label="A graphite retro computer with a warm amber CRT screen showing the CRVRO terminal: a headline, a one-line bio, and a button that opens the live portfolio at crvro.com.">
+  <!-- WebGL canvas and CSS3D layer are injected here by src/m1.js -->
+</div>
+
+<!-- The screen: a real DOM element co-registered in the 3D scene.
+     Copy is the live portfolio's own Hero copy (verbatim), so what you
+     read in the prototype IS the production sentence. -->
+<div id="screen" role="region" aria-label="CRVRO terminal" tabindex="-1">
+  <div class="crt-screen__glow" aria-hidden="true"></div>
+
+  <pre class="crt-screen__boot" aria-label="Boot lines">CRVRO-OS 1970 · PHOSPHOR P1 · 80 COLUMNS</pre>
+  <div class="crt-screen__rule" aria-hidden="true"></div>
+
+  <p class="crt-screen__eyebrow">SUPPORT AUTOMATION · AI OPERATIONS · GIS SYSTEMS</p>
+
+  <h1 class="crt-screen__headline">Christopher Rivero — I build Python
+  automation and AI tools for support and GIS/CAD work I know firsthand.</h1>
+
+  <p class="crt-screen__sub">A still life, not a simulation: one machine,
+  rendered with PBR materials at rest. The text you are reading is the
+  live portfolio's own copy, held in real DOM — crisp, focusable,
+  clickable.</p>
+
+  <a id="cta" class="crt-screen__cta" href="https://crvro.com/#work"
+     target="_blank" rel="noopener noreferrer">
+    <span>ENTER PORTFOLIO</span>
+    <span class="crt-screen__cta-arrow" aria-hidden="true">→</span>
+    <span class="crt-screen__cta-note">(live site, new tab)</span>
+  </a>
+
+  <div class="crt-screen__foot" aria-hidden="true">
+    <span>STILL LIFE · M1</span>
+    <span>600 × 400 · 1:1 WORLD-UNIT</span>
+  </div>
+
+</div>
+
+<!-- HUD chrome (non-interactive) -->
+<header class="hud">
+  <div class="hud__brand">
+    <span class="hud__mark" aria-hidden="true">◆</span>
+    <span class="hud__name">CRVRO</span>
+    <span class="hud__dim">· M1.5 EXPLORATION</span><span class="variant-label">A · GIS DRAFTING WORKSTATION</span><nav class="variants" aria-label="Variants"><a href="a.html" aria-current="page">A</a><a href="b.html">B</a><a href="c.html">C</a><a href="index.html">ALL</a></nav>
+  </div>
+  <div class="hud__meta">
+    <span>three.js r170</span>
+    <span class="hud__dot" aria-hidden="true"></span>
+    <span id="hud-fps">— fr</span>
+    <span class="hud__dot" aria-hidden="true"></span>
+    <span id="hud-asset">— KB</span>
+  </div>
+</header>
+
+<!-- M1 review tool: orbit the model to inspect its real geometry -->
+<div class="inspect">
+  <button id="inspect-toggle" type="button" aria-pressed="false">Inspect</button>
+  <button id="pins-toggle" type="button" aria-pressed="false">Show destinations</button>
+  <div id="inspect-bar" class="inspect__bar" hidden>
+    <span class="inspect__hint">Drag to orbit · wheel to zoom · arrow keys</span>
+    <button type="button" data-view="front">Front</button>
+    <button type="button" data-view="threeQuarter">¾</button>
+    <button type="button" data-view="side">Side</button>
+    <button type="button" data-view="top">Top</button>
+    <button type="button" data-view="threeQuarter" class="inspect__reset">Reset view</button>
+  </div>
+</div>
+
+<div id="pins" aria-hidden="true"></div>
+<div id="disk-tag" hidden></div>
+
+<footer class="footbar">
+  <span>ISOLATED WORKTREE · <code>feature/crvro-3d-m1-still-life · m15/</code> · NOT PRODUCTION</span>
+  <span>ON-DEMAND RENDERING · NO CONTINUOUS LOOP WHILE IDLE</span>
+</footer>
+
+<script type="module" src="src/workspace.js"></script>
+<script>
+  // HUD: report actual measurements (never estimates)
+  addEventListener('load', async () => setTimeout(async () => {
+    const m = window.__M1__;
+    if (!m) return;
+    const hudFps = document.getElementById('hud-fps');
+    const hudAsset = document.getElementById('hud-asset');
+    setInterval(() => {
+      if (hudFps) hudFps.textContent = m.frames + ' fr (total)';
+    }, 800);
+    const kb = (n) => (n >= 1048576 ? (n / 1048576).toFixed(2) + ' MB' : (n / 1024).toFixed(0) + ' KB');
+    const parts = ['tex ' + kb(m.textureBytes)];
+    try {
+      for (const u of ['vendor/three.module.min.js', 'vendor/CSS3DRenderer.js', 'vendor/RoomEnvironment.js']) {
+        const r = await fetch(u, { method: 'HEAD' });
+        const len = +r.headers.get('content-length') || 0;
+        parts.push(u.split('/').slice(-1)[0].replace('.js', '') + ' ' + kb(len));
+      }
+    } catch {}
+    if (hudAsset) hudAsset.textContent = parts.join(' · ');
+  }, 400));
+</script>
+</body>
+</html>
