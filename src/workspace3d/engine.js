@@ -13,6 +13,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { makeCanvas, drawGrain, drawContactShadow } from './textures.js';
 import * as props from './props.js';
 import * as env from './env.js';
+import { buildNotes } from './plans.js';
 import { setupSteam } from './steam.js';
 
 /** Resolves once the screen/label font is usable, so canvas textures never bake in a fallback face. */
@@ -453,6 +454,7 @@ machine.add(glass);
 
 /* ── desk + baked contact shadow ─────────────────────────────────── */
 const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasticDark, plasticDeep, rubber, renderer });
+const notes = built.sheet ? buildNotes({ THREE, scene, sheet: built.sheet }) : [];
 
 // optional per-variant light grade (iteration 02+); A/B/C define none
 env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });
@@ -606,6 +608,7 @@ scene.add(screenObj);
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
     tray: built.tray,
+    sheet: built.sheet, notes,
     driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
     reduceMotion, run, flyTo, setView, markDirty, suspend, resume, dispose, on: listen,
     look, setLook,

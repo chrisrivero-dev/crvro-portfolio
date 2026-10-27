@@ -5,6 +5,8 @@
  *   computer  the camera at the CRT (menu, Ask, Contact, or a loaded disk's directory)
  *   disks     the camera at the floppy organizer
  *   hold      a disk lifted out of the organizer and held in front of the camera for inspection
+ *   plans     (05B.1) the camera over the survey sheet; project notes are pinned to it
+ *   note      (05B.1) the camera down on one note (`st.note`), reading it square-on
  * plus `fill` (the screen fills the viewport just before the expanded interface opens).
  *
  * Every action is "go to state X from wherever things are now": a new action bumps `epoch`, in-flight tweens see alive()
@@ -12,16 +14,19 @@
  * Multi-step actions set `busy` so the page does not write an intermediate state into the URL.
  * Reduced motion: engine.run() collapses each tween into one step (jump cuts). */
 
-const LOOK = { yaw: 0.45, pitchUp: 0.16, pitchDown: 0.12 };   // look-around limits at the desk (radians)
+const LOOK = { yaw: 0.45, pitchUp: 0.16, pitchDown: 0.2 };    // 05B.1: a little further down, toward the flat files   // look-around limits at the desk (radians)
 
-export function createController(engine, { onChange, onHover, onLaunch }) {
+import { noteView } from './plans.js';
+
+export function createController(engine, { onChange, onHover, onLaunch, onNoteLink }) {
   const { THREE, scene, camera, run, flyTo, markDirty, EASE, diskList } = engine;
+  const notes = Object.fromEntries((engine.notes || []).map((m) => [m.userData.note.slug, m]));
   const disks = Object.fromEntries(diskList.map((d) => [d.userData.project.slug, d]));
   const home = {};
   for (const [slug, d] of Object.entries(disks)) home[slug] = { parent: d.parent, pos: d.position.clone(), quat: d.quaternion.clone(), loc: 'home' };
 
   let epoch = 0;
-  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null };
+  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
   const emit = () => { engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
@@ -97,7 +102,7 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
   async function back() {                         // to the desk, at the viewpoint the visitor left it; a loaded disk stays seated
     const alive = mine();
     if (st.held) return putBack();
-    st.view = 'rest'; st.busy = true; emit();
+    st.view = 'rest'; st.note = null; st.busy = true; emit();
     if (await flyTo('threeQuarter', 1000, alive, deskLook)) { st.busy = false; emit(); }
   }
   async function approach() {                     // the computer: menu, or the loaded disk's directory
@@ -162,6 +167,31 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
     await cam;
     st.busy = false; emit();                    // ends at the organizer: the visitor can pick another disk
   }
+  /** A held disk goes home before the camera leaves for another station (one object in hand at a time). */
+  async function dropHeld(alive) {
+    if (!st.held) return true;
+    const s = st.held; st.held = null; st.busy = true; emit();
+    return diskOut(s, alive);
+  }
+  /** The drafting plans: over the survey sheet with its pinned notes. From a note, this is one step back. */
+  async function goPlans() {
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'plans'; st.note = null; st.busy = false; emit();
+    await flyTo('plans', 1000, alive);
+  }
+  /** Bring the camera down onto one note so it can be read. */
+  async function inspectNote(slug) {
+    const m = notes[slug];
+    if (!m) return goPlans();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'note'; st.note = slug; st.busy = false; emit();
+    await flyTo(noteView(THREE, m), 900, alive);
+  }
+
   /** Menu entry chosen: the screen fills the viewport, then the page takes over (the owner swaps the layers). */
   async function launch(entry) {
     const alive = mine();
@@ -181,7 +211,13 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : [])], true)[0];
+    if (hit?.object.userData.note) {
+      const n = hit.object.userData.note;
+      const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
+      return { note: n.slug, title: n.title, caseId: n.caseId, stamp: r?.kind || null };
+    }
+    if (hit && hit.object === engine.sheet) return { sheet: true };
     let g = hit?.object;
     while (g && !g.userData.project && g !== engine.machine && g !== engine.tray) g = g.parent;
     if (g === engine.machine) return { machine: true };
@@ -203,6 +239,14 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
     if (d.onScreen && st.view === 'rest') { approach(); return; }   // clicking the CRT's glass uses the computer
     const hit = pick(e);
     if (st.view === 'hold') { if (!hit || hit.slug !== st.held) putBack(); return; }   // clicking away puts the disk back
+    if (st.view === 'note') {                     // reading a note: press a printed stamp, pick the other note, or click off the paper to step back
+      if (hit?.note === st.note) { if (hit.stamp) onNoteLink?.(st.note, hit.stamp); }
+      else if (hit?.note) inspectNote(hit.note);
+      else goPlans();
+      return;
+    }
+    if (hit?.note) { inspectNote(hit.note); return; }
+    if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
     else if (hit?.machine) approach();
     else if (hit?.tray) focusTray();
@@ -221,8 +265,9 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
         return;
       }
     }
-    if (e.pointerType === 'touch' || engine.suspended || st.view === 'crt' || st.view === 'fill' || e.target.closest?.('a, button, #screen')) { onHover?.(null); return; }
+    if (e.pointerType === 'touch' || engine.suspended || st.view === 'crt' || st.view === 'fill' || e.target.closest?.('a, button, #screen')) { onHover?.(null); engine.stage.style.cursor = ''; return; }
     const hit = pick(e);
+    engine.stage.style.cursor = hit && (st.view !== 'note' || hit.note !== st.note || hit.stamp) && !(hit.sheet && st.view === 'plans') ? 'pointer' : '';
     onHover?.(hit ? { ...hit, x: e.clientX, y: e.clientY } : null);
   };
   engine.stage.addEventListener('pointerdown', onDown);
@@ -237,7 +282,8 @@ export function createController(engine, { onChange, onHover, onLaunch }) {
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote,
+    noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */
     nudgeLook(dy, dp) {
       if (!canLook()) return;

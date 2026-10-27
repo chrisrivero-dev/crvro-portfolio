@@ -10,7 +10,8 @@ import { createPortal } from 'react-dom';
 import { createWorkspace } from './engine.js';
 import { createController } from './controller.js';
 import CrtScreen from './CrtScreen.jsx';
-import { DISK_PROJECTS } from '../data/caseIds.js';
+import { DISK_PROJECTS, CASE_IDS } from '../data/caseIds.js';
+import { PLAN_NOTE_PROJECTS } from '../data/planNotes.js';
 import { EXPERIENCES, hrefFor } from '../lib/experiences.js';
 import { navigate } from '../lib/location.js';
 import { STATIONS, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
@@ -20,6 +21,8 @@ const supportsWebGL2 = () => { try { return !!document.createElement('canvas').g
 const lowQuality = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 700;
 const TITLES = Object.fromEntries(DISK_PROJECTS.map((d) => [d.slug, d.label]));
 const prettyTitle = (slug) => TITLES[slug].replace(/\b([A-Z])([A-Z]+)/g, (m, a, b) => a + b.toLowerCase());
+const NOTES = Object.fromEntries(PLAN_NOTE_PROJECTS.map((p) => [p.slug, p]));
+const openCase = (slug, origin) => { rememberOrigin(origin); return { id: 'case', href: `/projects/${slug}` }; };
 
 export default function Workspace3D({ active, station = 'desk', onLaunch, onUnavailable, onPrefer2D }) {
   const stageRef = useRef(null);
@@ -29,7 +32,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   const disksOpenRef = useRef(false);
   activeRef.current = active;
   const [engine, setEngine] = useState(null);
-  const [ui, setUi] = useState({ view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, locs: {} });
+  const [ui, setUi] = useState({ view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, locs: {} });
   const [app, setApp] = useState(null);           // a program running on the CRT (ask / contact)
   const stationRef = useRef(station);
   stationRef.current = station;
@@ -40,6 +43,11 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   const [announce, setAnnounce] = useState('');
   const [disksOpen, setDisksOpen] = useState(false);
   const diskListRef = useRef(null);
+  const [stationsOpen, setStationsOpen] = useState(false);   // phones: one "Stations" button opens the list (05B.1)
+  const stationsOpenRef = useRef(false);
+  stationsOpenRef.current = stationsOpen;
+  const stMenuRef = useRef(null);
+  useEffect(() => { if (stationsOpen) (stMenuRef.current?.querySelector('[aria-current]') || stMenuRef.current?.querySelector('button'))?.focus({ preventScroll: true }); }, [stationsOpen]);
   // opening the list moves keyboard focus into it; Escape closes it and returns focus to its button
   useEffect(() => { if (disksOpen) diskListRef.current?.querySelector('button')?.focus({ preventScroll: true }); }, [disksOpen]);
   // the room fades out under the incoming interface instead of cutting (see .ws3d--leaving); it is suspended at once
@@ -77,6 +85,11 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
           onChange: (s) => { setUi(s); if (s.session) { setMenuOpen(false); setDisksOpen(false); } },
           onHover: setHover,
           onLaunch: (entry) => { rememberOrigin('/#computer'); onLaunchRef.current(entry); },
+          // a printed stamp on a pinned note was pressed
+          onNoteLink: (slug, kind) => {
+            if (kind === 'case') onLaunchRef.current(openCase(slug, `/#plans/${slug}`));
+            else if (kind === 'repo' && NOTES[slug]?.repo) window.open(NOTES[slug].repo, '_blank', 'noopener,noreferrer');
+          },
         });
         eng.on('contextlost', () => {
           setPaused(true);
@@ -128,9 +141,12 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       if (!ctl) return;
       const typing = e.target.closest?.('input, textarea, [contenteditable="true"]');
       if (e.key === 'Escape') {
+        if (stationsOpenRef.current) { e.preventDefault(); setStationsOpen(false); document.querySelector('.ws3d__stbtn')?.focus({ preventScroll: true }); return; }
         if (disksOpenRef.current) { e.preventDefault(); setDisksOpen(false); document.querySelector('.ws3d__disks')?.focus({ preventScroll: true }); return; }
         const v = ctl.state.view;
         if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
+        if (v === 'note') { e.preventDefault(); ctl.goPlans(); setAnnounce('Back over the drafting plans.'); return; }
+        if (v === 'plans') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
         if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
         return;
       }
@@ -138,6 +154,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       const k = e.key.toLowerCase();
       if (k === 'c') { e.preventDefault(); goStation('computer'); }
       else if (k === 'd') { e.preventDefault(); goStation('disks'); }
+      else if (k === 'p') { e.preventDefault(); goStation('plans'); }
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.shiftKey && ctl.state.view === 'rest') { e.preventDefault(); ctl.nudgeLook(e.key === 'ArrowLeft' ? 0.12 : -0.12, 0); }
       else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         if (e.target.closest?.('.ws3d__stations')) return;          // the switcher handles its own arrows
@@ -155,8 +172,10 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   function goStation(s) {
     const ctl = ctlRef.current;
     if (!ctl) return;
-    setDisksOpen(false);
+    setDisksOpen(false); setStationsOpen(false);
     if (s === 'desk') ctl.back();
+    else if (s === 'plans') ctl.goPlans();
+    else if (s.startsWith('plans/')) ctl.inspectNote(s.slice(6));
     else if (s === 'computer') { setMenuOpen(true); ctl.approach(); }
     else if (s === 'disks') { if (ctl.state.held) ctl.putBack(); else ctl.focusTray(); }
     else if (s.startsWith('disk/')) ctl.pickUp(s.slice(5));
@@ -180,7 +199,9 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   // leaving the screen: keyboard focus must not stay on a control that is no longer in view; it moves to the current station
   useEffect(() => {
     if (ui.view === 'crt' || ui.view === 'fill' || ui.busy) return;
-    if (document.activeElement?.closest('#screen')) document.querySelector('.ws3d__stations [aria-current]')?.focus({ preventScroll: true });
+    if (!document.activeElement?.closest('#screen')) return;
+    const cur = document.querySelector('.ws3d__stations [aria-current]');
+    (cur?.offsetParent ? cur : document.querySelector('.ws3d__stbtn'))?.focus({ preventScroll: true });
   }, [ui.view, ui.busy]);
   useEffect(() => { if (ui.session) setAnnounce(`${prettyTitle(ui.session)} loaded. Directory shown on the screen.`); }, [ui.session]);
 
@@ -219,6 +240,26 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
       </div>
     );
+    if (ui.view === 'plans') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">{coarse ? 'Tap a pinned note to read it' : 'Click a pinned note to read it'}</span>
+        {PLAN_NOTE_PROJECTS.map((p) => <button key={p.slug} type="button" onClick={() => ctl()?.inspectNote(p.slug)}>{p.title} note</button>)}
+        <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
+    if (ui.view === 'note' && NOTES[ui.note]) {
+      const p = NOTES[ui.note];
+      return (
+        <div className="ws3d__row ws3d__row--ctx">
+          <span className="ws3d__label ws3d__label--hold">{CASE_IDS[p.slug]} · {p.title} · pinned note</span>
+          {/* the note's printed text (a texture) for screen readers: the same registry fields */}
+          <span className="ws3d__sr">{p.titleEm} {p.desc} {p.kind}, {p.year}. Status: {p.status}.</span>
+          <button type="button" className="ws3d__use" onClick={() => onLaunchRef.current(openCase(p.slug, `/#plans/${p.slug}`))}>Read case study</button>
+          {p.repo && <a className="ws3d__btnlink" href={p.repo} target="_blank" rel="noopener noreferrer">Repository ↗</a>}
+          <button type="button" onClick={() => ctl()?.goPlans()}>Back to the sheet</button>
+        </div>
+      );
+    }
     if (ui.view === 'drive') return (
       <div className="ws3d__row ws3d__row--ctx">
         <span className="ws3d__label">{coarse ? 'Tap a disk to lift it' : 'Click a disk to lift it'}</span>
@@ -228,7 +269,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     );
     return (
       <div className="ws3d__row ws3d__row--ctx">
-        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer or the disk organizer' : 'Look around, then click the computer or the disk organizer'}</span>
+        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, the disks or the drafting plans' : 'Look around, then click the computer, the disk organizer or the drafting plans'}</span>
         {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject {TITLES[ui.session]}</button>}
       </div>
     );
@@ -256,6 +297,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
           onUse={use}
           onPick={pick}
           onOpenDisk={() => setMenuOpen(false)}
+          onShowNote={(slug) => ctlRef.current?.inspectNote(slug)}
           onMenu={() => { setMenuOpen(true); setApp(null); }}
           app={app}
           onExpand={expand}
@@ -266,15 +308,21 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !ui.busy && (ui.view === 'rest' || ui.view === 'drive') && (
+      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.machine ? 'The computer · click to use it' : hover.tray ? 'Floppy organizer · click to look closer' : `${hover.caseId} · ${hover.label} · click to lift`}
+          {hover.machine ? 'The computer · click to use it'
+            : hover.tray ? 'Floppy organizer · click to look closer'
+            : hover.sheet ? 'Drafting plans · project notes pinned to a studio drawing · click to look closer'
+            : hover.stamp === 'case' ? `${hover.title} · open the case study`
+            : hover.stamp === 'repo' ? `${hover.title} · open the repository (new tab)`
+            : hover.note ? `${hover.caseId} · ${hover.title} · pinned note · click to read`
+            : `${hover.caseId} · ${hover.label} · click to lift`}
         </div>
       )}
 
       {engine && active && (
         <>
-          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look around · click an object · ' : ''}C computer · D disk tray · ←/→ stations · Esc back</p>}
+          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · ←/→ stations · Esc back</p>}
           <div className="ws3d__dock" role="group" aria-label="Studio controls">
             {ContextRow()}
             {disksOpen && !sessionSlug && !ui.held && (
@@ -288,6 +336,19 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
                 ))}
               </ul>
             )}
+            <div className="ws3d__stmenu">
+              {stationsOpen && (
+                <ul id="ws-stmenu" className="ws3d__stlist" aria-label="Stations" ref={stMenuRef}>
+                  {STATIONS.map((s) => {
+                    const cur = baseStation(stationOfUi(ui)) === s;
+                    return <li key={s}><button type="button" aria-current={cur ? 'location' : undefined} className={cur ? 'is-on' : ''} onClick={() => goStation(s)}>{STATION_LABEL[s]}</button></li>;
+                  })}
+                </ul>
+              )}
+              <button type="button" className="ws3d__stbtn" aria-expanded={stationsOpen} aria-controls="ws-stmenu" onClick={() => setStationsOpen((v) => !v)}>
+                Stations <span className="ws3d__stcur">· {STATION_LABEL[baseStation(stationOfUi(ui))] || '…'}</span> <span aria-hidden="true">{stationsOpen ? '▾' : '▴'}</span>
+              </button>
+            </div>
             <nav className="ws3d__stations" aria-label="Stations">
               {STATIONS.map((s) => {
                 const cur = baseStation(stationOfUi(ui)) === s;

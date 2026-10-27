@@ -1,0 +1,305 @@
+{
+  "checks": [
+    {
+      "name": "mouse 1: hovering the survey sheet names it, and says the notes are pinned to a studio drawing",
+      "ok": true,
+      "detail": "Drafting plans · project notes pinned to a studio drawing · click to look closer"
+    },
+    {
+      "name": "mouse 2: clicking the sheet moves the camera over the drafting plans (/#plans)",
+      "ok": true
+    },
+    {
+      "name": "mouse 3: hovering a note names it (case ID, title)",
+      "ok": true,
+      "detail": "G-01 · Parcel Engine · pinned note · click to read"
+    },
+    {
+      "name": "mouse 4: clicking the note brings the camera down onto it (/#plans/parcel-engine)",
+      "ok": true
+    },
+    {
+      "name": "mouse 5: the note fills most of the frame and is not blocked by any prop",
+      "ok": true,
+      "detail": "{\"noteDesktop\":{\"note\":{\"w\":501,\"h\":639},\"stamps\":[{\"kind\":\"case\",\"w\":233,\"h\":89},{\"kind\":\"repo\",\"w\":227,\"h\":89}]},\"collideNoteDesktop\":{\"inside\":[],\"blocked\":null,\"camY\":413}}"
+    },
+    {
+      "name": "mouse 6: pressing the printed REPOSITORY stamp opens the registry repo in a new tab",
+      "ok": true,
+      "detail": "https://github.com/chrisrivero-dev/parcel-engine"
+    },
+    {
+      "name": "mouse 7: pressing the printed CASE STUDY stamp opens the expanded case study",
+      "ok": true
+    },
+    {
+      "name": "mouse 8: Back from the case study returns to the same note, camera unchanged",
+      "ok": true
+    },
+    {
+      "name": "mouse 9: clicking the other note moves straight to it",
+      "ok": true
+    },
+    {
+      "name": "mouse 10: clicking off the note steps back to the sheet",
+      "ok": true
+    },
+    {
+      "name": "mouse 11: Escape from the plans returns to the desk at the viewpoint the visitor left",
+      "ok": true,
+      "detail": "{\"deskLook\":{\"yaw\":-0.128,\"pitch\":0.032},\"back\":{\"yaw\":-0.128,\"pitch\":0.032}}"
+    },
+    {
+      "name": "mouse 12: clicking a note from the desk flies directly to it",
+      "ok": true
+    },
+    {
+      "name": "mouse 13: notes and disks are exactly where they started",
+      "ok": true
+    },
+    {
+      "name": "mouse 14: looking down stops at -0.2 rad, camera clear of every object",
+      "ok": true,
+      "detail": "{\"low\":{\"yaw\":-0.128,\"pitch\":-0.2},\"c\":{\"inside\":[],\"blocked\":null,\"camY\":139}}"
+    },
+    {
+      "name": "keys 1: P moves to the drafting plans",
+      "ok": true
+    },
+    {
+      "name": "keys 2: the note buttons are reachable by Tab and open the note",
+      "ok": true,
+      "detail": "Parcel Engine note"
+    },
+    {
+      "name": "keys 3: the note offers Read case study, Repository and Back to the sheet as real controls",
+      "ok": true,
+      "detail": "G-01 · Parcel Engine · pinned noteLocal metes-and-bounds parser and parcel geometry validator. A local Python tool that parses metes-and-bounds legal descriptions into structured COGO calls, builds preview geometry, checks closure/misclosure, and exports DXF or GeoJSON for mapping workflow testing. No official County data, real APNs, private legal descriptions, Q-drive files, or production records are included. Local Tool, 2025 to present. Status: Active Build · local tool.Read case studyRepository ↗Back to the sheet"
+    },
+    {
+      "name": "keys 4: the repository link is the registry repo URL",
+      "ok": true,
+      "detail": "https://github.com/chrisrivero-dev/parcel-engine"
+    },
+    {
+      "name": "keys 5: Escape steps back one level at a time (note -> plans -> desk)",
+      "ok": true
+    },
+    {
+      "name": "keys 6: ←/→ station cycling includes the drafting plans",
+      "ok": true
+    },
+    {
+      "name": "touch 1: phones show one Stations button (no row of station buttons)",
+      "ok": true,
+      "detail": "{\"fiveVisible\":\"none\",\"stBtn\":{\"h\":44,\"text\":\"Stations · Desk ▴\",\"expanded\":\"false\"}}"
+    },
+    {
+      "name": "touch 2: the menu lists the four stations, marks the current one, takes focus, 44px rows",
+      "ok": true,
+      "detail": "{\"menu\":[{\"t\":\"Desk\",\"h\":44,\"cur\":\"location\"},{\"t\":\"Computer\",\"h\":44,\"cur\":null},{\"t\":\"Disk tray\",\"h\":44,\"cur\":null},{\"t\":\"Drafting plans\",\"h\":44,\"cur\":null}],\"focused\":\"Desk\"}"
+    },
+    {
+      "name": "touch 3: at the plans each note is a large tap target (>=44px), camera clear",
+      "ok": true,
+      "detail": "{\"pe\":{\"note\":{\"w\":143,\"h\":137},\"stamps\":[{\"kind\":\"case\",\"w\":59,\"h\":16},{\"kind\":\"repo\",\"w\":59,\"h\":16}]},\"gr\":{\"note\":{\"w\":149,\"h\":126},\"stamps\":[{\"kind\":\"case\",\"w\":119,\"h\":3}]}}"
+    },
+    {
+      "name": "touch 4: tapping a note reads it; body text ~11px, stamp >=44px tall, nothing blocks it",
+      "ok": true,
+      "detail": "{\"bodyPx\":10.6,\"m\":{\"note\":{\"w\":328,\"h\":421},\"stamps\":[{\"kind\":\"case\",\"w\":306,\"h\":57}]}}"
+    },
+    {
+      "name": "touch 5: tapping the printed CASE STUDY stamp opens the case study",
+      "ok": true
+    },
+    {
+      "name": "touch 6: Back returns to the note",
+      "ok": true
+    },
+    {
+      "name": "touch 7: Back to the sheet, then Stations -> Desk",
+      "ok": true
+    },
+    {
+      "name": "link 1: /#plans opens over the drafting plans",
+      "ok": true
+    },
+    {
+      "name": "link 2: /#plans/parcel-engine opens on that note",
+      "ok": true
+    },
+    {
+      "name": "link 2: /#plans/groundrules opens on that note",
+      "ok": true
+    },
+    {
+      "name": "link 3: an unknown note slug falls back to the plans (no invented note)",
+      "ok": true,
+      "detail": "{\"view\":\"plans\",\"note\":null,\"held\":null,\"session\":null,\"busy\":false,\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#plans\"}"
+    },
+    {
+      "name": "history 1: Back x3 / Forward x2 retrace desk -> plans -> note -> note with the room following",
+      "ok": true,
+      "detail": "/#plans/parcel-engine /#plans / /#plans /#plans/parcel-engine"
+    },
+    {
+      "name": "hand 1: going to the plans with a disk in hand puts the disk back first",
+      "ok": true,
+      "detail": "{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"}"
+    },
+    {
+      "name": "pointer 1: the Parcel Engine floppy directory points to its note on the plans",
+      "ok": true
+    },
+    {
+      "name": "pointer 2: SHOW ME moves the camera to the note; the disk stays in the drive",
+      "ok": true,
+      "detail": "{\"view\":\"note\",\"note\":\"parcel-engine\",\"held\":null,\"session\":\"parcel-engine\",\"busy\":false,\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"drive\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"look\":{\"yaw\":0,\"pitch\":0},\"url\":\"/#plans/parcel-engine\"}"
+    },
+    {
+      "name": "no page errors",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "frames": {
+    "mouse": [
+      "01-desk.png",
+      "02-hover-sheet.png",
+      "03-flying-to-plans.png",
+      "04-plans.png",
+      "05-note-parcel-engine.png",
+      "06-case-study.png",
+      "07-returned-to-note.png",
+      "08-note-groundrules.png",
+      "09-clicked-off-note.png",
+      "10-back-at-desk.png",
+      "11-look-down-limit.png"
+    ],
+    "keyboard": [
+      "01-p-plans.png",
+      "02-enter-note.png",
+      "03-esc-to-plans.png",
+      "04-esc-to-desk.png"
+    ],
+    "touch": [
+      "01-desk.png",
+      "02-stations-menu.png",
+      "03-plans.png",
+      "04-note-groundrules.png",
+      "05-case-study.png",
+      "06-returned-to-note.png",
+      "07-desk-again.png"
+    ],
+    "pointer": [
+      "01-disk-directory.png",
+      "02-note-from-disk.png"
+    ],
+    "framing": [
+      "01-before-lookdown-0.12.png",
+      "02-after-lookdown-0.20.png",
+      "03-desk-rest.png",
+      "04-plans.png"
+    ],
+    "framing-phone": [
+      "01-desk-rest.png",
+      "02-after-lookdown-0.20.png"
+    ]
+  },
+  "measures": {
+    "noteDesktop": {
+      "note": {
+        "w": 501,
+        "h": 639
+      },
+      "stamps": [
+        {
+          "kind": "case",
+          "w": 233,
+          "h": 89
+        },
+        {
+          "kind": "repo",
+          "w": 227,
+          "h": 89
+        }
+      ]
+    },
+    "collideNoteDesktop": {
+      "inside": [],
+      "blocked": null,
+      "camY": 413
+    },
+    "collideLookDown": {
+      "inside": [],
+      "blocked": null,
+      "camY": 139
+    },
+    "notesPhonePlans": {
+      "pe": {
+        "note": {
+          "w": 143,
+          "h": 137
+        },
+        "stamps": [
+          {
+            "kind": "case",
+            "w": 59,
+            "h": 16
+          },
+          {
+            "kind": "repo",
+            "w": 59,
+            "h": 16
+          }
+        ]
+      },
+      "gr": {
+        "note": {
+          "w": 149,
+          "h": 126
+        },
+        "stamps": [
+          {
+            "kind": "case",
+            "w": 119,
+            "h": 3
+          }
+        ]
+      }
+    },
+    "collidePlansPhone": {
+      "inside": [],
+      "blocked": null,
+      "camY": 2086
+    },
+    "notePhone": {
+      "note": {
+        "w": 328,
+        "h": 421
+      },
+      "stamps": [
+        {
+          "kind": "case",
+          "w": 306,
+          "h": 57
+        }
+      ]
+    },
+    "collideNotePhone": {
+      "inside": [],
+      "blocked": null,
+      "camY": 700
+    },
+    "notePhoneBodyTextPx": 10.6,
+    "history": [
+      "/#plans/parcel-engine",
+      "/#plans",
+      "/",
+      "/#plans",
+      "/#plans/parcel-engine"
+    ]
+  }
+}

@@ -189,12 +189,12 @@ function recorder(page, mode) {
   await settle(page, () => window.__WS__.ctl.state.view === 'hold'); await sleep(400);
   await rec('disk-in-hand');
   check('touch 6: tapping a disk lifts it to the camera', (await S(page)).held === 'zarvin-one');
-  check('touch 6b: the actions are 44px touch targets', await page.evaluate(() => Math.min(...[...document.querySelectorAll('.ws3d__row--ctx button, .ws3d__stations button')].map((b) => b.getBoundingClientRect().height)) >= 44));
+  check('touch 6b: the actions are 44px touch targets', await page.evaluate(() => Math.min(...[...document.querySelectorAll('.ws3d__row--ctx button, .ws3d__stations button, .ws3d__stbtn')].filter((b) => b.offsetParent).map((b) => b.getBoundingClientRect().height)) >= 44));
   await page.tap('.ws3d__row--ctx .ws3d__use');
   await settle(page, () => window.__WS__.ctl.state.view === 'crt' && !!document.querySelector('#screen .ws-view')); await sleep(900);
   await rec('project-on-the-crt');
   check('touch 7: inserted; the project is readable on the CRT', await page.evaluate(() => /ZARVIN ONE/.test(document.getElementById('screen').innerText)));
-  await page.tap('.ws3d__stations button:first-child');
+  await page.tap('.ws3d__stbtn'); await sleep(250); await page.tap('#ws-stmenu li:nth-child(1) button');   // 05B.1: phones use the Stations menu
   await settle(page, () => window.__WS__.ctl.state.view === 'rest'); await sleep(900);
   await rec('back-in-room');
   check('touch 8: the Desk station returns to the room at the previous viewpoint', Math.abs((await S(page)).look.yaw - tLook.yaw) < 0.01);

@@ -63,6 +63,8 @@ export const views = {
   crt:          { yaw: 0.0,  pitch: 0.02, dist: 1180, fitW: 618, target: new THREE.Vector3(0, 40, 254) },
   // phone portrait: computer + tray fill the width, camera a little lower so the desk (not the wall) fills the frame
   restPortrait: { yaw: 0.3, pitch: 0.26, dist: 3000, fitW: 1150, target: new THREE.Vector3(-170, -110, 150) },
+  // 05B.1 drafting plans: over the survey sheet, looking down at the pinned notes (fitW keeps both notes on a phone)
+  plans:        { yaw: 0.1, pitch: 0.95, dist: 1650, fitW: 860, target: new THREE.Vector3(870, -390, 60) },
   mug:          { yaw: 0.2,  pitch: 0.16, dist: 620, target: new THREE.Vector3(520, -270, 575) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
@@ -155,7 +157,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   scene.add(scale);
   const pencil = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 290, 12), new THREE.MeshStandardMaterial({ color: '#1f2a36', roughness: 0.4, metalness: 0.3 }));
   pencil.rotation.set(Math.PI / 2, 0, 0.7);
-  pencil.position.set(1060, TOP + 5, 40);
+  pencil.position.set(1290, TOP + 5, 330);   // 05B.1: moved clear of the pinned project notes
   pencil.castShadow = true;
   scene.add(pencil);
   for (let i = 0; i < 3; i++) {
@@ -362,6 +364,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   return {
     diskList: disks,
     tray: org,
+    sheet,
   };
 }
 

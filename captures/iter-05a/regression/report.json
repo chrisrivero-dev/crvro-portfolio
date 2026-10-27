@@ -9,14 +9,14 @@
       "ok": true
     },
     {
-      "name": "station switcher lists Desk, Computer, Disk tray with the current one marked",
+      "name": "station switcher lists Desk, Computer, Disk tray, Drafting plans with the current one marked",
       "ok": true,
-      "detail": "[\"Desk*\",\"Computer\",\"Disk tray\"]"
+      "detail": "[\"Desk*\",\"Computer\",\"Disk tray\",\"Drafting plans\"]"
     },
     {
       "name": "room focus order: skip/quick links, then the HI-FI/LO-FI switch, the CRT control, then the stations",
       "ok": true,
-      "detail": "[\"Browse without 3D\",\"Project World\",\"Ask about my work\",\"About\",\"Skills\",\"AI consultation\",\"Contact\",\"LO-FI plain 2D\",\"USE THE COMPUTER→ [CRT]\",\"Desk\",\"Computer\",\"Disk tray\",\"(function () { var stored = localStorage\"]"
+      "detail": "[\"Browse without 3D\",\"Project World\",\"Ask about my work\",\"About\",\"Skills\",\"AI consultation\",\"Contact\",\"LO-FI plain 2D\",\"USE THE COMPUTER→ [CRT]\",\"Desk\",\"Computer\",\"Disk tray\",\"Drafting plans\"]"
     },
     {
       "name": "screen shows the production hero sentence",
@@ -29,7 +29,7 @@
     {
       "name": "idle room renders no frames (on-demand) apart from steam in view",
       "ok": true,
-      "detail": "18 frames/1.2s"
+      "detail": "19 frames/1.2s"
     },
     {
       "name": "hover over a disk labels it and does not move the camera",
@@ -64,7 +64,7 @@
     {
       "name": "Back from the case study returns to the room with the disk still seated",
       "ok": true,
-      "detail": "{\"view\":\"crt\",\"session\":\"zarvin-one\",\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":null,\"locs\":{\"zarvin-one\":\"drive\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":347,\"suspended\":false}"
+      "detail": "{\"view\":\"crt\",\"session\":\"zarvin-one\",\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":null,\"note\":null,\"locs\":{\"zarvin-one\":\"drive\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":349,\"suspended\":false}"
     },
     {
       "name": "eject returns the disk to its slot and leaves the camera at the organizer",
@@ -73,7 +73,7 @@
     {
       "name": "CRT menu appears at once (no typing or staged loading)",
       "ok": true,
-      "detail": "31ms"
+      "detail": "29ms"
     },
     {
       "name": "CRT menu lists the experiences",
@@ -152,7 +152,7 @@
     {
       "name": "\"Computer\" returns to the room at the CRT menu (not the start)",
       "ok": true,
-      "detail": "{\"view\":\"crt\",\"session\":null,\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":\"work\",\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":667,\"suspended\":false}"
+      "detail": "{\"view\":\"crt\",\"session\":null,\"pending\":null,\"held\":null,\"busy\":false,\"lastEntry\":\"work\",\"note\":null,\"locs\":{\"zarvin-one\":\"home\",\"proof-first\":\"home\",\"parcel-engine\":\"home\",\"openclaw\":\"home\",\"sidecar\":\"home\",\"groundrules\":\"home\",\"help-nearby\":\"home\"},\"frames\":669,\"suspended\":false}"
     },
     {
       "name": "focus returns to the WORLD.MAP entry",
@@ -263,7 +263,7 @@
     {
       "name": "reduced motion: the whole hand-off to Project World is a jump cut",
       "ok": true,
-      "detail": "70ms (menu 25ms)"
+      "detail": "74ms (menu 25ms)"
     },
     {
       "name": "mobile: every dock control is at least 44px tall",
@@ -390,7 +390,7 @@
     {
       "name": "mobile: the resting controls (actions + station switcher) stay under 16% of the viewport height",
       "ok": true,
-      "detail": "96px"
+      "detail": "88px"
     },
     {
       "name": "mobile: the disk list opens on demand with all seven case IDs",
@@ -492,7 +492,7 @@
     "Desk",
     "Computer",
     "Disk tray",
-    "(function () { var stored = localStorage"
+    "Drafting plans"
   ],
   "focusOrderMobileShell": {
     "startsAt": "main",

@@ -217,3 +217,19 @@
   .ws-list--menu .ws-file { font-size: 19px; }
   .ws-file--menu .ws-fn { width: 112px; }
 }
+
+/* ── 05B.1: drafting plans + the phone "Stations" menu ─────────────── */
+.ws3d__dock a.ws3d__btnlink { display: inline-flex; align-items: center; min-height: 36px; padding: 8px 12px; color: var(--ws-ink); background: #2a2520; border: 1px solid #7d7466; border-radius: 4px; text-decoration: none; text-transform: uppercase; }
+.ws3d__dock a.ws3d__btnlink:hover { border-color: var(--ws-amber); color: #fff; }
+.ws3d__stmenu { display: none; position: relative; width: 100%; }
+.ws3d__stbtn { width: 100%; }
+.ws3d__stcur { color: var(--ws-amber); }
+.ws3d__stlist { list-style: none; margin: 0 0 6px; padding: 4px; display: grid; gap: 4px; background: rgba(20, 17, 14, 0.94); border: 1px solid #4a4238; border-radius: 6px; }
+.ws3d__stlist button { width: 100%; text-align: left; }
+.ws3d__stlist button.is-on { color: #1d1812; background: var(--ws-amber); border-color: var(--ws-amber); }
+@media (max-width: 700px), (pointer: coarse) {
+  .ws3d__stations { display: none; }
+  .ws3d__stmenu { display: block; }
+  .ws3d__stmenu button { min-height: 44px; }
+  .ws3d__row > a.ws3d__btnlink { flex: 1 1 0; min-width: 0; min-height: 44px; justify-content: center; padding: 8px 6px; font-size: 11.5px; letter-spacing: 0.05em; }
+}

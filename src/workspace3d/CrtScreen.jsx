@@ -11,6 +11,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 import { CASE_IDS } from '../data/caseIds.js';
 import { EXPERIENCES } from '../lib/experiences.js';
+import { PLAN_NOTE_SLUGS } from '../data/planNotes.js';
 import PortfolioNavigator from '../components/PortfolioNavigator.jsx';
 import Contact from '../components/Contact.jsx';
 
@@ -117,7 +118,7 @@ function MenuPane({ loaded, focusEntry, onPick, onOpenDisk, active }) {
 }
 
 /* ── disk: the floppy in the drive ──────────────────────────────── */
-function DiskPane({ slug, active, onMenu }) {
+function DiskPane({ slug, active, onMenu, onShowNote }) {
   const p = BY_SLUG[slug];
   const files = useMemo(() => filesFor(p), [p]);
   const rows = files.length;
@@ -165,7 +166,9 @@ function DiskPane({ slug, active, onMenu }) {
       </div>
       {done && (
         <p className="ws-sum">
-          {files.length} file(s)   ·   <button type="button" className="ws-linkbtn" onClick={onMenu}>MENU</button>   ·   Esc: back to the room
+          {files.length} file(s)   ·   <button type="button" className="ws-linkbtn" onClick={onMenu}>MENU</button>
+          {PLAN_NOTE_SLUGS.includes(slug) && <>   ·   A note on this project is pinned to the drafting plans: <button type="button" className="ws-linkbtn" onClick={() => onShowNote(slug)}>SHOW ME</button></>}
+          {'   ·   Esc: back to the room'}
         </p>
       )}
     </div>
@@ -199,7 +202,7 @@ function AppPane({ app, active, onMenu, onExpand }) {
   );
 }
 
-export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, app, onUse, onPick, onOpenDisk, onMenu, onExpand }) {
+export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, app, onUse, onPick, onOpenDisk, onMenu, onExpand, onShowNote }) {
   const atScreen = ui.view === 'crt' || ui.view === 'fill';
   const showDisk = ui.session && !menuOpen;
   return (
@@ -207,7 +210,7 @@ export default function CrtScreen({ ui, reduced, menuOpen, focusEntry, app, onUs
       {app && atScreen && !showDisk ? (
         <AppPane app={app} active={ui.view === 'crt'} onMenu={onMenu} onExpand={onExpand} />
       ) : showDisk ? (
-        <DiskPane slug={ui.session} active={ui.view === 'crt'} onMenu={onMenu} />
+        <DiskPane slug={ui.session} active={ui.view === 'crt'} onMenu={onMenu} onShowNote={onShowNote} />
       ) : atScreen ? (
         <MenuPane loaded={ui.session} focusEntry={focusEntry} onPick={onPick} onOpenDisk={onOpenDisk} active={ui.view === 'crt'} />
       ) : (

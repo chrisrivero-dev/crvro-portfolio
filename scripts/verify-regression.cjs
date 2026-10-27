@@ -40,7 +40,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   check('exactly one computer, and the 3D tray holds seven registry disks', await page.evaluate(() => window.__WS__.engine.diskList.length) === 7);
   // 05A: the dock is a station switcher plus actions for the current station
   const chips = await page.evaluate(() => [...document.querySelectorAll('.ws3d__stations button')].map((b) => b.textContent.trim() + (b.getAttribute('aria-current') ? '*' : '')));
-  check('station switcher lists Desk, Computer, Disk tray with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray']), JSON.stringify(chips));
+  check('station switcher lists Desk, Computer, Disk tray, Drafting plans with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans']), JSON.stringify(chips));
   // focus order of the room, recorded for the report
   await page.evaluate(() => { window.scrollTo(0, 0); document.activeElement.blur(); });
   const order = [];
@@ -271,11 +271,11 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   /* ── 11. phone portrait, touch ── */
   page = await open(browser, '/', { w: 390, h: 844, mobile: true });
   await shot(page, '15-mobile-home');
-  const bh = await page.evaluate(() => Math.min(...[...document.querySelectorAll('.ws3d__dock button')].map((b) => b.getBoundingClientRect().height)));
+  const bh = await page.evaluate(() => Math.min(...[...document.querySelectorAll('.ws3d__dock button')].filter((b) => b.offsetParent).map((b) => b.getBoundingClientRect().height)));
   check('mobile: every dock control is at least 44px tall', bh >= 44, bh);
   const fit = await page.evaluate(() => { const { camera, machine } = window.__WS__.engine; const v = machine.getWorldPosition(machine.position.clone()).project(camera); return Math.abs(v.x) < 1 && Math.abs(v.y) < 1; });
   check('mobile: the computer is inside the viewport at rest', fit);
-  await page.tap('.ws3d__stations button:nth-child(2)');
+  await page.tap('.ws3d__stbtn'); await sleep(250); await page.tap('#ws-stmenu li:nth-child(2) button');   // 05B.1: phones use the Stations menu
   await waitFor(page, () => document.querySelectorAll('[data-entry]').length === 6, null, 10000); await sleep(1400);
   await shot(page, '16-mobile-menu');
   const mfs = await page.evaluate(() => { const b = document.querySelector('[data-entry="work"] .ws-fn'); const s = document.getElementById('screen').getBoundingClientRect(); return { px: parseFloat(getComputedStyle(b).fontSize) * (s.width / 600), sw: s.width }; });
@@ -399,7 +399,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   page = await open(browser, '/', { w: 390, h: 844, mobile: true });
   const dockH = await page.evaluate(() => Math.round(document.querySelector('.ws3d__dock').getBoundingClientRect().height));
   check('mobile: the resting controls (actions + station switcher) stay under 16% of the viewport height', dockH <= 844 * 0.16, `${dockH}px`);
-  await page.tap('.ws3d__stations button:nth-child(3)'); await waitFor(page, () => window.__WS__.ctl.state.view === 'drive', null, 8000); await sleep(400);
+  await page.tap('.ws3d__stbtn'); await sleep(250); await page.tap('#ws-stmenu li:nth-child(3) button'); await waitFor(page, () => window.__WS__.ctl.state.view === 'drive', null, 8000); await sleep(400);
   await page.tap('.ws3d__dock [aria-controls="ws-disklist"]'); await sleep(300);
   await shot(page, '24-mobile-disk-list');
   check('mobile: the disk list opens on demand with all seven case IDs', await page.evaluate(() => document.querySelectorAll('#ws-disklist li').length === 7 && /C-06/.test(document.getElementById('ws-disklist').innerText)));
