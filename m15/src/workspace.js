@@ -73,8 +73,13 @@ const VIEWS = {
   side:         { yaw: 1.2,  pitch: 0.3,  dist: 3200 },
   top:          { yaw: 0.2,  pitch: 1.2, dist: 3600 },
 };
+// optional per-variant framing (iteration 02+); A/B/C define none
+const BASE_TARGET = (env.target || TARGET).clone();
+TARGET.copy(BASE_TARGET);
+Object.assign(VIEWS, env.views || {});
 const REST = VIEWS.threeQuarter;
 const orbit = { ...REST };
+delete orbit.target;
 
 function applyPose(dYaw = 0, dPitch = 0) {
   const yaw = orbit.yaw + dYaw;
@@ -431,6 +436,9 @@ machine.add(glass);
 /* ── desk + baked contact shadow ─────────────────────────────────── */
 const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasticDark, plasticDeep, rubber, renderer });
 
+// optional per-variant light grade (iteration 02+); A/B/C define none
+env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });
+
 const contact = new THREE.Mesh(
   new THREE.PlaneGeometry(1150, 900),
   new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0.9 }),
@@ -546,7 +554,9 @@ const inspectBtn = document.getElementById('inspect-toggle');
 const inspectBar = document.getElementById('inspect-bar');
 
 function setView(name) {
-  Object.assign(orbit, VIEWS[name]);
+  const { target, ...pose } = VIEWS[name];
+  TARGET.copy(target || BASE_TARGET);
+  Object.assign(orbit, pose);
   cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
   applyPose();
   markDirty();
@@ -632,7 +642,9 @@ window.__M1__ = {
   setInspect,
   reset: () => {
     tgt.yaw = 0; tgt.pitch = 0; cur.yaw = 0; cur.pitch = 0;
-    Object.assign(orbit, REST);
+    const { target, ...pose } = REST;
+    TARGET.copy(target || BASE_TARGET);
+    Object.assign(orbit, pose);
     applyPose();
     markDirty();
   },
