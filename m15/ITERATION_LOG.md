@@ -27,3 +27,5 @@
 - Mug: "ANOTHER SHOT OF AI", `refill();`, coffee surface, subtle steam (6 sprites, 15 fps timer only while the mug is in frame and the tab is visible; still pose under reduced motion).
 - Survey drawing: three closed lots with computed bearings/distances, setback lines, monuments, contours with index elevations, creek, R/W, dimension string, north arrow, scale bar, revision table and a small REV 03 stamp. A prop, not data.
 - Browser verification: `node tools/capture-03.cjs` (32 checks, real pointer/keyboard/touch input, desktop + reduced motion + 390x844 touch).
+
+**Iteration 03 APPROVED by the user.** Preserved at tag `m15-iter-03-approved` (e0a3aed). Do not overwrite; later work goes in iteration 04+.
