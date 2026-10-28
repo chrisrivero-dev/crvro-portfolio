@@ -19,6 +19,7 @@ import { isValidQuestion, validateResult } from './validate.mjs';
 import { createJob, getJob, updateJob, usingRedis, approximateInFlight, getCachedAnswer, setCachedAnswer } from './store.mjs';
 import { sendJob, JOBS_TOPIC, WORKER_CONSUMER_GROUP, QUEUE_REGION } from './queue.mjs';
 import { claimMessage, ackMessage, extendMessage } from './queue-lease.mjs';
+import { answerFast, FALLBACK } from './fast-answer.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const corpus = JSON.parse(readFileSync(path.join(__dirname, 'corpus.json'), 'utf8'));
@@ -115,44 +116,42 @@ export async function handleAsk({ question: rawQuestion, ip }) {
   }
   const question = rawQuestion.trim();
 
-  const dupKey = `${ip}:${question.toLowerCase()}`;
-  const dup = recentQuestions.get(dupKey);
-  if (dup && now() - dup.ts < LIMITS.DUPLICATE_WINDOW_MS) {
-    return { status: 202, body: { request_id: dup.jobId, status: 'queued' } };
-  }
-
-  // Tier 0.5: a validated answer for this exact question already
-  // exists against the current corpus -- skip the queue and the model
-  // pipeline entirely. The job record is created already-answered, so
-  // the browser's very first poll resolves it.
+  // Fast path: cache, then one hosted-model call, all inside this request
+  // under a hard deadline. The queue and the local worker are not used for
+  // public questions. The answer is returned directly (status 200) and
+  // the browser never has to poll.
+  const t0 = now();
   const cacheKey = computeCacheKey(question);
-  const cached = await getCachedAnswer(cacheKey);
-  if (cached) {
-    const id = crypto.randomUUID();
-    await createJob(id, question, { ip, status: 'answered', result: cached, cacheHit: true });
-    recentQuestions.set(dupKey, { jobId: id, ts: now() });
-    console.log(`[handlers] cache hit for question (key ${cacheKey.slice(0, 8)}...)`);
-    return { status: 202, body: { request_id: id, status: 'queued' } };
-  }
-
-  const inFlight = approximateInFlight();
-  if (inFlight !== null && inFlight >= LIMITS.MAX_IN_FLIGHT) {
-    return { status: 503, body: { error: 'busy' } };
-  }
-
-  const id = crypto.randomUUID();
-  await createJob(id, question, { ip });
-  recentQuestions.set(dupKey, { jobId: id, ts: now() });
-
+  let cached = null;
   try {
-    await sendJob(id, question);
+    cached = await getCachedAnswer(cacheKey);
   } catch (err) {
-    console.error('[handlers] queue send failed:', err.message);
-    await updateJob(id, { status: 'error' });
-    return { status: 503, body: { error: 'queue_unavailable' } };
+    console.warn('[handlers] cache read failed:', err.message);
+  }
+  if (cached) {
+    console.log(`[handlers] ask cache hit key ${cacheKey.slice(0, 8)} ${now() - t0}ms`);
+    return { status: 200, body: cached };
   }
 
-  return { status: 202, body: { request_id: id, status: 'queued' } };
+  // Hard end-to-end deadline: whatever is still running at 6.8s loses to the honest fallback.
+  let deadline;
+  const timedOut = new Promise((resolve) => {
+    deadline = setTimeout(() => resolve({ result: FALLBACK, cacheable: false, reason: 'deadline', ms: LIMITS.ASK_DEADLINE_MS }), LIMITS.ASK_DEADLINE_MS);
+  });
+  const { result, cacheable, reason, ms } = await Promise.race([
+    answerFast(question, { corpus, destinationAllowlist: DESTINATION_ALLOWLIST, evidenceIdSet: EVIDENCE_ID_SET }),
+    timedOut,
+  ]);
+  clearTimeout(deadline);
+  if (cacheable) {
+    try {
+      await setCachedAnswer(cacheKey, result);
+    } catch (err) {
+      console.warn('[handlers] cache write failed:', err.message);
+    }
+  }
+  console.log(`[handlers] ask ${reason} ${ms}ms total ${now() - t0}ms status ${result.status}`);
+  return { status: 200, body: result };
 }
 
 // ---- GET /api/result/:id (public) ----

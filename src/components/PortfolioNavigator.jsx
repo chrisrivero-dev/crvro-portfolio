@@ -243,6 +243,9 @@ function NavigatorScreen({ lines, awake, reduced, value, setValue, onSubmit, onE
 // way; this only changes which honest sentence is shown meanwhile.
 const STILL_WORKING_AFTER_POLLS = 10; // ~15s of actual processing
 
+// Comparisons need real synthesis, so they skip the single-project keyword match and go to the backend.
+const COMPARISON_RE = /\b(compare|comparison|versus|vs\.?|difference between|which is better|both .* and)\b/i;
+
 export default function PortfolioNavigator({ direct = false }) {
   const [value, setValue] = useState('');
   const [state, setState] = useState('idle'); // idle | thinking | done | offline
@@ -337,7 +340,7 @@ export default function PortfolioNavigator({ direct = false }) {
 
       // Fast, free, offline-safe path first -- only fall through to
       // the network for genuinely open-ended questions.
-      const det = matchQuery(q);
+      const det = COMPARISON_RE.test(q) ? { kind: 'unknown' } : matchQuery(q);
       if (det.kind !== 'unknown') {
         setResult({ source: 'deterministic', match: det });
         setState('done');
@@ -352,6 +355,7 @@ export default function PortfolioNavigator({ direct = false }) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: q }),
+          signal: AbortSignal.timeout(9000),
         });
         if (res.status === 429) {
           console.warn('[navigator] rate limited on submit');
@@ -360,6 +364,12 @@ export default function PortfolioNavigator({ direct = false }) {
         }
         if (!res.ok) throw new Error(`ask_failed: HTTP ${res.status}`);
         const data = await res.json();
+        // The backend now answers inside this request; polling is kept only for a queued reply.
+        if (data.status === 'answered' || data.status === 'unresolved') {
+          setResult({ source: 'captain', ...data });
+          setState('done');
+          return;
+        }
         if (!data.request_id) throw new Error('ask_failed: no request_id in response');
         poll(data.request_id);
       } catch (err) {

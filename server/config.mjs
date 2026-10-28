@@ -25,6 +25,7 @@ export const WORKER_SECRET = process.env.PUBLIC_CAPTAIN_WORKER_SECRET || crypto.
 export const LIMITS = {
   MAX_QUESTION_LEN: 500,
   MAX_ANSWER_LEN: 1200,
+  ASK_DEADLINE_MS: 6_800, // /api/ask answers or falls back within this, well inside the 7s visitor budget
   MAX_BODY_BYTES: 8 * 1024, // reject oversized payloads before parsing
   QUEUE_TTL_MS: 90_000, // job must be claimed by the worker within this window
   // Generous: a complex question can involve three sequential model calls
