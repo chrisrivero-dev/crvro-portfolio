@@ -60,7 +60,8 @@ async function callGroqModel(model, { system, user, signal }) {
     body: JSON.stringify({
       model,
       temperature: 0.2,
-      max_tokens: 420,
+      // gpt-oss models reason before answering; give them room and keep the reasoning short so the JSON is not cut off.
+      ...(model.includes('gpt-oss') ? { max_tokens: 1200, reasoning_effort: 'low' } : { max_tokens: 420 }),
       response_format: { type: 'json_object' },
       // No `tools` field, on purpose: the model can only return text.
       messages: [
@@ -81,16 +82,16 @@ async function callGroqModel(model, { system, user, signal }) {
 }
 
 async function callGroq(args) {
-  let last;
+  const failures = [];
   for (const model of GROQ_MODELS) {
     try {
       return await callGroqModel(model, args);
     } catch (err) {
-      last = err;
+      failures.push(err.message);
       if (args.signal.aborted || ![400, 404].includes(err.status)) throw err;
     }
   }
-  throw last;
+  throw new Error(failures.join('; '));
 }
 
 /**
