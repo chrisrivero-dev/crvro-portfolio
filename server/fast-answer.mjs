@@ -18,7 +18,8 @@ import { matchQuery } from '../src/data/portfolioNavigator.js';
 import { validateResult } from './validate.mjs';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+// Tried in order; a model the account cannot use (404/400) moves on to the next within the same deadline.
+const GROQ_MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'openai/gpt-oss-20b'];
 export const GROQ_TIMEOUT_MS = 5_500; // leaves headroom under the 7s end-to-end deadline for retrieval, validation and cache I/O
 
 const on = (v) => /^(1|true|yes|on)$/i.test(String(v || '').trim());
@@ -52,12 +53,12 @@ function deterministic(question) {
   return { status: 'answered', answer: `${m.lines.join(' ')} Relevant work: ${names}.`, destinations: m.results.map((r) => r.key), evidence_ids: [], confidence: 'high' };
 }
 
-async function callGroq({ system, user, signal }) {
+async function callGroqModel(model, { system, user, signal }) {
   const res = await fetch(GROQ_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model,
       temperature: 0.2,
       max_tokens: 420,
       response_format: { type: 'json_object' },
@@ -69,9 +70,27 @@ async function callGroq({ system, user, signal }) {
     }),
     signal,
   });
-  if (!res.ok) throw new Error(`groq http ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    const err = new Error(`groq http ${res.status} ${model} ${body?.error?.code || ''}`.trim());
+    err.status = res.status;
+    throw err;
+  }
   const data = await res.json();
   return data?.choices?.[0]?.message?.content ?? '';
+}
+
+async function callGroq(args) {
+  let last;
+  for (const model of GROQ_MODELS) {
+    try {
+      return await callGroqModel(model, args);
+    } catch (err) {
+      last = err;
+      if (args.signal.aborted || ![400, 404].includes(err.status)) throw err;
+    }
+  }
+  throw last;
 }
 
 /**
