@@ -6,12 +6,13 @@ import ExperienceShell from "./components/ExperienceShell.jsx";
 import ClassicExperience from "./components/ClassicExperience.jsx";
 import OsShell from "./components/OsShell.jsx";
 import FlatHome from "./components/FlatHome.jsx";
+import CareerPage from "./components/CareerPage.jsx";
 import LegacyHome from "./components/LegacyHome.jsx";
 import { PROJECTS, GIS_PROJECTS } from "./data/projects.js";
 import { experienceFromHash } from "./lib/experiences.js";
 import { applyScroll, getSnapshot, navigate, subscribe } from "./lib/location.js";
 import { useParallax } from "./lib/pageEffects.js";
-import { stationFromHash } from "./lib/stations.js";
+import { stationFromHash, careerPageFromHash } from "./lib/stations.js";
 import "./styles/experience.css";
 import "./styles/os.css";
 
@@ -168,19 +169,31 @@ export default function App() {
   useRouteMeta(route);
   useParallax();
 
-  // What the home route is showing: the 3D room, a full-page experience, or the preserved classic page.
-  const exp = route.kind === "home" ? experienceFromHash(snap.hash) : null;
-  const classic = route.kind === "home" && new URLSearchParams(snap.search).get("classic") === "1";
-  const homeKind = route.kind !== "home" ? null : classic ? "classic" : exp ? "experience" : "workspace";
-  const homeRef = useRef(null);
-  homeRef.current = homeKind === "classic" || !homeKind ? null : { kind: homeKind, exp: exp?.id };
-
   // 3D availability: the visitor's choice, or a reason the engine reported.
-  const [prefer2D, setPrefer2D] = useState(() => { try { return localStorage.getItem(PREF_KEY) === "2d"; } catch { return false; } });
+  // ?view=2d is read on the first render, so a visitor asking for the plain page never downloads the 3D engine first
+  const [prefer2D, setPrefer2D] = useState(() => {
+    if (new URLSearchParams(window.location.search).get("view") === "2d") return true;
+    try { return localStorage.getItem(PREF_KEY) === "2d"; } catch { return false; }
+  });
   const [unavailable, setUnavailable] = useState(() => (supportsWebGL2() ? null : "no-webgl2"));
   const choose = useCallback((v) => { setPrefer2D(v); try { localStorage.setItem(PREF_KEY, v ? "2d" : "3d"); } catch { /* private mode */ } if (!v) setUnavailable(null); }, []);
   // ?view=2d is a shareable way to ask for the plain page
-  useEffect(() => { if (new URLSearchParams(snap.search).get("view") === "2d" && !prefer2D) choose(true); }, [snap.search]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (new URLSearchParams(snap.search).get("view") !== "2d") return;
+    let stored = null;
+    try { stored = localStorage.getItem(PREF_KEY); } catch { /* private mode */ }
+    if (stored !== "2d") choose(true);   // remember the choice (prefer2D itself may already be true from the first render)
+  }, [snap.search]); // eslint-disable-line react-hooks/exhaustive-deps
+  // What the home route is showing: the 3D room, a full-page experience, or the preserved classic page.
+  const exp = route.kind === "home" ? experienceFromHash(snap.hash) : null;
+  const classic = route.kind === "home" && new URLSearchParams(snap.search).get("classic") === "1";
+  // /#career is the notebook in the 3D room, and the plain career page when the 3D room is off (LO-FI, or no WebGL2)
+  const careerPage = route.kind === "home" ? careerPageFromHash(snap.hash) : null;
+  const careerPlain = !!careerPage && !classic && (prefer2D || !!unavailable);
+  const homeKind = route.kind !== "home" ? null : classic ? "classic" : careerPlain ? "career" : exp ? "experience" : "workspace";
+  const homeRef = useRef(null);
+  homeRef.current = homeKind === "classic" || !homeKind ? null : { kind: homeKind, exp: exp?.id };
+
   const use3D = !prefer2D && !unavailable && homeKind !== "classic";
   // The immersive computer interface wraps experiences and case studies whenever the 3D computer is the site's front door.
   const immersive = !prefer2D && !unavailable && homeKind !== "classic";
@@ -218,6 +231,8 @@ export default function App() {
     content = <LegacyHome theme={theme} onToggleTheme={toggleTheme} />;
   } else if (homeKind === "experience") {
     content = immersive ? <ExperienceShell exp={exp} /> : <ClassicExperience exp={exp} theme={theme} onToggleTheme={toggleTheme} />;
+  } else if (homeKind === "career") {
+    content = <CareerPage theme={theme} onToggleTheme={toggleTheme} page={careerPage} onTry3D={() => choose(false)} />;
   } else if (!use3D) {
     content = (
       <FlatHome

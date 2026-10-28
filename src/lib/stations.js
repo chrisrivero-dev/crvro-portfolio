@@ -6,11 +6,22 @@
 //   /#disk/<slug>      a disk lifted out of the organizer for inspection
 //   /#plans            (05B.1) the drafting plans: the survey sheet with project notes pinned to it
 //   /#plans/<slug>     (05B.1) one note, read up close
-//   /#mug              (05B.3) the coffee mug, close up (reached by tapping the mug; not one of the four listed stations)
+//   /#mug              (05B.3) the coffee mug, close up (reached by tapping the mug; not one of the listed stations)
+//   /#career           (06) the career notebook, open at its first page (work history)
+//   /#career/<page>    (06) one notebook page: work, highlights or resume. An unknown page falls back to /#career.
+// In LO-FI (no 3D engine) the same hashes open the plain career page instead; see App.jsx.
 import { PLAN_NOTE_SLUGS } from '../data/planNotes.js';
+import { CAREER_PAGE_IDS } from '../data/career.js';
 
-export const STATIONS = ['desk', 'computer', 'disks', 'plans'];
-export const STATION_LABEL = { desk: 'Desk', computer: 'Computer', disks: 'Disk tray', plans: 'Drafting plans' };
+export const STATIONS = ['desk', 'computer', 'disks', 'plans', 'career'];
+export const STATION_LABEL = { desk: 'Desk', computer: 'Computer', disks: 'Disk tray', plans: 'Drafting plans', career: 'Career notebook' };
+export const isCareerHash = (hash) => /^#career(\/|$)/.test(hash || '');
+/** The notebook page a hash names (null when it is not a career hash). */
+export function careerPageFromHash(hash) {
+  const m = /^#career(?:\/([a-z0-9-]+))?$/.exec(hash || '');
+  if (!m) return null;
+  return CAREER_PAGE_IDS.includes(m[1]) ? m[1] : 'work';
+}
 
 export function stationFromHash(hash) {
   if (!hash || hash === '#' || hash === '#top') return 'desk';
@@ -18,13 +29,15 @@ export function stationFromHash(hash) {
   if (hash === '#disks') return 'disks';
   if (hash === '#plans') return 'plans';
   if (hash === '#mug') return 'mug';
+  const cp = careerPageFromHash(hash);
+  if (cp) return cp === 'work' ? 'career' : `career/${cp}`;
   const n = /^#plans\/([a-z0-9-]+)$/.exec(hash);
   if (n) return PLAN_NOTE_SLUGS.includes(n[1]) ? `plans/${n[1]}` : 'plans';
   const m = /^#disk\/([a-z0-9-]+)$/.exec(hash);
   return m ? `disk/${m[1]}` : null;
 }
 export const hrefForStation = (s) => (s === 'desk' ? '/' : `/#${s}`);
-export const baseStation = (s) => (s === 'mug' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s);
+export const baseStation = (s) => (s === 'mug' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s && s.startsWith('career/') ? 'career' : s);
 
 /** The station a controller state stands for, or null while it is moving between states (nothing is written to the URL then). */
 export function stationOfUi(ui) {
@@ -36,6 +49,7 @@ export function stationOfUi(ui) {
   if (ui.view === 'plans') return 'plans';
   if (ui.view === 'mug') return 'mug';
   if (ui.view === 'note' && ui.note) return `plans/${ui.note}`;
+  if (ui.view === 'book') return !ui.page || ui.page === 'work' ? 'career' : `career/${ui.page}`;
   return null;
 }
 

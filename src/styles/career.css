@@ -1,0 +1,73 @@
+/* Career pages: the content in the 3D notebook's reading surface (.nb-paper) and the plain LO-FI page (.career-flat).
+ * The content components only set .career-* classes; each host decides colours. Plain pages inherit the site's own tokens. */
+
+/* ── shared structure ─────────────────────────────────────────── */
+/* the site's global h2/h3/p rules (tokens.css) are editorial display styles; the career pages reset them and set their own */
+.career-page { display: block; }
+.career-page h2, .career-page h3, .career-page p { font-family: inherit; font-size: inherit; font-weight: inherit; line-height: inherit; letter-spacing: normal; color: inherit; margin: 0; text-wrap: wrap; }
+.career-page .career-h { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-weight: 700; font-size: 1.15em; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 0.9em; outline: none; }
+.career-roles, .career-hl, .career-contact { list-style: none; margin: 0; padding: 0; }
+.career-role, .career-hlitem { padding: 0.95em 0 1em; border-top: 1px solid var(--career-rule, rgba(128, 128, 128, 0.35)); }
+.career-role:first-child, .career-hlitem:first-child { border-top: 0; padding-top: 0; }
+.career-page .career-dates { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.78em; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 0.3em; color: var(--career-accent, inherit); }
+.career-page .career-title { font-size: 1.08em; line-height: 1.25; margin: 0 0 0.25em; font-weight: 650; }
+.career-page .career-employer { margin: 0 0 0.5em; font-size: 0.92em; opacity: 0.85; }
+.career-page .career-summary { margin: 0 0 0.5em; }
+.career-does { margin: 0 0 0.6em; padding-left: 1.1em; }
+.career-does li { margin: 0 0 0.35em; }
+.career-page .career-strengths, .career-hlitem p, .career-contact li { margin: 0 0 0.5em; }
+.career-page .career-k { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.74em; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 0.5em; color: var(--career-accent, inherit); font-weight: 700; }
+.career-link { color: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.career-contact li { padding: 0.55em 0; border-top: 1px solid var(--career-rule, rgba(128, 128, 128, 0.35)); }
+.career-contact li:first-child { border-top: 0; }
+.career-contact span { opacity: 0.78; }
+.career-page .career-note { font-size: 0.9em; opacity: 0.8; margin-top: 1em; }
+
+/* ── LO-FI page ───────────────────────────────────────────────── */
+.career-flat { --career-accent: var(--accent-gold, #896c38); --career-rule: var(--rule, rgba(128, 128, 128, 0.35)); }
+.career-flat section { max-width: 46em; margin: 0 0 2.4em; scroll-margin-top: 90px; }
+.career-flat .career-page { font-size: 16px; line-height: 1.55; }
+.career-flat .career-page .career-h { font-size: 1.25rem; }
+.career-jump { margin: 0 0 2.4em; }
+.career-jump a { color: inherit; }
+
+/* ── the notebook's reading surface (3D room): real DOM on the open book's right-hand page ──
+ * Placed by Workspace3D from the page's projected corners (left/top/width/height); --pw is its width, which sets the type size. */
+.nb-paper {
+  --career-accent: #8a3e22;
+  --career-rule: rgba(60, 48, 32, 0.28);
+  position: absolute; z-index: 56; box-sizing: border-box; display: flex; flex-direction: column;
+  color: #201b14; font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  background-color: #efe6cf;
+  background-image:
+    linear-gradient(to right, transparent 7.2%, rgba(160, 60, 45, 0.38) 7.2%, rgba(160, 60, 45, 0.38) 7.6%, transparent 7.6%),
+    linear-gradient(rgba(70, 105, 140, 0.16) 1px, transparent 1px),
+    linear-gradient(to right, rgba(70, 105, 140, 0.16) 1px, transparent 1px);
+  background-size: auto, calc(var(--pw, 400px) / 25.6) calc(var(--pw, 400px) / 25.6), calc(var(--pw, 400px) / 25.6) calc(var(--pw, 400px) / 25.6);
+  box-shadow: inset 0 0 0 1px rgba(90, 70, 40, 0.18), inset 0 0 34px rgba(120, 85, 40, 0.22), 0 1px 3px rgba(0, 0, 0, 0.4);
+  animation: nb-in 0.3s ease-out both;
+}
+.nb-paper[hidden] { display: none; }
+.nb-tabs { flex: none; display: flex; gap: 2px; padding: 5px 7% 0 11%; border-bottom: 1px solid var(--career-rule); }
+.nb-tabs button {
+  flex: 1 1 0; min-width: 0; min-height: 40px; padding: 6px 4px; cursor: pointer; background: transparent; color: #4a4033;
+  border: 0; border-bottom: 3px solid transparent; font: 600 clamp(10.5px, calc(var(--pw, 400px) * 0.027), 12.5px)/1.2 var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace);
+  letter-spacing: 0.05em; text-transform: uppercase; text-align: center;
+}
+.nb-tabs button:hover { color: #201b14; background: rgba(138, 62, 34, 0.08); }
+.nb-tabs button[aria-current="page"] { color: #201b14; border-bottom-color: var(--career-accent); }
+.nb-paper button:focus-visible, .nb-paper a:focus-visible { outline: 2px solid #8a3e22; outline-offset: 2px; }
+.nb-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding: 3.5% 5.5% 6% 10%; font-size: clamp(14px, calc(var(--pw, 400px) * 0.034), 16.5px); line-height: 1.45;
+  scrollbar-width: thin; scrollbar-color: rgba(90, 70, 40, 0.45) transparent; animation: nb-in 0.3s ease-out 0.12s both;
+}
+@keyframes nb-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nb-paper, .nb-body { animation: none; } }
+@media (pointer: coarse) { .nb-tabs button { min-height: 44px; } }
+
+/* touch: links on the paper are real tap targets */
+@media (pointer: coarse) {
+  .nb-paper .career-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .nb-paper .career-contact li { padding: 0.15em 0; }
+}

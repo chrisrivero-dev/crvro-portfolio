@@ -26,6 +26,7 @@ export default function FlatHome({ theme, onToggleTheme, notice, canTry3D, onTry
             {EXPERIENCES.map((e) => (
               <li key={e.id}><a href={hrefFor(e)}><strong>{e.label}</strong></a> <span>{e.blurb}</span></li>
             ))}
+            <li><a href="/#career"><strong>Career</strong></a> <span>Work history, selected highlights, résumé and contact.</span></li>
           </ul>
 
           <h2 className="flat-h2">Case studies</h2>

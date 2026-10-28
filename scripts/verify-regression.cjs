@@ -40,7 +40,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   check('exactly one computer, and the 3D tray holds seven registry disks', await page.evaluate(() => window.__WS__.engine.diskList.length) === 7);
   // 05A: the dock is a station switcher plus actions for the current station
   const chips = await page.evaluate(() => [...document.querySelectorAll('.ws3d__stations button')].map((b) => b.textContent.trim() + (b.getAttribute('aria-current') ? '*' : '')));
-  check('station switcher lists Desk, Computer, Disk tray, Drafting plans with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans']), JSON.stringify(chips));
+  check('station switcher lists Desk, Computer, Disk tray, Drafting plans, Career notebook with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans', 'Career notebook']), JSON.stringify(chips));
   // focus order of the room, recorded for the report
   await page.evaluate(() => { window.scrollTo(0, 0); document.activeElement.blur(); });
   const order = [];
@@ -316,7 +316,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   await waitFor(page, () => !!document.querySelector('.flat-home'), null, 6000); await sleep(400);
   await shot(page, '19-flat-home');
   check('"2D view" shows the plain page (one h1, no canvas, no retro computer)', await page.evaluate(() => document.querySelectorAll('h1').length === 1 && !document.querySelector('canvas') && !document.querySelector('.retro-crt')));
-  check('plain page lists every experience and the registry case studies', await page.evaluate(() => document.querySelectorAll('.flat-list li').length === 6 + 7));
+  check('plain page lists every experience, the career page and the registry case studies', await page.evaluate(() => document.querySelectorAll('.flat-list li').length === 6 + 1 + 7));
   await page.click('.flat-list a[href="/#work"]'); await waitFor(page, () => !!document.querySelector('.project-world'), null, 8000);
   check('plain-page links open the same real experiences', true);
   await page.goto(BASE + '/', { waitUntil: 'networkidle0' }); await sleep(600);

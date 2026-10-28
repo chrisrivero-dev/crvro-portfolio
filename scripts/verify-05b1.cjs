@@ -175,10 +175,12 @@ function recorder(page, mode) {
   await page.keyboard.press('Escape');
   await settled(page, 'rest', '/'); await rec('esc-to-desk');
   check('keys 5: Escape steps back one level at a time (note -> plans -> desk)', true);
-  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('ArrowLeft');                       // 06: the cycle is Desk, Computer, Disk tray, Drafting plans, Career notebook, so ← from the desk reaches the notebook
+  await settled(page, 'book', '/#career');
+  await page.keyboard.press('ArrowLeft');                       // at the notebook's first page the arrow moves on to the previous station
   await settled(page, 'plans', '/#plans');
   check('keys 6: ←/→ station cycling includes the drafting plans', true);
-  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Escape');
   await settled(page, 'rest', '/');
   await page.close();
 
@@ -192,7 +194,7 @@ function recorder(page, mode) {
   await page.tap('.ws3d__stbtn'); await sleep(300); await rec('stations-menu');
   const menu = await page.$$eval('#ws-stmenu button', (bs) => bs.map((b) => ({ t: b.textContent, h: Math.round(b.getBoundingClientRect().height), cur: b.getAttribute('aria-current') })));
   const focused = await page.evaluate(() => document.activeElement?.textContent);
-  check('touch 2: the menu lists the four stations, marks the current one, takes focus, 44px rows', menu.length === 4 && menu.every((m) => m.h >= 44) && menu[0].cur === 'location' && focused === 'Desk', JSON.stringify({ menu, focused }));
+  check('touch 2: the menu lists the five stations, marks the current one, takes focus, 44px rows', menu.length === 5 && menu.every((m) => m.h >= 44) && menu[0].cur === 'location' && focused === 'Desk', JSON.stringify({ menu, focused }));
   await page.tap('#ws-stmenu li:nth-child(4) button');
   await settled(page, 'plans', '/#plans'); await rec('plans');
   report.measures.notesPhonePlans = { pe: await noteSize(page, 'parcel-engine'), gr: await noteSize(page, 'groundrules') };

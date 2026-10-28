@@ -8,6 +8,7 @@
  *   plans     (05B.1) the camera over the survey sheet; project notes are pinned to it
  *   note      (05B.1) the camera down on one note (`st.note`), reading it square-on
  *   mug       (05B.3) the camera close on the coffee mug so its lettering reads
+ *   book      (06) the camera straight over the open career notebook (`st.page`: work, highlights or resume); the words are DOM laid on its page
  * plus `fill` (the screen fills the viewport just before the expanded interface opens).
  *
  * Every action is "go to state X from wherever things are now": a new action bumps `epoch`, in-flight tweens see alive()
@@ -20,6 +21,7 @@
 const LOOK = { yaw: 1.0, pitchUp: 0.45, pitchDown: 0.25 };
 
 import { noteView } from './plans.js';
+import { CAREER_PAGE_IDS } from '../data/career.js';
 
 export function createController(engine, { onChange, onHover, onLaunch, onNoteLink }) {
   const { THREE, scene, camera, run, flyTo, markDirty, EASE, diskList } = engine;
@@ -29,12 +31,71 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   for (const [slug, d] of Object.entries(disks)) home[slug] = { parent: d.parent, pos: d.position.clone(), quat: d.quaternion.clone(), loc: 'home' };
 
   let epoch = 0;
-  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null };
+  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0 };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
-  const emit = () => { engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  const emit = () => { syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
+
+  /* ── the career notebook: the cover and the leaves follow the state (view 'book', page) and nothing else ── */
+  const book = engine.book;
+  const BK = { open: 0, carry: 0, turned: CAREER_PAGE_IDS.map(() => 0) };
+  let bookGoal = { open: 0, page: 0 }, bookTok = 0;
+  const ramp = (e, a, b) => Math.min(1, Math.max(0, (e - a) / (b - a)));
+  function bookTo(open, page) {
+    const tok = ++bookTok, alive = () => bookTok === tok;
+    const from = { open: BK.open, carry: BK.carry, turned: [...BK.turned] };
+    const to = { carry: open ? 1 : 0, turned: CAREER_PAGE_IDS.map((_, i) => (open && i < page ? 1 : 0)) };
+    const lifted = book.portrait();                  // resting on the shelf: it is carried to the desk to be read, and back again
+    const changes = from.open !== open;
+    const ms = !changes ? 480 : lifted ? 1150 : 800;
+    return run(ms, (e) => {
+      if (!changes) {                                // only the leaves turn
+        BK.turned = from.turned.map((f, i) => f + (to.turned[i] - f) * e);
+      } else if (open) {                             // opening: carried down (if on the shelf), then the cover, then any leaves a deep link asks for
+        const c = lifted ? ramp(e, 0, 0.5) : 1;
+        BK.carry = from.carry + (1 - from.carry) * c;
+        BK.open = from.open + (1 - from.open) * ramp(e, lifted ? 0.4 : 0, 1);
+        BK.turned = from.turned.map((f, i) => f + (to.turned[i] - f) * ramp(e, lifted ? 0.7 : 0.4, 1));
+      } else {                                       // closing: the leaves settle and the cover shuts, then it is carried back
+        BK.open = from.open * (1 - ramp(e, 0, lifted ? 0.45 : 1));
+        BK.turned = from.turned.map((f) => f * (1 - ramp(e, 0, lifted ? 0.45 : 1)));
+        BK.carry = lifted ? from.carry * (1 - ramp(e, 0.4, 1)) : 0;
+      }
+      book.carry(BK.carry);
+      book.pose(BK.open, BK.turned);
+    }, alive);
+  }
+  function syncBook() {
+    if (!book) return;
+    const open = st.view === 'book' ? 1 : 0;
+    const page = open ? Math.max(0, CAREER_PAGE_IDS.indexOf(st.page)) : 0;
+    if (open === bookGoal.open && page === bookGoal.page) return;
+    bookGoal = { open, page };
+    bookTo(open, page);
+  }
+  /** A resize can cross between a landscape and a portrait screen: a closed, idle book moves to the resting place that screen frames. */
+  let restedPortrait = book ? book.portrait() : false;
+  function rePlace() {
+    if (!book || BK.open > 0 || bookGoal.open || book.portrait() === restedPortrait) return;
+    restedPortrait = book.portrait(); book.carry(0); engine.markDirty();
+  }
+  /** The reading pose for the room as it is laid out now: the book centred in the space the dock and the mode switch leave free. */
+  function bookPose() {
+    const s = engine.size, r = engine.stage.getBoundingClientRect();
+    const dock = engine.stage.parentElement?.querySelector('.ws3d__dock')?.getBoundingClientRect();
+    const bottom = dock && dock.height ? Math.max(0, r.bottom - dock.top) + 10 : s.vw < 700 ? 230 : 160;
+    return book.readingView({ aspect: s.aspect, fov: s.fov, vw: s.vw, vh: s.vh, top: 64, bottom });
+  }
+  /** Re-fit the reading pose after the layout changed (a resize, or the dock's size changed). */
+  let flying = false;                                  // the camera is on its way to the book: its pose is not touched, and the reading page is not placed yet
+  function refit() {
+    if (!book || st.view !== 'book' || st.busy || flying) return;
+    engine.setView(bookPose());
+    st.fit++; emit();
+  }
+  const offResize = engine.on('resize', () => { rePlace(); refit(); });
 
   /* ── disk choreography ──────────────────────────────────────────── */
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -105,7 +166,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   async function back() {                         // to the desk, at the viewpoint the visitor left it; a loaded disk stays seated
     const alive = mine();
     if (st.held) return putBack();
-    st.view = 'rest'; st.note = null; st.busy = true; emit();
+    st.view = 'rest'; st.note = null; st.page = null; st.busy = true; emit();
     if (await flyTo('threeQuarter', 1000, alive, deskLook)) { st.busy = false; emit(); }
   }
   async function approach() {                     // the computer: menu, or the loaded disk's directory
@@ -203,6 +264,25 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     await flyTo(noteView(THREE, m), 900, alive);
   }
 
+  /** The career notebook: the camera goes over the book, the cover swings open, and the reading page lays over its right-hand page. */
+  async function openBook(page = 'work') {
+    if (!book) return back();
+    const p = CAREER_PAGE_IDS.includes(page) ? page : 'work';
+    if (st.view === 'book') return turnPage(p);
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'book'; st.page = p; st.note = null; st.busy = false; st.fit = 0; flying = true; emit();
+    const arrived = await flyTo(bookPose(), 1000, alive);
+    flying = false;
+    if (arrived) refit();                              // fit > 0 from here on: the reading page can be laid on the open book
+  }
+  /** Turn to another page of the open notebook (the camera stays; the leaves turn). */
+  function turnPage(page) {
+    if (!CAREER_PAGE_IDS.includes(page) || st.view !== 'book' || st.page === page) return;
+    st.page = page; emit();
+  }
+
   /** Menu entry chosen: the screen fills the viewport, then the page takes over (the owner swaps the layers). */
   async function launch(entry) {
     const alive = mine();
@@ -222,7 +302,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : [])], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : [])], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
@@ -230,6 +310,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     }
     if (hit && hit.object === engine.sheet) return { sheet: true };
     if (hit && engine.mug && hit.object.parent === engine.mug) return { mug: true, proxy: !!hit.object.userData.proxy };
+    if (hit && book) { let o = hit.object; while (o && o !== book.group) o = o.parent; if (o) return { book: true }; }
     let g = hit?.object;
     while (g && !g.userData.project && g !== engine.machine && g !== engine.tray) g = g.parent;
     if (g === engine.machine) return { machine: true };
@@ -258,10 +339,12 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
       return;
     }
     if (st.view === 'mug') { if (!hit?.mug || hit.proxy) back(); return; }   // the mug close-up: a tap off the mug steps back
+    if (st.view === 'book') { if (!hit?.book) back(); return; }               // the open notebook: a tap off the book steps back to the desk
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
     else if (hit?.mug) goMug();
+    else if (hit?.book) openBook('work');
     else if (hit?.machine) approach();
     else if (hit?.tray) focusTray();
   };
@@ -291,12 +374,13 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     engine.stage.removeEventListener('pointerdown', onDown);
     window.removeEventListener('pointerup', onUp);
     engine.stage.removeEventListener('pointermove', onMove);
-    epoch++;
+    epoch++; bookTok++; offResize();
   };
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit,
+    pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */
     nudgeLook(dy, dp) {

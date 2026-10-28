@@ -250,3 +250,6 @@
 
 /* 05B.3: the mug's keyboard/screen-reader entry is out of sight until it has focus */
 .ws3d__mugbtn:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 06 career notebook: dock states */
+.ws3d__dock button:disabled { opacity: 0.4; cursor: default; border-color: #4a4238; color: var(--ws-dim); }

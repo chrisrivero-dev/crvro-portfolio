@@ -70,6 +70,14 @@ export const views = {
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
 
+/** 06: where the career notebook is. On the desk it lies at the left end, clear of the disks (landscape screens frame that corner). On a
+ *  portrait phone that corner is outside the frame, so it stands cover-out on the free right half of the wall shelf (which the phone does
+ *  frame) and is carried down to the desk spot to be read. Free space: no object within 200 units of either spot. */
+export const bookPlaces = {
+  desk: { x: -1110, y: TOP, z: 90, rot: -0.16 },
+  shelf: { x: -700, y: TOP + 830 + 18 + 162, z: WALL_Z + 180, rot: 0.2, lean: 0.14 },
+};
+
 /** The rest pose differs on a portrait phone; every 'threeQuarter' request (reset, return, eject) resolves through here. */
 export const resolveView = (name) => (name === 'threeQuarter' && matchMedia('(max-aspect-ratio: 4/5)').matches ? 'restPortrait' : name);
 

@@ -14,6 +14,7 @@ import { makeCanvas, drawGrain, drawContactShadow } from './textures.js';
 import * as props from './props.js';
 import * as env from './env.js';
 import { buildNotes } from './plans.js';
+import { buildNotebook } from './notebook.js';
 import { setupSteam } from './steam.js';
 
 /** Resolves once the screen/label font is usable, so canvas textures never bake in a fallback face. */
@@ -102,7 +103,7 @@ const look = { yaw: 0, pitch: 0 };
 function applyPose(dYaw = 0, dPitch = 0) {
   const dist = Math.max(orbit.dist, orbit.fitW ? orbit.fitW / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect) : 0);
   const yaw = orbit.yaw + look.yaw + dYaw;
-  const pitch = THREE.MathUtils.clamp(orbit.pitch + look.pitch + dPitch, -0.05, 1.35);
+  const pitch = THREE.MathUtils.clamp(orbit.pitch + look.pitch + dPitch, -0.05, 1.5);
   camera.position.set(
     TARGET.x + dist * Math.sin(yaw) * Math.cos(pitch),
     TARGET.y + dist * Math.sin(pitch),
@@ -455,6 +456,7 @@ machine.add(glass);
 /* ── desk + baked contact shadow ─────────────────────────────────── */
 const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasticDark, plasticDeep, rubber, renderer });
 const notes = built.sheet ? buildNotes({ THREE, scene, sheet: built.sheet }) : [];
+const book = env.bookPlaces ? buildNotebook({ THREE, scene, places: env.bookPlaces }) : null;
 
 // optional per-variant light grade (iteration 02+); A/B/C define none
 env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });
@@ -530,7 +532,7 @@ scene.add(screenObj);
   }
   function setLook(yaw, pitch) { look.yaw = yaw; look.pitch = pitch; applyPose(); markDirty(); }
   function setView(name) {
-    const { target, ...pose } = viewOf(name);
+    const { target, ...pose } = typeof name === 'string' ? viewOf(name) : name;
     TARGET.copy(target || BASE_TARGET);
     Object.assign(orbit, pose);
     orbit.fitW = pose.fitW;
@@ -571,6 +573,7 @@ scene.add(screenObj);
     cssRenderer.setSize(VW, VH);
     applyPose();
     markDirty();
+    emit('resize');
   }
   const ro = new ResizeObserver(() => resize());
   ro.observe(stage);
@@ -608,7 +611,17 @@ scene.add(screenObj);
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
     tray: built.tray,
-    sheet: built.sheet, mug: built.mug, notes,
+    sheet: built.sheet, mug: built.mug, notes, book,
+    /** The right-hand page of the open notebook as a rectangle in the stage's CSS pixels (null if the book is not built or not in view). */
+    bookPageRect() {
+      if (!book) return null;
+      const pts = book.pageCorners().map((p) => { p.project(camera); return [(p.x * 0.5 + 0.5) * VW, (-p.y * 0.5 + 0.5) * VH]; });
+      const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
+      const left = Math.min(...xs), top = Math.min(...ys), width = Math.max(...xs) - left, height = Math.max(...ys) - top;
+      // the page's own outline inside that box, in percent: a little perspective makes it a trapezoid, and the DOM page is clipped to it
+      return { left, top, width, height, poly: pts.map(([x, y]) => `${(((x - left) / width) * 100).toFixed(2)}% ${(((y - top) / height) * 100).toFixed(2)}%`).join(', ') };
+    },
+    get size() { return { vw: VW, vh: VH, fov: camera.fov, aspect: camera.aspect }; },
     driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
     reduceMotion, run, flyTo, setView, markDirty, suspend, resume, dispose, on: listen,
     look, setLook,
