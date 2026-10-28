@@ -69,11 +69,12 @@ export const views = {
   mug:          { yaw: 0.2,  pitch: 0.18, dist: 520, fitW: 190, target: new THREE.Vector3(525, -325, 575) },
   // 07: the reading corner from the room side (fitW keeps chair and table in a portrait frame); seated in the chair, looking at the desk;
   // the record player from above its front edge
-  corner:       { yaw: 0.95, pitch: 0.36, dist: 5600, target: new THREE.Vector3(-1450, -1250, 2100) },
-  cornerPortrait: { yaw: 0.5, pitch: 0.32, dist: 6200, target: new THREE.Vector3(-1450, -1150, 2050) },
-  seat:         { yaw: -0.25, pitch: 0.16, dist: 3200, target: new THREE.Vector3(-400, -350, 100) },
-  record:       { yaw: 1.9,  pitch: 0.9,  dist: 1400, target: new THREE.Vector3(-1730, -800, 1400) },
-  recordPortrait: { yaw: 1.9, pitch: 0.9, dist: 2100, target: new THREE.Vector3(-1730, -820, 1400) },
+  corner:       { yaw: 1.3, pitch: 0.27, dist: 6700, target: new THREE.Vector3(-1100, -950, 3430) },
+  cornerPortrait: { yaw: 1.3, pitch: 0.5, dist: 6000, fitW: 3900, target: new THREE.Vector3(-1000, -1500, 4000) },
+  cornerShort:  { yaw: 1.25, pitch: 0.33, dist: 7800, target: new THREE.Vector3(-1150, -1950, 3430) },
+  seat:         { yaw: -0.37, pitch: 0.07, dist: 4040, target: new THREE.Vector3(-100, -250, 200) },
+  record:       { yaw: 1.9,  pitch: 0.85, dist: 1500, target: new THREE.Vector3(-1820, -870, 2120) },
+  recordPortrait: { yaw: 1.9, pitch: 0.85, dist: 2900, target: new THREE.Vector3(-1870, -950, 2030) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
 
@@ -84,9 +85,11 @@ export const views = {
  *  drawer): the lounge chair angled toward the desk, the side table with the record player between it and the window. */
 export const loungePlaces = {
   floorY: FLOOR_Y,
-  chair: { x: -1050, z: 2950, rot: 2.55 },
-  table: { x: -1720, z: 1400, rot: 0.12 },
-  lamp: { x: -2030, z: 860 },
+  chair: { x: -900, z: 3700, rot: 1.95 },                      // back to the window wall, turned toward the desk; the ottoman in front
+  table: { x: -1840, z: 1820, rot: Math.PI / 2 },              // the record console against the wall, at the chair's left hand, out of the desk's view
+  lamp: { x: -2080, z: 4450, headX: -640, headZ: 4210 },      // arc lamp: base behind the chair, dome over the reader's right shoulder
+  plant: { x: -1940, z: 5480, rot: 0 },
+  rug: { x: -340, z: 3480, w: 3300, d: 2300, rot: 1.95 },
 };
 
 export const bookPlaces = {
@@ -96,6 +99,8 @@ export const bookPlaces = {
 
 /** The rest pose differs on a portrait phone; every 'threeQuarter' request (reset, return, eject) resolves through here. */
 export const resolveView = (name) => {
+  // 08: a landscape phone keeps half its height for the dock, so the reading corner sits higher and further off there
+  if (views[`${name}Short`] && matchMedia('(max-height: 500px) and (min-aspect-ratio: 1/1)').matches) return `${name}Short`;
   if (!matchMedia('(max-aspect-ratio: 4/5)').matches) return name;
   if (name === 'threeQuarter') return 'restPortrait';
   return views[`${name}Portrait`] ? `${name}Portrait` : name;     // 07: the reading corner has its own portrait framings
@@ -125,7 +130,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     scene.add(m);
   };
   lw(WALL_Z, win.z0, FLOOR_Y, FLOOR_Y + 5200);
-  lw(win.z1, 5200, FLOOR_Y, FLOOR_Y + 5200);   // 07: runs on past the reading corner, so its views never reach the wall's end
+  lw(win.z1, 8000, FLOOR_Y, FLOOR_Y + 5200);   // 07: runs on past the reading corner, so its views never reach the wall's end
   lw(win.z0, win.z1, FLOOR_Y, win.y0);
   lw(win.z0, win.z1, win.y1, FLOOR_Y + 5200);
   // window frame + mullions (cast the daylight pattern)
@@ -139,10 +144,10 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   scene.add(box(9000, wH, 18, panel, [LEFT_X + 4500, FLOOR_Y + wH / 2, WALL_Z + 9]));
   scene.add(box(9000, 40, 40, wood('#4a321f', 42), [LEFT_X + 4500, FLOOR_Y + wH + 20, WALL_Z + 20]));
   // floor boards
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 8000),   // 07: deep enough that the reading-corner views never see its edge
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 11000),   // 07: deep enough that the reading-corner views never see its edge
     new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base: '#4a3424', seed: 51 }), { repeat: 4 }), roughness: 0.6 }));
   floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, FLOOR_Y, 2000);
+  floor.position.set(0, FLOOR_Y, 3500);
   floor.receiveShadow = true;
   scene.add(floor);
 

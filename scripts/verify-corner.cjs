@@ -36,7 +36,9 @@ async function open(b, url, vp, opts = {}) {
 /** Where an object's centre is on screen, and whether it is visible above the dock (and in front of the camera). */
 const pt = (p, which) => p.evaluate((which) => {
   const { lounge, camera, THREE } = window.__WS__.engine;
-  const v = which === 'chair' ? new THREE.Box3().setFromObject(lounge.chair).getCenter(new THREE.Vector3()).add(new THREE.Vector3(0, 120, 0)) : lounge.playerCenter.clone().add(new THREE.Vector3(0, 40, 0));   // the seat; the record on the platter
+  // the seat cushion; the record on the platter; the middle of the ottoman; the plant's pot rim
+  const at = (o, x, y, z) => { o.updateMatrixWorld(true); return o.localToWorld(new THREE.Vector3(x, y, z)); };
+  const v = which === 'chair' ? at(lounge.chair, 0, 640, 0) : which === 'ottoman' ? at(lounge.ottoman, 0, 420, 0) : which === 'plant' ? at(lounge.plant, 0, 880, 0) : lounge.playerCenter.clone().add(new THREE.Vector3(0, 40, 0));
   v.project(camera);
   const dk = document.querySelector('.ws3d__dock').getBoundingClientRect();
   const x = (v.x * 0.5 + 0.5) * innerWidth, y = (-v.y * 0.5 + 0.5) * innerHeight;
@@ -57,7 +59,7 @@ const mem = (p) => p.evaluate(() => ({ ...window.__WS__.engine.renderer.info.mem
     const solid = (o) => { const bb = new THREE.Box3(); o.updateMatrixWorld(true); o.traverse((m) => { if (m.isMesh && !m.userData.proxy) bb.expandByObject(m); }); return bb; };
     const chair = solid(lounge.chair), table = solid(lounge.table);
     // everything else in the room that stands on the floor or the desk (meshes not part of the corner, the book or the room shell)
-    const mine = new Set(); for (const o of [lounge.chair, lounge.table]) o.traverse((m) => mine.add(m));
+    const mine = new Set(); for (const o of [lounge.chair, lounge.table, lounge.lamp, lounge.plant, lounge.rug]) o.traverse((m) => mine.add(m));
     book.group.traverse((m) => mine.add(m));
     const hits = [];
     scene.traverse((m) => {
@@ -71,20 +73,34 @@ const mem = (p) => p.evaluate(() => ({ ...window.__WS__.engine.renderer.info.mem
     const parts = (o) => { const out = []; o.updateMatrixWorld(true); o.traverse((m) => { if (m.isMesh && !m.userData.proxy) out.push(new THREE.Box3().setFromObject(m)); }); return out; };
     const cp = parts(lounge.chair), tp = parts(lounge.table);
     const apart = !cp.some((a) => tp.some((t) => a.intersectsBox(t)));
-    const inRoom = [...cp, ...tp, ...parts(lounge.lamp)].every((a) => a.min.x > -2300 && a.min.z > -900);
-    return { chair: r(chair), table: r(table), apart, inRoom, hits };
+    const pp = parts(lounge.plant), lp = parts(lounge.lamp);
+    // the lamp's arc is a curved tube: its bounding box spans the whole arc, so only the base and the dome count as footprint
+    const lpSolid = []; lounge.lamp.traverse((m) => { if (m.isMesh && m.geometry.type !== 'TubeGeometry') lpSolid.push(new THREE.Box3().setFromObject(m)); });
+    const inRoom = [...cp, ...tp, ...lp, ...pp].every((a) => a.min.x > -2300 && a.min.z > -900);
+    // 08: the plant and the lamp stand clear of the chair, the ottoman and the console; the ottoman sits in front of the chair; the rug lies under both
+    const plantClear = !pp.some((a) => [...cp, ...tp, ...lpSolid].some((t) => a.intersectsBox(t)));
+    const lampClear = !lpSolid.some((a) => [...cp, ...tp].some((t) => a.intersectsBox(t)));
+    const plant = solid(lounge.plant), seat = solid(lounge.chair), ot = solid(lounge.ottoman);
+    const front = new THREE.Vector3(0, 0, 1).applyQuaternion(lounge.chair.quaternion);
+    const ahead = ot.getCenter(new THREE.Vector3()).sub(lounge.chair.position).dot(front);
+    const rug = box(lounge.rug), under = (c) => rug.containsPoint(new THREE.Vector3(c.x, rug.min.y, c.z));
+    const leaves = []; lounge.plant.traverse((m) => { if (m.isMesh && m.material.alphaTest) leaves.push(m); });
+    return { chair: r(chair), table: r(table), plant: r(plant), apart, inRoom, hits, plantClear, lampClear, ahead: Math.round(ahead), rugUnder: under(lounge.chair.position) && under(ot.getCenter(new THREE.Vector3())), leaves: leaves.length };
   });
   const FLOOR = -1990;
   check('placement: the chair and the side table stand on the floor', Math.abs(audit.chair.y0 - FLOOR) < 12 && Math.abs(audit.table.y0 - FLOOR) < 12, JSON.stringify(audit));
   check('placement: both are inside the room (in front of the window wall, clear of the back wall)', audit.inRoom, JSON.stringify(audit));
   check('placement: the chair and the table do not overlap each other', audit.apart, JSON.stringify(audit));
   check('placement: neither touches the desk, the cabinet or anything on them', audit.hits.length === 0, audit.hits.join(' '));
+  check('placement: the plant stands on the floor, inside the room, clear of the chair, the console and the lamp', Math.abs(audit.plant.y0 - FLOOR) < 12 && audit.plantClear && audit.leaves >= 10, JSON.stringify(audit));
+  check('placement: the arc lamp clears the chair and the console', audit.lampClear, JSON.stringify(audit));
+  check('placement: the ottoman sits in front of the chair, and the rug lies under both', audit.ahead > 900 && audit.ahead < 1800 && audit.rugUnder, JSON.stringify(audit));
   check('placement: the record player stands on the table top', await p.evaluate(() => { const { lounge, THREE } = window.__WS__.engine; const pl = new THREE.Box3().setFromObject(lounge.player), tb = new THREE.Box3().setFromObject(lounge.table); return pl.min.y >= tb.min.y + 1000 && pl.min.y < tb.min.y + 1100 && pl.min.x >= tb.min.x - 20 && pl.max.x <= tb.max.x + 20; }));
 
   /* ── the desk view: the corner does not cover the cabinet, computer, disks, plans or notebook ── */
   const restCover = await p.evaluate(() => {
     const { lounge, camera, scene, THREE } = window.__WS__.engine;
-    const mine = new Set(); for (const o of [lounge.chair, lounge.table, lounge.lamp]) o.traverse((m) => mine.add(m));
+    const mine = new Set(); for (const o of [lounge.chair, lounge.table, lounge.lamp, lounge.plant, lounge.rug]) o.traverse((m) => mine.add(m));
     const ray = new THREE.Raycaster(); let n = 0, hit = 0;
     const solids = []; scene.traverse((m) => { if (m.isMesh && m.visible && !m.userData.proxy && m.material && m.material.visible !== false) solids.push(m); });
     for (let i = 0; i < 64; i++) for (let j = 0; j < 36; j++) {
@@ -104,6 +120,8 @@ const mem = (p) => p.evaluate(() => ({ ...window.__WS__.engine.renderer.info.mem
   check('switcher: "Reading corner" flies to the corner (/#corner)', s.view === 'corner' && s.url === '/#corner', JSON.stringify(s));
   const ch = await pt(p, 'chair'), pl = await pt(p, 'player');
   check('corner: the chair and the record player are both on screen', ch.on && pl.on, JSON.stringify({ ch, pl }));
+  const ot = await pt(p, 'ottoman'), pn = await pt(p, 'plant');
+  check('corner: the ottoman and the plant are on screen too (the whole composition)', ot.on && pn.on, JSON.stringify({ ot, pn }));
   await shot(p, 'c02-corner-1920');
 
   // a drag is not a tap: it does not sit down
@@ -190,6 +208,7 @@ const mem = (p) => p.evaluate(() => ({ ...window.__WS__.engine.renderer.info.mem
   await settled(p, 'corner');
   const mch = await pt(p, 'chair'), mpl = await pt(p, 'player');
   check('phone: the chair and the record player are on screen in the corner view', mch.on && mpl.on, JSON.stringify({ mch, mpl }));
+  { const o = await pt(p, 'ottoman'), n = await pt(p, 'plant'); check('phone: the ottoman and the plant are on screen too', o.on && n.on, JSON.stringify({ o, n })); }
   await shot(p, 'm-c01-corner');
   await p.touchscreen.tap(mch.x, mch.y); await settled(p, 'seat');
   check('phone: a tap on the chair sits down', (await S(p)).url === '/#corner/seat');
@@ -214,6 +233,7 @@ const mem = (p) => p.evaluate(() => ({ ...window.__WS__.engine.renderer.info.mem
   await settled(p, 'corner');
   const lch = await pt(p, 'chair'), lpl = await pt(p, 'player');
   check('phone landscape: the chair and the record player are on screen', lch.on && lpl.on, JSON.stringify({ lch, lpl }));
+  { const o = await pt(p, 'ottoman'), n = await pt(p, 'plant'); check('phone landscape: the ottoman and the plant are on screen too', o.on && n.on, JSON.stringify({ o, n })); }
   await shot(p, 'm-c04-corner-landscape');
   await p.close();
 

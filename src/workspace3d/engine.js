@@ -81,7 +81,7 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.22;
 
 /* ── camera: three-quarter rest pose + inspection orbit ──────────── */
-const camera = new THREE.PerspectiveCamera(34, VW / VH, 10, 12000);
+const camera = new THREE.PerspectiveCamera(34, VW / VH, 10, 18000);   // 08: far enough for the reading corner framed from across the room on a portrait phone
 const TARGET = new THREE.Vector3(150, -200, 40);
 const VIEWS = {
   threeQuarter: { yaw: 0.40, pitch: 0.22, dist: 2900 },
@@ -458,7 +458,7 @@ machine.add(glass);
 const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasticDark, plasticDeep, rubber, renderer });
 const notes = built.sheet ? buildNotes({ THREE, scene, sheet: built.sheet }) : [];
 const book = env.bookPlaces ? buildNotebook({ THREE, scene, places: env.bookPlaces }) : null;
-const lounge = env.loungePlaces ? buildLounge({ THREE, scene, floorY: env.loungePlaces.floorY, chairAt: env.loungePlaces.chair, tableAt: env.loungePlaces.table, lampAt: env.loungePlaces.lamp }) : null;
+const lounge = env.loungePlaces ? buildLounge({ THREE, scene, floorY: env.loungePlaces.floorY, chairAt: env.loungePlaces.chair, tableAt: env.loungePlaces.table, lampAt: env.loungePlaces.lamp, plantAt: env.loungePlaces.plant, rugAt: env.loungePlaces.rug }) : null;
 
 // optional per-variant light grade (iteration 02+); A/B/C define none
 env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });

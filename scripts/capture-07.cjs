@@ -1,4 +1,4 @@
-/* 07 visual evidence: every required state at 1920x1080, 1280x800, 390x844 (iPhone portrait) and 844x390 (iPhone landscape).
+/* 07/08 visual evidence: every required state at 1920x1080, 1280x800, 390x844 (iPhone portrait) and 844x390 (iPhone landscape).
  * Phone sizes are Chromium emulation, not a device. Output: captures/career/after/<vp>-<state>.png
  * Run: BASE=http://localhost:5193 node scripts/capture-07.cjs   (VPS=1920,390 to limit) */
 const path = require('path');
@@ -23,6 +23,10 @@ const STEPS = [
   ['05-career-resume', '#career/resume', 'book'],
   ['06-desk-after-notebook', '', 'rest'],
   ['07-corner', '#corner', 'corner'],
+  // 08: the corner from further back with the desk, the chair and ottoman close enough to judge the silhouette, the plant
+  ['07b-corner-overview', 'CAM:0.62:0.34:8200:-600:-900:2400', 'corner'],
+  ['07c-chair-ottoman', 'CAM:0.62:0.14:4300:-650:-1250:3500', 'corner'],
+  ['07d-plant', 'CAM:1.05:0.22:3600:-1750:-1150:5100', 'corner'],
   ['08-seat', '#corner/seat', 'seat'],
   ['09-desk-after-seat', '', 'rest'],
   ['10-record-stopped', '#corner/record', 'record'],
@@ -39,6 +43,7 @@ const STEPS = [
     await sleep(1500);
     for (const [name, act, view] of STEPS) {
       if (act === 'PLAY') await p.evaluate(() => window.__WS__.ctl.togglePlay());
+      else if (act.startsWith('CAM:')) await p.evaluate((c) => { const [yaw, pitch, dist, x, y, z] = c.slice(4).split(':').map(Number); const e = window.__WS__.engine; return e.flyTo({ yaw, pitch, dist, target: new e.THREE.Vector3(x, y, z) }, 0); }, act);
       else if (act === 'SCROLL') await p.evaluate(() => { const b = document.querySelector('.nb-paper .nb-body'); b.scrollTop = b.scrollHeight * 0.42; });
       else if (act === '') await p.evaluate(() => { if (window.__WS__.ctl.state.view !== 'rest') window.__WS__.ctl.back(); });   // the dock's Back to the desk
       else await p.evaluate((h) => { location.hash = h; }, act);

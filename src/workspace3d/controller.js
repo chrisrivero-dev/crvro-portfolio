@@ -36,7 +36,16 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   let epoch = 0;
   const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
-  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  // 08: the reading corner is framed from further off than the desk; the dusk haze thins while there so the corner keeps its colour
+  const fog = scene.fog, fog0 = fog && { near: fog.near, far: fog.far };
+  let hazeOn = false, hazeTok = 0;
+  const cornerHaze = (on) => {
+    if (!fog || hazeOn === on) return;
+    hazeOn = on;
+    const a = { near: fog.near, far: fog.far }, k = matchMedia('(max-aspect-ratio: 4/5)').matches ? 1.5 : 1, b = on ? { near: fog0.near * 1.7 * k, far: fog0.far * 1.6 * k } : fog0, tok = ++hazeTok;
+    run(900, (e) => { fog.near = a.near + (b.near - a.near) * e; fog.far = a.far + (b.far - a.far) * e; }, () => hazeTok === tok);
+  };
+  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
