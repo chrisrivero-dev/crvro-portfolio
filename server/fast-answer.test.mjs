@@ -35,3 +35,8 @@ test('honest unresolved from the model is kept and cacheable', async () => {
   assert.equal(r.result.status, 'unresolved');
   assert.equal(r.cacheable, true);
 });
+test('projects named in the question are always in the evidence', async () => {
+  const { gatherEvidence } = await import('./fast-answer.mjs');
+  const ids = gatherEvidence('What is the difference between OpenClaw and Parcel Engine?', corpus.entries).map((e) => e.slug);
+  assert.ok(ids.includes('openclaw') && ids.includes('parcel-engine'));
+});

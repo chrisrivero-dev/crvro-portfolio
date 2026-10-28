@@ -53,6 +53,17 @@ function deterministic(question) {
   return { status: 'answered', answer: `${m.lines.join(' ')} Relevant work: ${names}.`, destinations: m.results.map((r) => r.key), evidence_ids: [], confidence: 'high' };
 }
 
+// Keyword retrieval alone misses projects the visitor names outright ("Zarvin One" vs slug zarvin-one),
+// which breaks comparisons. Entries of any project named in the question go in first.
+export function gatherEvidence(question, entries) {
+  const q = question.toLowerCase().replace(/[^a-z0-9]+/g, ' ');
+  const slugs = [...new Set(entries.map((e) => e.slug).filter(Boolean))].filter((slug) => q.includes(slug.replace(/-/g, ' ')));
+  const named = slugs.slice(0, 4).flatMap((slug) => entries.filter((e) => e.slug === slug).slice(0, 3));
+  const byId = new Map();
+  for (const e of [...named, ...retrieveEvidence(question, entries, 10)]) byId.set(e.id, e);
+  return [...byId.values()].slice(0, 14);
+}
+
 async function callGroqModel(model, { system, user, signal }) {
   const res = await fetch(GROQ_URL, {
     method: 'POST',
@@ -109,7 +120,7 @@ export async function answerFast(question, { corpus, destinationAllowlist, evide
   }
   if (!fastPathEnabled()) return done(FALLBACK, false, 'fast_path_disabled');
 
-  const evidence = retrieveEvidence(question, corpus.entries, 10);
+  const evidence = gatherEvidence(question, corpus.entries);
   const user = [
     `VISITOR QUESTION:\n${question}`,
     `EVIDENCE:\n${formatEvidence(evidence)}`,
