@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { box, DESK_FRONT, DESK_BACK, FLOOR_Y } from './env-common.js';
 import { surveyTexture } from './drafting.js';
+import { buildRoom } from './room.js';
 import { DISK_PROJECTS } from '../data/caseIds.js';
 
 const TOP = -390;                    // desk surface
@@ -83,6 +84,9 @@ export const views = {
  *  frame) and is carried down to the desk spot to be read. Free space: no object within 200 units of either spot. */
 /** 07: the reading corner in front of the window wall, beside the desk's left end and outside the desk's rest frame (so it hides no
  *  drawer): the lounge chair angled toward the desk, the side table with the record player between it and the window. */
+/** 09: the room's inside faces (the camera never leaves them). */
+export const bounds = { x0: LEFT_X, x1: 6200, z0: WALL_Z, z1: 7400 };
+
 export const loungePlaces = {
   floorY: FLOOR_Y,
   chair: { x: -900, z: 3700, rot: 1.95 },                      // back to the window wall, turned toward the desk; the ottoman in front
@@ -130,7 +134,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     scene.add(m);
   };
   lw(WALL_Z, win.z0, FLOOR_Y, FLOOR_Y + 5200);
-  lw(win.z1, 8000, FLOOR_Y, FLOOR_Y + 5200);   // 07: runs on past the reading corner, so its views never reach the wall's end
+  lw(win.z1, 7400, FLOOR_Y, FLOOR_Y + 5200);   // 09: runs to the front wall
   lw(win.z0, win.z1, FLOOR_Y, win.y0);
   lw(win.z0, win.z1, win.y1, FLOOR_Y + 5200);
   // window frame + mullions (cast the daylight pattern)
@@ -144,12 +148,14 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   scene.add(box(9000, wH, 18, panel, [LEFT_X + 4500, FLOOR_Y + wH / 2, WALL_Z + 9]));
   scene.add(box(9000, 40, 40, wood('#4a321f', 42), [LEFT_X + 4500, FLOOR_Y + wH + 20, WALL_Z + 20]));
   // floor boards
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 11000),   // 07: deep enough that the reading-corner views never see its edge
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000),   // 09: wall to wall: x −2300…6200, z −900…7400 (with a margin under the skirting)
     new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base: '#4a3424', seed: 51 }), { repeat: 4 }), roughness: 0.6 }));
   floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, FLOOR_Y, 3500);
+  floor.position.set(1950, FLOOR_Y, 3250);
   floor.receiveShadow = true;
   scene.add(floor);
+  // 09: the rest of the room (right and front walls, door, ceiling, trim, bookcase, sconce) and the workstation's task chair
+  build.room = buildRoom({ THREE, scene, props, wood, plaster, FLOOR_Y, LEFT_X, WALL_Z, TOP, win });
 
   /* ── furniture: flat-file cabinet base + oak drafting top ─────── */
   const cabW = 2900, cx0 = -250, depth = DESK_FRONT - DESK_BACK, zc = (DESK_FRONT + DESK_BACK) / 2;
@@ -158,23 +164,33 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   // breadboard edge along the front: reads as a drafting board, not a shelf
   scene.add(box(cabW + 80, topT + 14, 34, wood('#6a4830', 8), [cx0, TOP - topT / 2 - 7, DESK_FRONT + 30]));
   const cabTop = TOP - topT, H = cabTop - (FLOOR_Y + 90);
-  scene.add(box(cabW, H, depth - 60, steelDark, [cx0, FLOOR_Y + 90 + H / 2, zc - 20]));
-  scene.add(box(cabW - 40, 90, depth - 120, blackMetal, [cx0, FLOOR_Y + 45, zc - 30])); // recessed plinth
+  // 09: a pedestal desk: flat-file drawers left and right, a knee space under the computer (≈ 52 cm wide, 63 cm clear under the
+  // pencil drawer, the full depth to a modesty panel), so the task chair can actually be used at the keyboard
+  const KNEE = { x0: -560, x1: 540 }, PENCIL = 190;
+  const peds = [[cx0 - cabW / 2, KNEE.x0], [KNEE.x1, cx0 + cabW / 2]];
   const rows = 6, dh = H / rows;
   const drawerNames = ['PLATS', 'SURVEY', 'CAD SHEETS', 'RECORDS', 'INDEX', 'DRAFTS'];
-  for (let r = 0; r < rows; r++) {
-    const y = cabTop - dh / 2 - r * dh;
-    for (const half of [-1, 1]) {
-      const cx = cx0 + half * cabW / 4;
-      scene.add(box(cabW / 2 - 20, dh - 12, 18, steel, [cx, y, DESK_FRONT - 18]));
-      scene.add(box(240, 12, 16, brass, [cx, y - dh * 0.18, DESK_FRONT - 2]));
+  peds.forEach(([a, b], pi) => {
+    const w = b - a, cx = (a + b) / 2;
+    scene.add(box(w, H, depth - 60, steelDark, [cx, FLOOR_Y + 90 + H / 2, zc - 20]));
+    scene.add(box(w - 40, 90, depth - 120, blackMetal, [cx, FLOOR_Y + 45, zc - 30])); // recessed plinth
+    for (let r = 0; r < rows; r++) {
+      const y = cabTop - dh / 2 - r * dh;
+      scene.add(box(w - 20, dh - 12, 18, steel, [cx, y, DESK_FRONT - 18]));
+      scene.add(box(Math.min(240, w * 0.4), 12, 16, brass, [cx, y - dh * 0.18, DESK_FRONT - 2]));
       scene.add(box(132, 54, 4, brass, [cx, y + dh * 0.17, DESK_FRONT - 7]));
       const card = new THREE.Mesh(new THREE.PlaneGeometry(118, 40),
-        new THREE.MeshStandardMaterial({ map: props.tex(cardCanvas(drawerNames[(r + (half > 0 ? 3 : 0)) % 6], 256, 88)), roughness: 0.9 }));
+        new THREE.MeshStandardMaterial({ map: props.tex(cardCanvas(drawerNames[(r + (pi ? 3 : 0)) % 6], 256, 88)), roughness: 0.9 }));
       card.position.set(cx, y + dh * 0.17, DESK_FRONT - 4.5);
       scene.add(card);
     }
-  }
+  });
+  const kw = KNEE.x1 - KNEE.x0, kx = (KNEE.x0 + KNEE.x1) / 2;
+  scene.add(box(kw, PENCIL, depth - 60, steelDark, [kx, cabTop - PENCIL / 2, zc - 20]));          // pencil drawer
+  scene.add(box(kw - 20, PENCIL - 20, 18, steel, [kx, cabTop - PENCIL / 2, DESK_FRONT - 18]));
+  scene.add(box(200, 12, 16, brass, [kx, cabTop - PENCIL / 2 - 30, DESK_FRONT - 2]));
+  scene.add(box(kw, H - PENCIL, 30, steelDark, [kx, FLOOR_Y + 90 + (H - PENCIL) / 2, DESK_BACK + 90]));   // modesty panel
+  build.knee = { ...KNEE, clear: cabTop - PENCIL - FLOOR_Y, front: DESK_FRONT, back: DESK_BACK + 105 };
 
   /* ── survey sheet, taped, with scale + pencil + rolled plans ──── */
   const sheet = new THREE.Mesh(new THREE.PlaneGeometry(1150, 800),
@@ -405,6 +421,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     tray: org,
     sheet,
     mug: mugG,
+    room: build.room, knee: build.knee,
   };
 }
 

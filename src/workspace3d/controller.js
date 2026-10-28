@@ -19,9 +19,9 @@
  * Multi-step actions set `busy` so the page does not write an intermediate state into the URL.
  * Reduced motion: engine.run() collapses each tween into one step (jump cuts). */
 
-// look-around limits at the desk (radians), layered on the rest pose. Yaw orbits the desk (about -0.7 to +1.3 rad from the front on a
-// landscape screen: window wall, filing cabinets, desk, plans); pitch goes from the drawer fronts up to a high view over the desk.
-const LOOK = { yaw: 1.0, pitchUp: 0.45, pitchDown: 0.25 };
+// look-around at the desk (radians), layered on the rest pose. 09: first-person and a full turn in yaw (the room is finished on every
+// side); pitch goes from a little above level (the ceiling line and the door head) down to the desk top in front.
+const LOOK = { pitchUp: 0.45, pitchDown: 0.45 };
 
 import { noteView } from './plans.js';
 import { CAREER_PAGE_IDS } from '../data/career.js';
@@ -37,13 +37,12 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
   // 08: the reading corner is framed from further off than the desk; the dusk haze thins while there so the corner keeps its colour
-  const fog = scene.fog, fog0 = fog && { near: fog.near, far: fog.far };
   let hazeOn = false, hazeTok = 0;
   const cornerHaze = (on) => {
-    if (!fog || hazeOn === on) return;
+    if (hazeOn === on) return;
     hazeOn = on;
-    const a = { near: fog.near, far: fog.far }, k = matchMedia('(max-aspect-ratio: 4/5)').matches ? 1.5 : 1, b = on ? { near: fog0.near * 1.7 * k, far: fog0.far * 1.6 * k } : fog0, tok = ++hazeTok;
-    run(900, (e) => { fog.near = a.near + (b.near - a.near) * e; fog.far = a.far + (b.far - a.far) * e; }, () => hazeTok === tok);
+    const a = engine.haze, b = on ? (matchMedia('(max-aspect-ratio: 4/5)').matches ? 2 : 1) : 0, tok = ++hazeTok;
+    run(900, (e) => engine.setHaze(a + (b - a) * e), () => hazeTok === tok);
   };
   const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
@@ -129,7 +128,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   /** In front of the camera, label toward the viewer, sized so the label is readable (portrait phones hold it further away). */
   function holdPose() {
     camera.updateMatrixWorld();
-    const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const tan = Math.tan(THREE.MathUtils.degToRad(engine.size.fov / 2));
     const dist = Math.max(200 / (2 * tan * 0.5), 191 / (2 * tan * camera.aspect * 0.72));
     const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
     const pos = camera.position.clone().addScaledVector(dir, dist).add(new THREE.Vector3(0, -12, 0));
@@ -428,9 +427,9 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
       if (!down.dragging && Math.hypot(dx, dy) > 8) { down.dragging = true; engine.stage.classList.add('is-looking'); onHover?.(null); }
       if (down.dragging) {
         const r = engine.stage.getBoundingClientRect();
-        const k = 2.6 / Math.max(r.width, 1);   // a full-width drag turns about 2.6 rad (about 1.4 rad vertically) before clamping
+        const k = 2.6 / Math.max(r.width, 1);   // a full-width drag turns about 2.6 rad (about 1.4 rad vertically, then clamped)
         engine.setLook(
-          THREE.MathUtils.clamp(down.lookY - dx * k, -LOOK.yaw, LOOK.yaw),
+          down.lookY - dx * k,
           THREE.MathUtils.clamp(down.lookP + dy * k * 0.55, -LOOK.pitchDown, LOOK.pitchUp),
         );
         return;
@@ -459,7 +458,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     /** Keyboard look-around at the desk (secondary to dragging). */
     nudgeLook(dy, dp) {
       if (!canLook()) return;
-      engine.setLook(THREE.MathUtils.clamp(engine.look.yaw + dy, -LOOK.yaw, LOOK.yaw), THREE.MathUtils.clamp(engine.look.pitch + dp, -LOOK.pitchDown, LOOK.pitchUp));
+      engine.setLook(engine.look.yaw + dy, THREE.MathUtils.clamp(engine.look.pitch + dp, -LOOK.pitchDown, LOOK.pitchUp));
     },
     get state() { return { ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }; },
     get deskLook() { return { ...deskLook }; },

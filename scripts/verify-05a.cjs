@@ -58,7 +58,7 @@ function recorder(page, mode) {
   check('mouse 2: dragging looks around the room (yaw/pitch change, no navigation)', look1.yaw > 0.05 && look2.yaw < look1.yaw && (await S(page)).url === '/' && (await S(page)).view === 'rest', JSON.stringify({ look1, look2 }));
   await page.mouse.move(800, 300); await page.mouse.down(); await page.mouse.move(2000, 900, { steps: 8 }); await page.mouse.up(); await sleep(200);
   const lim = (await S(page)).look;
-  check('mouse 2b: looking around is limited to the room (no free flight)', Math.abs(lim.yaw) <= 1.001 && lim.pitch >= -0.251 && lim.pitch <= 0.451, JSON.stringify(lim));
+  check('mouse 2b: looking around turns freely (09: a full turn) and pitch stays clamped (no free flight)', Math.abs(lim.yaw) > 1.001 && lim.pitch >= -0.451 && lim.pitch <= 0.451, JSON.stringify(lim));
   await page.mouse.move(800, 300); await page.mouse.down(); await page.mouse.move(700, 320, { steps: 6 }); await page.mouse.up(); await sleep(300);
   const deskLook = (await S(page)).look;
   const bz = await proj(page, 'bezel'); await page.mouse.move(bz.x, bz.y); await sleep(400);

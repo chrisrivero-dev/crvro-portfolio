@@ -81,7 +81,8 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.22;
 
 /* ── camera: three-quarter rest pose + inspection orbit ──────────── */
-const camera = new THREE.PerspectiveCamera(34, VW / VH, 10, 18000);   // 08: far enough for the reading corner framed from across the room on a portrait phone
+const FOV0 = 34;   // the stations' lens; looking around the room widens it (see applyPose)
+const camera = new THREE.PerspectiveCamera(FOV0, VW / VH, 10, 18000);   // 08: far enough for the reading corner framed from across the room on a portrait phone
 const TARGET = new THREE.Vector3(150, -200, 40);
 const VIEWS = {
   threeQuarter: { yaw: 0.40, pitch: 0.22, dist: 2900 },
@@ -100,17 +101,47 @@ delete orbit.target;
 
 // Views may declare fitW: the world width (units) that must stay visible. On a portrait phone that pushes the camera back instead of cropping.
 // `look` is the visitor's own look-around offset (drag), layered on the station's pose and kept within limits by the controller.
+// 09: a full turn in yaw. Up to ±1 rad it is the approved orbit round the desk; beyond that the camera stays put and turns in place
+// (first-person), so turning never swings it through furniture or walls. With no offset the pose is exactly the station's orbit pose.
 const look = { yaw: 0, pitch: 0 };
+const wrapAngle = (a) => a - 2 * Math.PI * Math.round(a / (2 * Math.PI));
+const _dir = new THREE.Vector3();
+let fog0 = null, haze = 0;
+/** The dusk haze thins as the visitor turns away from the desk (and in the reading-corner views, via setHaze), so the far side of the
+ *  room keeps its colour; at the desk, facing it, it is the approved haze. */
+function applyFog(ly) {
+  if (!scene.fog) return;
+  fog0 ||= { near: scene.fog.near, far: scene.fog.far };
+  const k = Math.max(haze, Math.min(1, Math.abs(wrapAngle(ly)) / 1.4));
+  scene.fog.near = fog0.near * (1 + 0.7 * k); scene.fog.far = fog0.far * (1 + 0.6 * k);
+}
+const ORBIT_LOOK = 1.0;   // the approved desk look-around: an orbit of up to ±1 rad; beyond it the camera stops and turns in place
+const _p = new THREE.Vector3();
+function posAt(dist, yaw, pitch) {
+  return _p.set(TARGET.x + dist * Math.sin(yaw) * Math.cos(pitch), TARGET.y + dist * Math.sin(pitch), TARGET.z + dist * Math.cos(yaw) * Math.cos(pitch));
+}
+let keepOut = [];   // furniture the look-around orbit must not enter (the reading corner; filled once it is built)
+const inside = (v) => (!env.bounds || (v.x > env.bounds.x0 + 150 && v.x < env.bounds.x1 - 150 && v.z > env.bounds.z0 + 150 && v.z < env.bounds.z1 - 150)) && !keepOut.some((b) => b.containsPoint(v));
 function applyPose(dYaw = 0, dPitch = 0) {
-  const dist = Math.max(orbit.dist, orbit.fitW ? orbit.fitW / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect) : 0);
-  const yaw = orbit.yaw + look.yaw + dYaw;
-  const pitch = THREE.MathUtils.clamp(orbit.pitch + look.pitch + dPitch, -0.05, 1.5);
-  camera.position.set(
-    TARGET.x + dist * Math.sin(yaw) * Math.cos(pitch),
-    TARGET.y + dist * Math.sin(pitch),
-    TARGET.z + dist * Math.cos(yaw) * Math.cos(pitch),
-  );
-  camera.lookAt(TARGET);
+  const dist = Math.max(orbit.dist, orbit.fitW ? orbit.fitW / (2 * Math.tan(THREE.MathUtils.degToRad(FOV0 / 2)) * camera.aspect) : 0);
+  const ly = look.yaw + dYaw;
+  const pitch = THREE.MathUtils.clamp(orbit.pitch + look.pitch + dPitch, -0.25, 1.5);   // 09: a little below level, so the visitor can look up to the door head
+  // the orbiting part of the look, shortened if it would take the camera out of the room (a portrait phone stands further back)
+  // (it eases back to the rest position as the view comes round behind, so the turn is periodic: 360° lands exactly on the desk view)
+  const w = wrapAngle(ly), m = Math.abs(w);
+  let oy = Math.sign(w) * (m <= ORBIT_LOOK ? m : ORBIT_LOOK * (Math.PI - m) / (Math.PI - ORBIT_LOOK));
+  while (Math.abs(oy) > 0.01 && !inside(posAt(dist, orbit.yaw + oy, pitch))) oy -= Math.sign(oy) * 0.02;
+  camera.position.copy(posAt(dist, orbit.yaw + oy, pitch));
+  const turn = w - oy;
+  applyFog(ly);
+  // a person turning to look round a room sees more of it than the desk lens shows: the lens widens to 54° as the view turns on
+  const fov = FOV0 + 20 * Math.min(1, Math.abs(wrapAngle(turn)) / 1.2);
+  if (Math.abs(camera.fov - fov) > 1e-3) { camera.fov = fov; camera.updateProjectionMatrix(); }
+  if (!turn) { camera.lookAt(TARGET); return; }
+  _dir.subVectors(TARGET, camera.position).normalize();
+  const head = Math.atan2(_dir.x, _dir.z) + turn, down = Math.asin(-_dir.y);
+  _dir.set(Math.sin(head) * Math.cos(down), -Math.sin(down), Math.cos(head) * Math.cos(down));
+  camera.lookAt(_dir.add(camera.position));
 }
 applyPose();
 
@@ -459,6 +490,7 @@ const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasti
 const notes = built.sheet ? buildNotes({ THREE, scene, sheet: built.sheet }) : [];
 const book = env.bookPlaces ? buildNotebook({ THREE, scene, places: env.bookPlaces }) : null;
 const lounge = env.loungePlaces ? buildLounge({ THREE, scene, floorY: env.loungePlaces.floorY, chairAt: env.loungePlaces.chair, tableAt: env.loungePlaces.table, lampAt: env.loungePlaces.lamp, plantAt: env.loungePlaces.plant, rugAt: env.loungePlaces.rug }) : null;
+if (lounge) { keepOut = [lounge.chair, lounge.table, lounge.plant].map((o) => new THREE.Box3().setFromObject(o).expandByScalar(150)); applyPose(); }
 
 // optional per-variant light grade (iteration 02+); A/B/C define none
 env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });
@@ -520,7 +552,7 @@ scene.add(screenObj);
   /** Fly to a view. `endLook` is where the look-around offset ends up (default: centred on the view). */
   function flyTo(view, ms = 1000, alive, endLook = { yaw: 0, pitch: 0 }) {
     const { target, ...pose } = typeof view === 'string' ? viewOf(view) : view;
-    const from = { yaw: orbit.yaw, pitch: orbit.pitch, dist: orbit.dist, fitW: orbit.fitW || 0, t: TARGET.clone(), ly: look.yaw, lp: look.pitch };
+    const from = { yaw: orbit.yaw, pitch: orbit.pitch, dist: orbit.dist, fitW: orbit.fitW || 0, t: TARGET.clone(), ly: endLook.yaw + wrapAngle(look.yaw - endLook.yaw), lp: look.pitch };   // the short way round
     const to = { fitW: 0, ...pose };
     const tt = (target || BASE_TARGET).clone();
     cur.yaw = cur.pitch = tgt.yaw = tgt.pitch = 0;
@@ -532,7 +564,7 @@ scene.add(screenObj);
       applyPose();
     }, alive);
   }
-  function setLook(yaw, pitch) { look.yaw = yaw; look.pitch = pitch; applyPose(); markDirty(); }
+  function setLook(yaw, pitch) { look.yaw = wrapAngle(yaw); look.pitch = pitch; applyPose(); markDirty(); }
   function setView(name) {
     const { target, ...pose } = typeof name === 'string' ? viewOf(name) : name;
     TARGET.copy(target || BASE_TARGET);
@@ -613,7 +645,7 @@ scene.add(screenObj);
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
     tray: built.tray,
-    sheet: built.sheet, mug: built.mug, notes, book, lounge,
+    sheet: built.sheet, mug: built.mug, notes, book, lounge, room: built.room, knee: built.knee,
     /** The right-hand page of the open notebook as a rectangle in the stage's CSS pixels (null if the book is not built or not in view). */
     /** Screen rect of an open-book page ('right' or 'left'), and its outline inside that rect as a clip-path polygon. */
     bookPageRect(side = 'right') {
@@ -626,10 +658,13 @@ scene.add(screenObj);
       // the page's own outline inside that box, in percent: a little perspective makes it a trapezoid, and the DOM page is clipped to it
       return { left, top, width, height, poly: pts.map(([x, y]) => `${(((x - left) / width) * 100).toFixed(2)}% ${(((y - top) / height) * 100).toFixed(2)}%`).join(', ') };
     },
-    get size() { return { vw: VW, vh: VH, fov: camera.fov, aspect: camera.aspect }; },
+    get size() { return { vw: VW, vh: VH, fov: FOV0, aspect: camera.aspect }; },
     driveSlot: machine.localToWorld(new THREE.Vector3(DRIVE.x, bandY + 12, bandFront + 4.6)),
     reduceMotion, run, flyTo, setView, markDirty, suspend, resume, dispose, on: listen,
     look, setLook,
+    /** 0 = the desk's haze; 1 = thinned (reading corner); up to 2 on a portrait phone, which frames the corner from further off. */
+    setHaze(v) { haze = v; applyPose(); markDirty(); },
+    get haze() { return haze; },
     lockParallax: (v) => { parallaxLocked = v; if (v) { tgt.yaw = tgt.pitch = 0; } },
     get frames() { return frames; },
     get suspended() { return suspended; },

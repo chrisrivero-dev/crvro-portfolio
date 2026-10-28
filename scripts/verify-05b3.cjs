@@ -43,19 +43,20 @@ async function dragTouch(p, x0, y0, x1, y1) {
   await dragTouch(p, Math.min(m.x, 360), m.y, Math.min(m.x, 360) - 200, m.y);
   let s2 = await S(p);
   check('touch drag starting on the mug looks around and does not open it', s2.view === 'rest' && s2.yaw !== s.yaw, JSON.stringify([s, s2]));
-  // far swipes reach the limits and stop there
-  for (let i = 0; i < 4; i++) await dragTouch(p, 40, 400, 360, 400);
+  // 09: far swipes keep turning (the room is finished on every side; verify-room.cjs covers the full turn)
+  for (let i = 0; i < 8; i++) await dragTouch(p, 40, 400, 360, 400);
   s = await S(p); await shot(p, 'phone-02-look-left-limit');
-  check('phone: swiping reaches the yaw limit (1.0 rad) and stops', Math.abs(Math.abs(s.yaw) - 1.0) < 0.02, JSON.stringify(s));
+  check('phone: swiping turns past the old 1.0 rad limit', Math.abs(s.yaw) > 1.02, JSON.stringify(s));
+  const s0 = s;
   for (let i = 0; i < 8; i++) await dragTouch(p, 360, 400, 40, 400);
   s = await S(p); await shot(p, 'phone-03-look-right-limit');
-  check('phone: the opposite swipe reaches the other limit', Math.abs(s.yaw + 1.0) < 0.02 || Math.abs(s.yaw - 1.0) < 0.02, JSON.stringify(s));
+  check('phone: the opposite swipe turns the other way', s.yaw !== s0.yaw, JSON.stringify([s0, s]));
   for (let i = 0; i < 4; i++) await dragTouch(p, 200, 150, 200, 700);
   s = await S(p); await shot(p, 'phone-04-look-up-high');
   check('phone: dragging down raises the view to the pitch limit (0.45)', Math.abs(s.pitch - 0.45) < 0.02, JSON.stringify(s));
   for (let i = 0; i < 6; i++) await dragTouch(p, 200, 700, 200, 150);
   s = await S(p); await shot(p, 'phone-05-look-low');
-  check('phone: dragging up lowers the view to the drawer fronts (-0.25)', Math.abs(s.pitch + 0.25) < 0.02, JSON.stringify(s));
+  check('phone: dragging up lowers the view to its limit (-0.45, a little below level)', Math.abs(s.pitch + 0.45) < 0.02, JSON.stringify(s));
   check('look-around never changed the station or URL', s.view === 'rest' && s.url === '/', JSON.stringify(s));
   // tap the mug (aim at it wherever the current look put it)
   m = await mugPt(p);
@@ -104,7 +105,7 @@ async function dragTouch(p, x0, y0, x1, y1) {
   await p.keyboard.press('Escape'); await settled(p, 'rest');
   // keyboard look still obeys the wider limits
   await p.evaluate(() => { for (let i = 0; i < 40; i++) window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', shiftKey: true })); }); await sleep(300);
-  s = await S(p); check('keyboard look stops at the yaw limit', Math.abs(s.yaw) <= 1.0001, JSON.stringify(s));
+  s = await S(p); check('keyboard look keeps turning (no yaw stop)', Math.abs(s.yaw) > 1.0001, JSON.stringify(s));
   await p.evaluate(() => window.__WS__.engine.setLook(0, 0)); 
   // mouse drag looks around, and a drag from the mug does not open it
   await p.mouse.move(dm.x, dm.y); await p.mouse.down(); await p.mouse.move(dm.x - 300, dm.y, { steps: 8 }); await p.mouse.up(); await sleep(400);
