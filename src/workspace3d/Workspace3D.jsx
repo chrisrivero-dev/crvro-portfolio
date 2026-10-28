@@ -322,7 +322,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
 
       {engine && active && (
         <>
-          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · ←/→ stations · Esc back</p>}
+          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · ←/→ · Esc back</p>}
           <div className="ws3d__dock" role="group" aria-label="Studio controls">
             {ContextRow()}
             {disksOpen && !sessionSlug && !ui.held && (

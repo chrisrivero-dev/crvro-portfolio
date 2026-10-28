@@ -110,6 +110,6 @@ export function buildNotes({ THREE, scene, sheet }) {
 export function noteView(THREE, mesh) {
   mesh.updateMatrixWorld(true);
   const down = new THREE.Vector3(0, -1, 0).transformDirection(mesh.matrixWorld);   // the note's bottom edge, in the world
-  const target = mesh.position.clone().addScaledVector(down, 40);                    // a little low, so the page's controls do not cover the stamps
-  return { yaw: Math.atan2(down.x, down.z), pitch: 1.2, dist: 860, fitW: SLIP.w + 50, target };
+  const target = mesh.position.clone().addScaledVector(down, 60);                    // a little low, so the page's controls do not cover the stamps
+  return { yaw: Math.atan2(down.x, down.z), pitch: 1.2, dist: 1080, fitW: SLIP.w + 50, target };
 }
