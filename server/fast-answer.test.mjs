@@ -30,10 +30,10 @@ test('model failure and garbage output fall back, never throw, never cached', as
     assert.equal(r.cacheable, false);
   }
 });
-test('honest unresolved from the model is kept and cacheable', async () => {
+test('honest unresolved from the model is kept but not cached', async () => {
   const r = await answerFast('what is his favorite color zzz', { ...ctx, call: reply({ status: 'unresolved', answer: 'The portfolio does not say.', evidence_ids: [], confidence: 'high' }) });
   assert.equal(r.result.status, 'unresolved');
-  assert.equal(r.cacheable, true);
+  assert.equal(r.cacheable, false);
 });
 test('projects named in the question are always in the evidence', async () => {
   const { gatherEvidence } = await import('./fast-answer.mjs');

@@ -139,7 +139,8 @@ export async function answerFast(question, { corpus, destinationAllowlist, evide
     const shown = new Set(evidence.map((e) => e.id));
     v.result.evidence_ids = v.result.evidence_ids.filter((id) => shown.has(id));
     if (v.result.status === 'answered' && v.result.evidence_ids.length === 0) return done(FALLBACK, false, 'ungrounded');
-    return done(v.result, true, 'groq');
+    // Only grounded answers are cached; an "unresolved" may just mean retrieval missed, so it is re-asked each time.
+    return done(v.result, v.result.status === 'answered', 'groq');
   } catch (err) {
     return done(FALLBACK, false, controller.signal.aborted ? 'timeout' : String(err.message).slice(0, 60));
   } finally {
