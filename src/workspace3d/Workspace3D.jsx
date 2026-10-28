@@ -146,7 +146,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         const v = ctl.state.view;
         if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
         if (v === 'note') { e.preventDefault(); ctl.goPlans(); setAnnounce('Back over the drafting plans.'); return; }
-        if (v === 'plans') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
+        if (v === 'plans' || v === 'mug') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
         if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
         return;
       }
@@ -175,6 +175,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     setDisksOpen(false); setStationsOpen(false);
     if (s === 'desk') ctl.back();
     else if (s === 'plans') ctl.goPlans();
+    else if (s === 'mug') ctl.goMug();
     else if (s.startsWith('plans/')) ctl.inspectNote(s.slice(6));
     else if (s === 'computer') { setMenuOpen(true); ctl.approach(); }
     else if (s === 'disks') { if (ctl.state.held) ctl.putBack(); else ctl.focusTray(); }
@@ -260,6 +261,12 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         </div>
       );
     }
+    if (ui.view === 'mug') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">The coffee mug · “Another shot of AI” · refill();</span>
+        <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
     if (ui.view === 'drive') return (
       <div className="ws3d__row ws3d__row--ctx">
         <span className="ws3d__label">{coarse ? 'Tap a disk to lift it' : 'Click a disk to lift it'}</span>
@@ -269,7 +276,8 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     );
     return (
       <div className="ws3d__row ws3d__row--ctx">
-        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, the disks or the drafting plans' : 'Look around, then click the computer, the disk organizer or the drafting plans'}</span>
+        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, the disks, the plans or the mug' : 'Look around, then click the computer, the disk organizer, the drafting plans or the mug'}</span>
+        <button type="button" className="ws3d__mugbtn" onClick={() => ctl()?.goMug()}>Look at the coffee mug</button>
         {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject {TITLES[ui.session]}</button>}
       </div>
     );
@@ -308,9 +316,10 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && (
+      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.machine ? 'The computer · click to use it'
+          {hover.mug ? 'Coffee mug · click to look closer'
+            : hover.machine ? 'The computer · click to use it'
             : hover.tray ? 'Floppy organizer · click to look closer'
             : hover.sheet ? 'Drafting plans · project notes pinned to a studio drawing · click to look closer'
             : hover.stamp === 'case' ? `${hover.title} · open the case study`

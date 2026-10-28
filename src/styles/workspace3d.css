@@ -247,3 +247,6 @@
 /* phone Stations menu: a compact 2 x 2 grid instead of a tall list (rows stay 44 px) */
 .ws3d__stlist { grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; }
 .ws3d__stlist button { text-align: center; padding: 6px 8px; font-size: 12px; }
+
+/* 05B.3: the mug's keyboard/screen-reader entry is out of sight until it has focus */
+.ws3d__mugbtn:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

@@ -7,6 +7,7 @@
  *   hold      a disk lifted out of the organizer and held in front of the camera for inspection
  *   plans     (05B.1) the camera over the survey sheet; project notes are pinned to it
  *   note      (05B.1) the camera down on one note (`st.note`), reading it square-on
+ *   mug       (05B.3) the camera close on the coffee mug so its lettering reads
  * plus `fill` (the screen fills the viewport just before the expanded interface opens).
  *
  * Every action is "go to state X from wherever things are now": a new action bumps `epoch`, in-flight tweens see alive()
@@ -14,7 +15,9 @@
  * Multi-step actions set `busy` so the page does not write an intermediate state into the URL.
  * Reduced motion: engine.run() collapses each tween into one step (jump cuts). */
 
-const LOOK = { yaw: 0.45, pitchUp: 0.16, pitchDown: 0.2 };    // 05B.1: a little further down, toward the flat files   // look-around limits at the desk (radians)
+// look-around limits at the desk (radians), layered on the rest pose. Yaw orbits the desk (about -0.7 to +1.3 rad from the front on a
+// landscape screen: window wall, filing cabinets, desk, plans); pitch goes from the drawer fronts up to a high view over the desk.
+const LOOK = { yaw: 1.0, pitchUp: 0.45, pitchDown: 0.25 };
 
 import { noteView } from './plans.js';
 
@@ -181,6 +184,14 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     st.view = 'plans'; st.note = null; st.busy = false; emit();
     await flyTo('plans', 1000, alive);
   }
+  /** The coffee mug, close up. Esc, a tap off the mug or Back returns to the desk at the viewpoint the visitor left it. */
+  async function goMug() {
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'mug'; st.note = null; st.busy = false; emit();
+    await flyTo('mug', 900, alive);
+  }
   /** Bring the camera down onto one note so it can be read. */
   async function inspectNote(slug) {
     const m = notes[slug];
@@ -211,13 +222,14 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : [])], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : [])], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
       return { note: n.slug, title: n.title, caseId: n.caseId, stamp: r?.kind || null };
     }
     if (hit && hit.object === engine.sheet) return { sheet: true };
+    if (hit && engine.mug && hit.object.parent === engine.mug) return { mug: true, proxy: !!hit.object.userData.proxy };
     let g = hit?.object;
     while (g && !g.userData.project && g !== engine.machine && g !== engine.tray) g = g.parent;
     if (g === engine.machine) return { machine: true };
@@ -245,9 +257,11 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
       else goPlans();
       return;
     }
+    if (st.view === 'mug') { if (!hit?.mug || hit.proxy) back(); return; }   // the mug close-up: a tap off the mug steps back
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
+    else if (hit?.mug) goMug();
     else if (hit?.machine) approach();
     else if (hit?.tray) focusTray();
   };
@@ -257,10 +271,10 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
       if (!down.dragging && Math.hypot(dx, dy) > 8) { down.dragging = true; engine.stage.classList.add('is-looking'); onHover?.(null); }
       if (down.dragging) {
         const r = engine.stage.getBoundingClientRect();
-        const k = 1.6 / Math.max(r.width, 1);   // a full-width drag turns about 1.6 rad before clamping
+        const k = 2.6 / Math.max(r.width, 1);   // a full-width drag turns about 2.6 rad (about 1.4 rad vertically) before clamping
         engine.setLook(
           THREE.MathUtils.clamp(down.lookY - dx * k, -LOOK.yaw, LOOK.yaw),
-          THREE.MathUtils.clamp(down.lookP + dy * k, -LOOK.pitchDown, LOOK.pitchUp),
+          THREE.MathUtils.clamp(down.lookP + dy * k * 0.55, -LOOK.pitchDown, LOOK.pitchUp),
         );
         return;
       }
@@ -282,7 +296,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */
     nudgeLook(dy, dp) {

@@ -152,7 +152,7 @@ function recorder(page, mode) {
   const low = (await S(page)).look;
   report.measures.collideLookDown = await collisions(page, null);
   await rec('look-down-limit');
-  check('mouse 14: looking down stops at -0.2 rad, camera clear of every object', Math.abs(low.pitch + 0.2) < 0.001 && !report.measures.collideLookDown.inside.length, JSON.stringify({ low, c: report.measures.collideLookDown }));
+  check('mouse 14: looking down stops at -0.25 rad (05B.3), camera clear of every object', Math.abs(low.pitch + 0.25) < 0.001 && !report.measures.collideLookDown.inside.length, JSON.stringify({ low, c: report.measures.collideLookDown }));
   await page.close();
 
   /* ── B. keyboard only ── */

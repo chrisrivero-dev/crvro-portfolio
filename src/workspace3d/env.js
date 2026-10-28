@@ -65,7 +65,8 @@ export const views = {
   restPortrait: { yaw: 0.3, pitch: 0.26, dist: 3000, fitW: 1150, target: new THREE.Vector3(-170, -110, 150) },
   // 05B.1 drafting plans: over the survey sheet, looking down at the pinned notes (fitW keeps both notes on a phone)
   plans:        { yaw: 0.1, pitch: 0.95, dist: 1650, fitW: 860, target: new THREE.Vector3(870, -390, 60) },
-  mug:          { yaw: 0.2,  pitch: 0.16, dist: 620, target: new THREE.Vector3(520, -270, 575) },
+  // 05B.3: the mug close-up, square-on to its lettering (the lettering faces yaw 0.2); fitW keeps the whole mug and its handle on a phone
+  mug:          { yaw: 0.2,  pitch: 0.18, dist: 520, fitW: 190, target: new THREE.Vector3(525, -325, 575) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
 
@@ -355,6 +356,10 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   coffee.castShadow = false;
   // beside the right end of the keyboard and a little toward the visitor, clear of the plans, the disks and the computer
   mugG.position.set(520, TOP + 60, 575);
+  // an invisible, slightly larger cylinder: a fingertip target (the mug itself is about 40 px wide on a phone at the desk view)
+  const mugHit = new THREE.Mesh(new THREE.CylinderGeometry(78, 78, 170, 16), new THREE.MeshBasicMaterial({ visible: false }));
+  mugHit.userData.proxy = true;
+  mugG.add(mugHit);
   scene.add(mugG);
   build.mugTop = new THREE.Vector3(520, TOP + 112, 575);
 
@@ -365,6 +370,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     diskList: disks,
     tray: org,
     sheet,
+    mug: mugG,
   };
 }
 
