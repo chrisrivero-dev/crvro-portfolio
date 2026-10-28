@@ -70,10 +70,10 @@ export const views = {
   mug:          { yaw: 0.2,  pitch: 0.18, dist: 520, fitW: 190, target: new THREE.Vector3(525, -325, 575) },
   // 07: the reading corner from the room side (fitW keeps chair and table in a portrait frame); seated in the chair, looking at the desk;
   // the record player from above its front edge
-  corner:       { yaw: 1.3, pitch: 0.27, dist: 6700, target: new THREE.Vector3(-1100, -950, 3430) },
+  corner:       { yaw: 1.3, pitch: 0.27, dist: 6700, target: new THREE.Vector3(-1000, -1150, 3480) },
   cornerPortrait: { yaw: 1.3, pitch: 0.5, dist: 6000, fitW: 3900, target: new THREE.Vector3(-1000, -1500, 4000) },
   cornerShort:  { yaw: 1.25, pitch: 0.33, dist: 7800, target: new THREE.Vector3(-1150, -1950, 3430) },
-  seat:         { yaw: -0.37, pitch: 0.07, dist: 4040, target: new THREE.Vector3(-100, -250, 200) },
+  seat:         { yaw: -0.385, pitch: 0.066, dist: 3960, target: new THREE.Vector3(-100, -250, 200) },
   record:       { yaw: 1.9,  pitch: 0.85, dist: 1500, target: new THREE.Vector3(-1820, -870, 2120) },
   recordPortrait: { yaw: 1.9, pitch: 0.85, dist: 2900, target: new THREE.Vector3(-1870, -950, 2030) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
@@ -89,11 +89,11 @@ export const bounds = { x0: LEFT_X, x1: 6200, z0: WALL_Z, z1: 7400 };
 
 export const loungePlaces = {
   floorY: FLOOR_Y,
-  chair: { x: -900, z: 3700, rot: 1.95 },                      // back to the window wall, turned toward the desk; the ottoman in front
+  chair: { x: -900, z: 3700, rot: 1.8 },                       // back to the window wall, turned toward the desk; the ottoman in front
   table: { x: -1840, z: 1820, rot: Math.PI / 2 },              // the record console against the wall, at the chair's left hand, out of the desk's view
   lamp: { x: -2080, z: 4450, headX: -640, headZ: 4210 },      // arc lamp: base behind the chair, dome over the reader's right shoulder
   plant: { x: -1940, z: 5480, rot: 0 },
-  rug: { x: -340, z: 3480, w: 3300, d: 2300, rot: 1.95 },
+  rug: { x: -220, z: 3540, w: 3300, d: 2300, rot: 1.8 },
 };
 
 export const bookPlaces = {

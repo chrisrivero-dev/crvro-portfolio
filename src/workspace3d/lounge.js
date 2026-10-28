@@ -96,6 +96,14 @@ function leafCanvas() {
   x.globalCompositeOperation = 'source-over';
   return c;
 }
+/** Snake-plant blade (64 × 256): deep green with lighter cross-bands and a thin yellow-green margin. */
+function snakeCanvas() {
+  const [c, x] = cv(64, 256), r = rng(61);
+  x.fillStyle = '#2c4a2a'; x.fillRect(0, 0, 64, 256);
+  for (let y = 4; y < 256; y += 9 + r() * 7) { x.fillStyle = `rgba(150,180,120,${0.18 + r() * 0.15})`; x.beginPath(); x.ellipse(32, y, 30, 2 + r() * 2.5, (r() - 0.5) * 0.3, 0, Math.PI * 2); x.fill(); }
+  x.fillStyle = '#b7b25a'; x.fillRect(0, 0, 3, 256); x.fillRect(61, 0, 3, 256);
+  return c;
+}
 /** A worn wool rug (512 × 352): rust field, a soft ochre lozenge and a cream border; low contrast so it anchors without competing. */
 function rugCanvas() {
   const [c, x] = cv(512, 352), r = rng(31);
@@ -245,7 +253,7 @@ export function buildLounge({ THREE, scene, floorY, chairAt, tableAt, lampAt, pl
   oCush.rotation.x = -Math.PI / 2;
   oSeat.add(oCush);
   ottoman.add(oSeat);
-  ottoman.position.set(0, 0, 1380);
+  ottoman.position.set(-200, 0, 1560);   // 10: ≈ 11 cm in front of the seat, a little to the reader's right, so it clears the walk past the desk
   ottoman.rotation.y = 0.06;
   const otHit = new THREE.Mesh(keep(new THREE.BoxGeometry(1460, 600, 1200)), new THREE.MeshBasicMaterial({ visible: false }));
   otHit.position.y = 300; otHit.userData.proxy = true;
@@ -332,11 +340,11 @@ export function buildLounge({ THREE, scene, floorY, chairAt, tableAt, lampAt, pl
   tt.position.set(-TW / 2 + PW / 2 + 70, TH + 18, 20);
   tt.rotation.y = 0.08;
   table.add(tt);
-  // the far end of the console: two books flat, and a small trailing pothos in a cream pot
+  // the far end of the console: two books flat (the snake plant stands beside them)
   table.add(rbox(520, 50, 380, 6, new THREE.MeshStandardMaterial({ color: '#2e3b33', roughness: 0.8 }), TW / 2 - 330, TH + 25, -60));
   table.add(rbox(470, 40, 340, 6, new THREE.MeshStandardMaterial({ color: '#8a3e22', roughness: 0.8 }), TW / 2 - 320, TH + 70, -50));
 
-  /* ── leaves: one shared split-leaf texture; the monstera and the console's small pothos ── */
+  /* ── leaves: the monstera's split-leaf texture; the console's snake plant has its own banded blades ── */
   const leafM = new THREE.MeshStandardMaterial({ map: tex(leafCanvas(), 4), alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.55 });
   const leafG = (() => { const g = new THREE.PlaneGeometry(1, 1, 4, 4); g.translate(0, 0.5, 0); const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i); p.setZ(i, 0.14 * x * x * 4 - 0.1 * y * y); } g.computeVertexNormals(); return keep(g); })();
   const stemM = new THREE.MeshStandardMaterial({ color: '#3d5a2c', roughness: 0.7 });
@@ -350,16 +358,36 @@ export function buildLounge({ THREE, scene, floorY, chairAt, tableAt, lampAt, pl
     l.rotation.order = 'YXZ'; l.rotation.y = az; l.rotation.x = Math.PI / 2 - elev;
     grp.add(l);
   };
-  // pothos on the console: a small cream pot with a few leaves spilling over the edge
-  const pothos = new THREE.Group();
-  pothos.add(mesh(new THREE.CylinderGeometry(110, 85, 190, 20), new THREE.MeshStandardMaterial({ color: '#e4d8bf', roughness: 0.35 }), 0, 95, 0));
-  const rp = rng(41);
-  for (let i = 0; i < 7; i++) {
-    const az = -0.8 + i * 0.45 + rp() * 0.2, reach = 120 + rp() * 160;
-    leaf(pothos, new THREE.Vector3(0, 180, 0), new THREE.Vector3(Math.sin(az) * reach, 200 - rp() * 160, Math.cos(az) * reach), az, -0.2 - rp() * 0.6, 130 + rp() * 60, 4);
+  // a small snake plant on the console: upright banded blades in a two-tone ceramic pot, standing clear of the books and the turntable
+  const snake = new THREE.Group();
+  snake.name = 'snake-plant';
+  const potW = new THREE.MeshStandardMaterial({ color: '#ece6da', roughness: 0.45 });
+  const potB = new THREE.MeshStandardMaterial({ color: '#d6c3a2', roughness: 0.8 });
+  snake.add(mesh(new THREE.CylinderGeometry(98, 84, 170, 28), potW, 0, 85, 0));
+  snake.add(mesh(new THREE.CylinderGeometry(100, 98, 60, 28), potB, 0, 200, 0));
+  snake.add(mesh(new THREE.CylinderGeometry(88, 88, 8, 24), new THREE.MeshStandardMaterial({ color: '#2a1e15', roughness: 1 }), 0, 222, 0));
+  const bladeM = new THREE.MeshStandardMaterial({ map: tex(snakeCanvas(), 4), side: THREE.DoubleSide, roughness: 0.5 });
+  const bladeG = (() => {
+    const g = new THREE.PlaneGeometry(1, 1, 2, 12); g.translate(0, 0.5, 0);
+    const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const v = p.getY(i), w = Math.pow(Math.sin(Math.PI * (0.12 + v * 0.86)), 0.7) * (1 - v * 0.25);   // narrow at the soil, widest low, tapering to a point
+      p.setX(i, p.getX(i) * w); p.setZ(i, 0.06 * v * v - Math.abs(p.getX(i)) * 0.25);                     // a slight lean and a shallow channel
+    }
+    g.computeVertexNormals(); return keep(g);
+  })();
+  const rs = rng(53);
+  for (let i = 0; i < 9; i++) {
+    const a = i * 2.4 + rs() * 0.4, r0 = 12 + rs() * 38, h = 430 + rs() * 340 - (i > 6 ? 150 : 0);
+    const bl = new THREE.Mesh(bladeG, bladeM);
+    bl.scale.set(58 + rs() * 22, h, 58);
+    bl.position.set(Math.sin(a) * r0, 216, Math.cos(a) * r0);
+    bl.rotation.order = 'YXZ'; bl.rotation.y = a + (rs() - 0.5) * 0.8; bl.rotation.x = 0.04 + rs() * 0.12;        // upright, a few degrees out from the centre
+    bl.castShadow = true; bl.receiveShadow = true;
+    snake.add(bl);
   }
-  pothos.position.set(TW / 2 - 200, TH, 220);
-  table.add(pothos);
+  snake.position.set(TW / 2 - 160, TH, 250);
+  table.add(snake);
 
   /* ── the monstera: a glazed planter on a low walnut stand, a dozen split leaves ── */
   const plant = new THREE.Group();
@@ -370,10 +398,12 @@ export function buildLounge({ THREE, scene, floorY, chairAt, tableAt, lampAt, pl
   plant.add(mesh(new THREE.CylinderGeometry(300, 220, POT, 32), new THREE.MeshStandardMaterial({ color: '#d9cbb0', roughness: 0.3 }), 0, STAND + 30 + POT / 2, 0));
   plant.add(mesh(new THREE.CylinderGeometry(280, 280, 10, 28), new THREE.MeshStandardMaterial({ color: '#2a1e15', roughness: 1 }), 0, STAND + 30 + POT - 30, 0));
   const soil = new THREE.Vector3(0, STAND + POT, 0), rm = rng(17);
-  for (let i = 0; i < 14; i++) {
-    const az = 0.1 + ((i * 0.618) % 1) * 1.9 + rm() * 0.15, h = 250 + rm() * 1150, reach = 120 + rm() * 300 + (h < 650 ? 220 : 0);   // leaves fan away from the wall (+x) and the chair (−z)
+  // 10: an upright, bushy crown. Leaves turn toward the room and the window wall's open side (+x / +z) and never toward the chair (−z),
+  // so from the corner views the foliage frames the chair instead of crossing its back; low leaves reach out, high ones stay close.
+  for (let i = 0; i < 18; i++) {
+    const az = 0.12 + ((i * 0.618) % 1) * 1.65, h = 300 + ((i * 0.381) % 1) * 1100, reach = 140 + rm() * 160 + (h < 700 ? 220 : h < 1000 ? 100 : 0);
     const to = new THREE.Vector3(Math.sin(az) * reach, STAND + POT + h, Math.cos(az) * reach);
-    leaf(plant, soil.clone().add(new THREE.Vector3(Math.sin(az) * 40, 0, Math.cos(az) * 40)), to, az, 0.1 + rm() * 0.55, 470 + rm() * 260, 10);
+    leaf(plant, soil.clone().add(new THREE.Vector3(Math.sin(az) * 50, 0, Math.cos(az) * 50)), to, az, 0.15 + rm() * 0.35, 520 + rm() * 240, 10);
   }
   plant.position.set(plantAt.x, floorY, plantAt.z);
   plant.rotation.y = plantAt.rot || 0;
