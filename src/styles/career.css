@@ -9,9 +9,10 @@
 .career-roles, .career-hl, .career-contact { list-style: none; margin: 0; padding: 0; }
 .career-role, .career-hlitem { padding: 0.95em 0 1em; border-top: 1px solid var(--career-rule, rgba(128, 128, 128, 0.35)); }
 .career-role:first-child, .career-hlitem:first-child { border-top: 0; padding-top: 0; }
-.career-page .career-dates { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.78em; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 0.3em; color: var(--career-accent, inherit); }
-.career-page .career-title { font-size: 1.08em; line-height: 1.25; margin: 0 0 0.25em; font-weight: 650; }
-.career-page .career-employer { margin: 0 0 0.5em; font-size: 0.92em; opacity: 0.85; }
+.career-page .career-dates { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.78em; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.55em; color: var(--career-accent, inherit); }
+.career-page .career-title { font-size: 1.1em; line-height: 1.25; margin: 0 0 0.2em; font-weight: 700; color: var(--career-ink, inherit); }
+.career-page .career-employer { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.82em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 0.2em; color: var(--career-ink, inherit); }
+.career-page .career-meta { color: var(--career-soft, inherit); letter-spacing: 0.04em; }
 .career-page .career-summary { margin: 0 0 0.5em; }
 .career-does { margin: 0 0 0.6em; padding-left: 1.1em; }
 .career-does li { margin: 0 0 0.35em; }
@@ -20,8 +21,8 @@
 .career-link { color: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
 .career-contact li { padding: 0.55em 0; border-top: 1px solid var(--career-rule, rgba(128, 128, 128, 0.35)); }
 .career-contact li:first-child { border-top: 0; }
-.career-contact span { opacity: 0.78; }
-.career-page .career-note { font-size: 0.9em; opacity: 0.8; margin-top: 1em; }
+.career-contact span { color: var(--career-soft, inherit); }
+.career-page .career-note { font-size: 0.9em; color: var(--career-soft, inherit); margin-top: 1em; }
 
 /* ── LO-FI page ───────────────────────────────────────────────── */
 .career-flat { --career-accent: var(--accent-gold, #896c38); --career-rule: var(--rule, rgba(128, 128, 128, 0.35)); }
@@ -33,8 +34,8 @@
 
 /* ── the notebook's reading surface (3D room): real DOM on the open book's right-hand page ──
  * Placed by Workspace3D from the page's projected corners (left/top/width/height); --pw is its width, which sets the type size. */
-.nb-paper {
-  --career-accent: #8a3e22;
+.nb-sheet {
+  --career-accent: #8a3e22; --career-ink: #1a140d; --career-soft: #4d4134;
   --career-rule: rgba(60, 48, 32, 0.28);
   position: absolute; z-index: 56; box-sizing: border-box; display: flex; flex-direction: column;
   color: #201b14; font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -45,9 +46,10 @@
     linear-gradient(to right, rgba(70, 105, 140, 0.16) 1px, transparent 1px);
   background-size: auto, calc(var(--pw, 400px) / 25.6) calc(var(--pw, 400px) / 25.6), calc(var(--pw, 400px) / 25.6) calc(var(--pw, 400px) / 25.6);
   box-shadow: inset 0 0 0 1px rgba(90, 70, 40, 0.18), inset 0 0 34px rgba(120, 85, 40, 0.22), 0 1px 3px rgba(0, 0, 0, 0.4);
-  animation: nb-in 0.3s ease-out both;
+  animation: nb-in 0.18s ease-out both; -webkit-text-fill-color: currentColor; color-scheme: light;
 }
-.nb-paper[hidden] { display: none; }
+.nb-sheet * { -webkit-text-fill-color: currentColor; }
+.nb-sheet[hidden] { display: none; }
 .nb-tabs { flex: none; display: flex; gap: 2px; padding: 5px 7% 0 11%; border-bottom: 1px solid var(--career-rule); }
 .nb-tabs button {
   flex: 1 1 0; min-width: 0; min-height: 40px; padding: 6px 4px; cursor: pointer; background: transparent; color: #4a4033;
@@ -56,18 +58,44 @@
 }
 .nb-tabs button:hover { color: #201b14; background: rgba(138, 62, 34, 0.08); }
 .nb-tabs button[aria-current="page"] { color: #201b14; border-bottom-color: var(--career-accent); }
-.nb-paper button:focus-visible, .nb-paper a:focus-visible { outline: 2px solid #8a3e22; outline-offset: 2px; }
+.nb-sheet button:focus-visible, .nb-sheet a:focus-visible, .nb-body:focus-visible { outline: 2px solid #8a3e22; outline-offset: 2px; }
 .nb-body {
   flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   padding: 3.5% 5.5% 6% 10%; font-size: clamp(14px, calc(var(--pw, 400px) * 0.034), 16.5px); line-height: 1.45;
-  scrollbar-width: thin; scrollbar-color: rgba(90, 70, 40, 0.45) transparent; animation: nb-in 0.3s ease-out 0.12s both;
+  scrollbar-width: thin; scrollbar-color: rgba(90, 70, 40, 0.55) transparent; outline: none;
 }
 @keyframes nb-in { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .nb-paper, .nb-body { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .nb-sheet { animation: none; } }
+.nb-more {
+  position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 2; min-height: 30px; padding: 3px 12px; cursor: pointer; white-space: nowrap;
+  font: 700 11px/1 var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); letter-spacing: 0.08em; text-transform: uppercase;
+  color: #fbf4e4; background: #5a3a22; border: 0; border-radius: 999px; box-shadow: 0 2px 6px rgba(40, 25, 10, 0.35);
+}
+.nb-paper[data-more]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; pointer-events: none; background: linear-gradient(rgba(239, 230, 207, 0), #efe6cf 85%); }
+/* the left-hand page: overview and an index of the facing page */
+.nb-index .nb-body { padding: 7% 7% 6% 9%; }
+.career-index .career-k { display: block; margin: 0 0 0.6em; }
+.career-index .career-h { font-size: 1.05em; }
+.career-facts { margin: 0 0 1.3em; }
+.career-facts div { display: grid; grid-template-columns: 9.5em 1fr; gap: 0.2em 0.8em; padding: 0.45em 0; border-top: 1px solid var(--career-rule); }
+.career-facts dt { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.72em; letter-spacing: 0.06em; text-transform: uppercase; color: var(--career-soft); padding-top: 0.25em; }
+.career-facts dd { margin: 0; color: var(--career-ink); font-weight: 600; }
+.career-index-h { margin-top: 0.4em !important; }
+.career-toc { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+.career-toc button {
+  display: grid; width: 100%; text-align: left; gap: 0.1em; padding: 0.6em 0.4em 0.6em 2em; position: relative; cursor: pointer; font: inherit;
+  color: var(--career-ink); background: transparent; border: 0; border-top: 1px dashed var(--career-rule); counter-increment: toc;
+}
+.career-toc button::before { content: counter(toc, upper-roman) "."; position: absolute; left: 0.2em; top: 0.75em; font: 700 0.75em/1 var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); color: var(--career-accent); }
+.career-toc button:hover { background: rgba(138, 62, 34, 0.08); }
+.career-toc-a { font-weight: 700; }
+.career-toc-b { color: var(--career-soft); font-size: 0.92em; }
+.career-toc-c { font-family: var(--font-mono, "JetBrains Mono", ui-monospace, Menlo, monospace); font-size: 0.72em; letter-spacing: 0.06em; text-transform: uppercase; color: var(--career-accent); }
+.career-index-note { color: var(--career-soft); }
 @media (pointer: coarse) { .nb-tabs button { min-height: 44px; } }
 
 /* touch: links on the paper are real tap targets */
 @media (pointer: coarse) {
-  .nb-paper .career-link { display: inline-flex; align-items: center; min-height: 44px; }
-  .nb-paper .career-contact li { padding: 0.15em 0; }
+  .nb-sheet .career-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .nb-sheet .career-contact li { padding: 0.15em 0; }
 }

@@ -40,7 +40,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   check('exactly one computer, and the 3D tray holds seven registry disks', await page.evaluate(() => window.__WS__.engine.diskList.length) === 7);
   // 05A: the dock is a station switcher plus actions for the current station
   const chips = await page.evaluate(() => [...document.querySelectorAll('.ws3d__stations button')].map((b) => b.textContent.trim() + (b.getAttribute('aria-current') ? '*' : '')));
-  check('station switcher lists Desk, Computer, Disk tray, Drafting plans, Career notebook with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans', 'Career notebook']), JSON.stringify(chips));
+  check('station switcher lists Desk, Computer, Disk tray, Drafting plans, Career notebook, Reading corner with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans', 'Career notebook', 'Reading corner']), JSON.stringify(chips));
   // focus order of the room, recorded for the report
   await page.evaluate(() => { window.scrollTo(0, 0); document.activeElement.blur(); });
   const order = [];

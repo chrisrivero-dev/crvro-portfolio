@@ -13,8 +13,7 @@ Built on `2d07974` (production). Branch `feature/crvro-3d-career-notebook`, work
 
 ## What was not built
 - **Résumé PDF.** None is approved (every draft carries a home city and phone number). The download action is left out.
-- **Chair: not built.** See the verdict in the delivery report: the floor is not in the frame, and a chair large enough to read would hide the cabinet.
-- **Record player: concept only.** Fits the shelf's free half on landscape, but the notebook uses that half on portrait. Placement and audio need a decision.
+- **Chair and record player:** first proposed only; built in iteration 07 (`docs/iteration-07-reading-corner.md`).
 
 ## Cost
 See the delivery report for numbers (bundle, draw calls, textures, heap). The notebook is about 21 more draw calls and five more textures; nothing runs while it is still.

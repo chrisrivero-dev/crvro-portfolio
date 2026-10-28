@@ -8,6 +8,9 @@
  *   plans     (05B.1) the camera over the survey sheet; project notes are pinned to it
  *   note      (05B.1) the camera down on one note (`st.note`), reading it square-on
  *   mug       (05B.3) the camera close on the coffee mug so its lettering reads
+ *   corner    (07) the reading corner by the window: lounge chair, side table, record player
+ *   seat      (07) seated in the lounge chair, looking at the desk
+ *   record    (07) the record player close up; `st.playing` while it turns (silent; it stops when the camera leaves)
  *   book      (06) the camera straight over the open career notebook (`st.page`: work, highlights or resume); the words are DOM laid on its page
  * plus `fill` (the screen fills the viewport just before the expanded interface opens).
  *
@@ -31,9 +34,9 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   for (const [slug, d] of Object.entries(disks)) home[slug] = { parent: d.parent, pos: d.position.clone(), quat: d.quaternion.clone(), loc: 'home' };
 
   let epoch = 0;
-  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0 };
+  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
-  const emit = () => { syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
@@ -283,6 +286,62 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     st.page = page; emit();
   }
 
+  /* ── 07: the reading corner ── */
+  const lounge = engine.lounge;
+  async function goCorner() {
+    if (!lounge) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'corner'; st.note = null; st.page = null; st.busy = false; emit();
+    await flyTo('corner', 1000, alive);
+  }
+  /** Sit in the lounge chair: the camera at a seated eye height, looking across at the desk. Back returns to the desk view. */
+  async function sit() {
+    if (!lounge) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'seat'; st.note = null; st.page = null; st.busy = false; emit();
+    await flyTo('seat', 1100, alive);
+  }
+  /** The record player, close up. A tap on it (or Play) starts and stops it. */
+  async function inspectRecord() {
+    if (!lounge) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'record'; st.note = null; st.page = null; st.busy = false; emit();
+    await flyTo('record', 900, alive);
+  }
+  // the platter turns at 33⅓ rpm only while playing: a rAF loop that exists only then, and only while the page is shown and motion is allowed
+  let spinRaf = 0, spinA = 0, spinT = 0, armTok = 0;
+  const spinStep = (now) => {
+    spinRaf = 0;
+    if (!st.playing || engine.suspended || document.hidden) return;
+    spinA += ((now - (spinT || now)) / 1000) * ((33.333 * 2 * Math.PI) / 60);
+    spinT = now;
+    lounge.spin(spinA);
+    markDirty();
+    spinRaf = requestAnimationFrame(spinStep);
+  };
+  const startSpin = () => { if (!spinRaf && !engine.reduceMotion.matches) { spinT = 0; spinRaf = requestAnimationFrame(spinStep); } };
+  const stopSpin = () => { cancelAnimationFrame(spinRaf); spinRaf = 0; };
+  const onVis = () => { if (document.hidden) stopSpin(); else if (st.playing) startSpin(); };
+  document.addEventListener('visibilitychange', onVis);
+  function setPlaying(on) {
+    if (!lounge || st.playing === on) return;
+    st.playing = on;
+    const tok = ++armTok, from = lounge.armT ?? (on ? 0 : 1);
+    if (!on) stopSpin();
+    run(on ? 900 : 700, (e) => { lounge.armT = from + ((on ? 1 : 0) - from) * e; lounge.armTo(lounge.armT); }, () => armTok === tok)
+      .then((done) => { if (done && on && st.playing) startSpin(); });
+  }
+  function togglePlay() {
+    if (st.view !== 'record') return inspectRecord();
+    setPlaying(!st.playing); emit();
+  }
+
   /** Menu entry chosen: the screen fills the viewport, then the page takes over (the owner swaps the layers). */
   async function launch(entry) {
     const alive = mine();
@@ -302,7 +361,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : [])], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : [])], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
@@ -310,6 +369,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     }
     if (hit && hit.object === engine.sheet) return { sheet: true };
     if (hit && engine.mug && hit.object.parent === engine.mug) return { mug: true, proxy: !!hit.object.userData.proxy };
+    if (hit && lounge) { let o = hit.object; while (o && o !== lounge.player && o !== lounge.chair && o !== lounge.table) o = o.parent; if (o === lounge.player) return { player: true }; if (o === lounge.chair) return { chair: true }; if (o === lounge.table) return { table: true }; }
     if (hit && book) { let o = hit.object; while (o && o !== book.group) o = o.parent; if (o) return { book: true }; }
     let g = hit?.object;
     while (g && !g.userData.project && g !== engine.machine && g !== engine.tray) g = g.parent;
@@ -340,11 +400,16 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     }
     if (st.view === 'mug') { if (!hit?.mug || hit.proxy) back(); return; }   // the mug close-up: a tap off the mug steps back
     if (st.view === 'book') { if (!hit?.book) back(); return; }               // the open notebook: a tap off the book steps back to the desk
+    if (st.view === 'record') { if (hit?.player || hit?.table) togglePlay(); else if (hit?.chair) sit(); else back(); return; }   // the record player: a tap on it plays or stops it
+    if (st.view === 'seat') { if (hit?.player) inspectRecord(); else back(); return; }         // seated: a tap anywhere stands up, back at the desk
+    if (st.view === 'corner') { if (hit?.chair) sit(); else if (hit?.player || hit?.table) inspectRecord(); else back(); return; }
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
     else if (hit?.mug) goMug();
     else if (hit?.book) openBook('work');
+    else if (hit?.chair) sit();
+    else if (hit?.player || hit?.table) inspectRecord();
     else if (hit?.machine) approach();
     else if (hit?.tray) focusTray();
   };
@@ -374,12 +439,12 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     engine.stage.removeEventListener('pointerdown', onDown);
     window.removeEventListener('pointerup', onUp);
     engine.stage.removeEventListener('pointermove', onMove);
-    epoch++; bookTok++; offResize();
+    epoch++; bookTok++; armTok++; offResize(); stopSpin(); document.removeEventListener('visibilitychange', onVis);
   };
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay,
     pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */

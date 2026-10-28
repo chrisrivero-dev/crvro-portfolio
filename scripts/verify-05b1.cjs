@@ -194,7 +194,7 @@ function recorder(page, mode) {
   await page.tap('.ws3d__stbtn'); await sleep(300); await rec('stations-menu');
   const menu = await page.$$eval('#ws-stmenu button', (bs) => bs.map((b) => ({ t: b.textContent, h: Math.round(b.getBoundingClientRect().height), cur: b.getAttribute('aria-current') })));
   const focused = await page.evaluate(() => document.activeElement?.textContent);
-  check('touch 2: the menu lists the five stations, marks the current one, takes focus, 44px rows', menu.length === 5 && menu.every((m) => m.h >= 44) && menu[0].cur === 'location' && focused === 'Desk', JSON.stringify({ menu, focused }));
+  check('touch 2: the menu lists the six stations (07: + reading corner), marks the current one, takes focus, 44px rows', menu.length === 6 && menu.every((m) => m.h >= 44) && menu[0].cur === 'location' && focused === 'Desk', JSON.stringify({ menu, focused }));
   await page.tap('#ws-stmenu li:nth-child(4) button');
   await settled(page, 'plans', '/#plans'); await rec('plans');
   report.measures.notesPhonePlans = { pe: await noteSize(page, 'parcel-engine'), gr: await noteSize(page, 'groundrules') };

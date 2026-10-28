@@ -9,12 +9,18 @@
 //   /#mug              (05B.3) the coffee mug, close up (reached by tapping the mug; not one of the listed stations)
 //   /#career           (06) the career notebook, open at its first page (work history)
 //   /#career/<page>    (06) one notebook page: work, highlights or resume. An unknown page falls back to /#career.
+//   /#corner           (07) the reading corner by the window: the lounge chair, the side table and the record player
+//   /#corner/seat      (07) seated in the lounge chair, looking at the desk
+//   /#corner/record    (07) the record player, close up (it plays silently; it stops when you leave)
 // In LO-FI (no 3D engine) the same hashes open the plain career page instead; see App.jsx.
 import { PLAN_NOTE_SLUGS } from '../data/planNotes.js';
 import { CAREER_PAGE_IDS } from '../data/career.js';
 
-export const STATIONS = ['desk', 'computer', 'disks', 'plans', 'career'];
-export const STATION_LABEL = { desk: 'Desk', computer: 'Computer', disks: 'Disk tray', plans: 'Drafting plans', career: 'Career notebook' };
+export const STATIONS = ['desk', 'computer', 'disks', 'plans', 'career'];   // the ←/→ cycle
+/** The station switcher: the cycle plus the reading corner, a side spot like the mug (reached from the switcher or L, not by ←/→). */
+export const SWITCHER = [...STATIONS, 'corner'];
+export const STATION_LABEL = { desk: 'Desk', computer: 'Computer', disks: 'Disk tray', plans: 'Drafting plans', career: 'Career notebook', corner: 'Reading corner' };
+export const CORNER_SPOTS = ['seat', 'record'];
 export const isCareerHash = (hash) => /^#career(\/|$)/.test(hash || '');
 /** The notebook page a hash names (null when it is not a career hash). */
 export function careerPageFromHash(hash) {
@@ -29,6 +35,9 @@ export function stationFromHash(hash) {
   if (hash === '#disks') return 'disks';
   if (hash === '#plans') return 'plans';
   if (hash === '#mug') return 'mug';
+  if (hash === '#corner') return 'corner';
+  const c = /^#corner\/([a-z]+)$/.exec(hash);
+  if (c) return CORNER_SPOTS.includes(c[1]) ? `corner/${c[1]}` : 'corner';
   const cp = careerPageFromHash(hash);
   if (cp) return cp === 'work' ? 'career' : `career/${cp}`;
   const n = /^#plans\/([a-z0-9-]+)$/.exec(hash);
@@ -37,7 +46,7 @@ export function stationFromHash(hash) {
   return m ? `disk/${m[1]}` : null;
 }
 export const hrefForStation = (s) => (s === 'desk' ? '/' : `/#${s}`);
-export const baseStation = (s) => (s === 'mug' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s && s.startsWith('career/') ? 'career' : s);
+export const baseStation = (s) => (s === 'mug' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s && s.startsWith('career/') ? 'career' : s && s.startsWith('corner/') ? 'corner' : s);
 
 /** The station a controller state stands for, or null while it is moving between states (nothing is written to the URL then). */
 export function stationOfUi(ui) {
@@ -49,6 +58,9 @@ export function stationOfUi(ui) {
   if (ui.view === 'plans') return 'plans';
   if (ui.view === 'mug') return 'mug';
   if (ui.view === 'note' && ui.note) return `plans/${ui.note}`;
+  if (ui.view === 'corner') return 'corner';
+  if (ui.view === 'seat') return 'corner/seat';
+  if (ui.view === 'record') return 'corner/record';
   if (ui.view === 'book') return !ui.page || ui.page === 'work' ? 'career' : `career/${ui.page}`;
   return null;
 }

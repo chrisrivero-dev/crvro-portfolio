@@ -14,6 +14,7 @@ import { makeCanvas, drawGrain, drawContactShadow } from './textures.js';
 import * as props from './props.js';
 import * as env from './env.js';
 import { buildNotes } from './plans.js';
+import { buildLounge } from './lounge.js';
 import { buildNotebook } from './notebook.js';
 import { setupSteam } from './steam.js';
 
@@ -457,6 +458,7 @@ machine.add(glass);
 const built = env.build({ THREE, scene, D, props, mesh, machine, plastic, plasticDark, plasticDeep, rubber, renderer });
 const notes = built.sheet ? buildNotes({ THREE, scene, sheet: built.sheet }) : [];
 const book = env.bookPlaces ? buildNotebook({ THREE, scene, places: env.bookPlaces }) : null;
+const lounge = env.loungePlaces ? buildLounge({ THREE, scene, floorY: env.loungePlaces.floorY, chairAt: env.loungePlaces.chair, tableAt: env.loungePlaces.table, lampAt: env.loungePlaces.lamp }) : null;
 
 // optional per-variant light grade (iteration 02+); A/B/C define none
 env.lighting?.({ THREE, scene, renderer, key, deskLamp, fill, rim, phosphor, D });
@@ -611,11 +613,14 @@ scene.add(screenObj);
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
     tray: built.tray,
-    sheet: built.sheet, mug: built.mug, notes, book,
+    sheet: built.sheet, mug: built.mug, notes, book, lounge,
     /** The right-hand page of the open notebook as a rectangle in the stage's CSS pixels (null if the book is not built or not in view). */
-    bookPageRect() {
+    /** Screen rect of an open-book page ('right' or 'left'), and its outline inside that rect as a clip-path polygon. */
+    bookPageRect(side = 'right') {
       if (!book) return null;
-      const pts = book.pageCorners().map((p) => { p.project(camera); return [(p.x * 0.5 + 0.5) * VW, (-p.y * 0.5 + 0.5) * VH]; });
+      const pts = (side === 'left' ? book.leftCorners() : book.pageCorners()).map((p) => { p.project(camera); return [(p.x * 0.5 + 0.5) * VW, (-p.y * 0.5 + 0.5) * VH]; });
+      const cx = pts.reduce((a, q) => a + q[0], 0) / 4, cy = pts.reduce((a, q) => a + q[1], 0) / 4;
+      pts.sort((a, b) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));   // a clean outline whatever order the corners came in
       const xs = pts.map((q) => q[0]), ys = pts.map((q) => q[1]);
       const left = Math.min(...xs), top = Math.min(...ys), width = Math.max(...xs) - left, height = Math.max(...ys) - top;
       // the page's own outline inside that box, in percent: a little perspective makes it a trapezoid, and the DOM page is clipped to it

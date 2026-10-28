@@ -13,10 +13,10 @@ import CrtScreen from './CrtScreen.jsx';
 import { DISK_PROJECTS, CASE_IDS } from '../data/caseIds.js';
 import { PLAN_NOTE_PROJECTS } from '../data/planNotes.js';
 import { CAREER_PAGES } from '../data/career.js';
-import { PAGE_VIEW } from '../components/CareerContent.jsx';
+import { PAGE_VIEW, CareerIndex } from '../components/CareerContent.jsx';
 import { EXPERIENCES, hrefFor } from '../lib/experiences.js';
 import { navigate } from '../lib/location.js';
-import { STATIONS, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
+import { STATIONS, SWITCHER, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
 import '../styles/workspace3d.css';
 
 const supportsWebGL2 = () => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; } };
@@ -31,11 +31,17 @@ function NotebookReader({ rect, page, onPage, onProof, paperRef }) {
   const idx = Math.max(0, CAREER_PAGES.findIndex((p) => p.id === page));
   const cur = CAREER_PAGES[idx];
   const View = PAGE_VIEW[cur.id];
+  // more text below the fold: a "continues" cue at the foot of the page, gone once the reader reaches the end
+  const bodyRef = useRef(null);
+  const [more, setMore] = useState(false);
+  const measure = () => { const b = bodyRef.current; setMore(!!b && b.scrollHeight - b.scrollTop - b.clientHeight > 8); };
+  useEffect(() => { measure(); }, [rect, page]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <section
       ref={paperRef}
-      className="nb-paper"
+      className="nb-sheet nb-paper"
       data-page={cur.id}
+      data-more={more || undefined}
       aria-label={`Career notebook, page ${idx + 1} of ${CAREER_PAGES.length}: ${cur.label}`}
       hidden={!rect}
       style={rect ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height, clipPath: `polygon(${rect.poly})`, '--pw': `${rect.width}px` } : undefined}
@@ -45,10 +51,28 @@ function NotebookReader({ rect, page, onPage, onProof, paperRef }) {
           <button key={p.id} type="button" aria-current={p.id === cur.id ? 'page' : undefined} onClick={() => onPage(p.id)}><span aria-hidden="true">{p.short} </span>{p.tab}</button>
         ))}
       </nav>
-      <div className="nb-body" key={cur.id}>
+      <div className="nb-body" key={cur.id} ref={bodyRef} onScroll={measure} tabIndex={0} aria-label={`${cur.label}, scrollable`}>
         <View headingProps={{ tabIndex: -1 }} onProof={onProof} onWork={() => onPage('work')} />
       </div>
+      {more && (
+        <button type="button" className="nb-more" onClick={() => bodyRef.current?.scrollBy({ top: bodyRef.current.clientHeight * 0.8, behavior: 'smooth' })}>
+          Continued below <span aria-hidden="true">↓</span>
+        </button>
+      )}
     </section>
+  );
+}
+
+/** The left-hand page of the open spread (wide screens only): an overview and an index of the page on the right. */
+function NotebookIndex({ rect, page, onPick }) {
+  return (
+    <aside
+      className="nb-sheet nb-index"
+      aria-label="Notebook overview"
+      style={{ left: rect.left, top: rect.top, width: rect.width, height: rect.height, clipPath: `polygon(${rect.poly})`, '--pw': `${rect.width}px` }}
+    >
+      <div className="nb-body"><CareerIndex page={page} onPick={onPick} /></div>
+    </aside>
   );
 }
 
@@ -174,7 +198,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         const v = ctl.state.view;
         if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
         if (v === 'note') { e.preventDefault(); ctl.goPlans(); setAnnounce('Back over the drafting plans.'); return; }
-        if (v === 'plans' || v === 'mug' || v === 'book') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
+        if (v === 'plans' || v === 'mug' || v === 'book' || v === 'corner' || v === 'seat' || v === 'record') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
         if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
         return;
       }
@@ -184,6 +208,8 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       else if (k === 'd') { e.preventDefault(); goStation('disks'); }
       else if (k === 'p') { e.preventDefault(); goStation('plans'); }
       else if (k === 'n') { e.preventDefault(); goStation('career'); }
+      else if (k === 'l') { e.preventDefault(); goStation('corner'); }
+      else if (k === ' ' && ctl.state.view === 'record' && !e.target.closest?.('button, a')) { e.preventDefault(); ctl.togglePlay(); }
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && ctl.state.view === 'book' && !e.shiftKey && flipPage(e.key === 'ArrowRight' ? 1 : -1)) { e.preventDefault(); }   // pages first; past the first or last page the arrows go on to the neighbouring station
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.shiftKey && ctl.state.view === 'rest') { e.preventDefault(); ctl.nudgeLook(e.key === 'ArrowLeft' ? 0.12 : -0.12, 0); }
       else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -208,6 +234,9 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     else if (s === 'mug') ctl.goMug();
     else if (s === 'career') ctl.openBook('work');
     else if (s.startsWith('career/')) ctl.openBook(s.slice(7));
+    else if (s === 'corner') ctl.goCorner();
+    else if (s === 'corner/seat') ctl.sit();
+    else if (s === 'corner/record') ctl.inspectRecord();
     else if (s.startsWith('plans/')) ctl.inspectNote(s.slice(6));
     else if (s === 'computer') { setMenuOpen(true); ctl.approach(); }
     else if (s === 'disks') { if (ctl.state.held) ctl.putBack(); else ctl.focusTray(); }
@@ -251,7 +280,17 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   const [pageRect, setPageRect] = useState(null);
   const paperRef = useRef(null);
   const bookReading = ui.view === 'book' && !ui.busy && ui.fit > 0;   // fit counts the settled poses: 0 while the camera is still flying to the book
-  useEffect(() => { setPageRect(bookReading && engineRef.current ? engineRef.current.bookPageRect() : null); }, [bookReading, ui.fit, engine]);
+  const [leftRect, setLeftRect] = useState(null);
+  useEffect(() => {
+    const e = engineRef.current;
+    // a short landscape phone leaves the open book too small to read: the page becomes a full-width sheet above the dock instead
+    const dock = document.querySelector('.ws3d__dock')?.getBoundingClientRect();
+    const sheet = bookReading && e && e.size.vh < 500 && dock
+      ? (() => { const width = Math.min(e.size.vw - 150, 760), height = Math.max(160, dock.top - 16); return { left: 12, top: 8, width, height, poly: '0% 0%, 100% 0%, 100% 100%, 0% 100%', sheet: true }; })()
+      : null;
+    setPageRect(sheet || (bookReading && e ? e.bookPageRect() : null));
+    setLeftRect(bookReading && e && e.book.spread(e.size) ? e.bookPageRect('left') : null);
+  }, [bookReading, ui.fit, engine]);
   // keyboard and screen-reader users arrive at the page heading when the notebook settles open
   useEffect(() => { if (bookReading && pageRect) paperRef.current?.querySelector('h2')?.focus({ preventScroll: true }); }, [bookReading, !!pageRect]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -341,6 +380,27 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
       </div>
     );
+    if (ui.view === 'corner') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">The reading corner · {coarse ? 'tap' : 'click'} the chair to sit, or the record player</span>
+        <button type="button" onClick={() => ctl()?.sit()}>Sit in the chair</button>
+        <button type="button" onClick={() => ctl()?.inspectRecord()}>Record player</button>
+        <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
+    if (ui.view === 'seat') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label">Seated in the lounge chair</span>
+        <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Stand up · back to the desk</button>
+      </div>
+    );
+    if (ui.view === 'record') return (
+      <div className="ws3d__row ws3d__row--ctx">
+        <span className="ws3d__label" aria-live="polite">{ui.playing ? (reduced ? 'Playing (motion reduced) · silent' : 'Playing · silent') : 'Record player · silent'}</span>
+        <button type="button" aria-pressed={ui.playing} onClick={() => ctl()?.togglePlay()}>{ui.playing ? '■ Stop' : '▶ Play'}</button>
+        <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
     if (ui.view === 'drive') return (
       <div className="ws3d__row ws3d__row--ctx">
         <span className="ws3d__label">{coarse ? 'Tap a disk to lift it' : 'Click a disk to lift it'}</span>
@@ -350,7 +410,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     );
     return (
       <div className="ws3d__row ws3d__row--ctx ws3d__row--rest">
-        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, disks, plans, mug or notebook' : 'Look around, then click the computer, the disk organizer, the drafting plans, the mug or the career notebook'}</span>
+        <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, disks, plans, mug or notebook' : 'Look around · click the computer, disks, plans, mug or career notebook · L reading corner'}</span>
         <button type="button" className="ws3d__mugbtn" onClick={() => ctl()?.goMug()}>Look at the coffee mug</button>
         {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject {TITLES[ui.session]}</button>}
       </div>
@@ -366,6 +426,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         <a className="ws3d__skip" href="/?view=2d" onClick={(e) => { e.preventDefault(); onPrefer2D(); }}>Browse without 3D</a>
         {EXPERIENCES.map((e) => <a key={e.id} className="ws3d__skip" href={hrefFor(e)}>{e.label}</a>)}
         <a className="ws3d__skip" href="/#career">Career notebook</a>
+        <a className="ws3d__skip" href="/#corner">Reading corner</a>
       </nav>
 
       <div className="ws3d__mode" role="group" aria-label="Portfolio mode"><span className="ws3d__mode-on" aria-current="true">HI-FI <small>3D studio</small></span><button type="button" onClick={onPrefer2D} title="Switch to the plain 2D portfolio">LO-FI <small>plain 2D</small></button></div>
@@ -391,9 +452,11 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
+      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.book ? 'Career notebook · work history, highlights, contact · click to open'
+          {hover.chair ? (ui.view === 'seat' ? 'Click to stand up' : 'Lounge chair · click to sit')
+            : hover.player || hover.table ? (ui.view === 'record' ? (ui.playing ? 'Record player · click to stop' : 'Record player · click to play (silent)') : 'Record player · click to look closer')
+            : hover.book ? 'Career notebook · work history, highlights, contact · click to open'
             : hover.mug ? 'Coffee mug · click to look closer'
             : hover.machine ? 'The computer · click to use it'
             : hover.tray ? 'Floppy organizer · click to look closer'
@@ -405,6 +468,15 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         </div>
       )}
 
+      {engine && active && ui.view === 'book' && leftRect && (
+        <NotebookIndex rect={leftRect} page={ui.page} onPick={(sel) => {
+          const el = paperRef.current?.querySelector(sel);
+          if (!el) return;
+          el.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+          el.querySelector('h3')?.setAttribute('tabindex', '-1');
+          el.querySelector('h3')?.focus({ preventScroll: true });
+        }} />
+      )}
       {engine && active && ui.view === 'book' && (
         <NotebookReader
           rect={pageRect}
@@ -417,7 +489,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
 
       {engine && active && (
         <>
-          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · N notebook · ←/→ · Esc back</p>}
+          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · N notebook · L corner · ←/→ · Esc back</p>}
           <div className="ws3d__dock" role="group" aria-label="Studio controls">
             {ContextRow()}
             {disksOpen && !sessionSlug && !ui.held && (
@@ -434,7 +506,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
             <div className="ws3d__stmenu">
               {stationsOpen && (
                 <ul id="ws-stmenu" className="ws3d__stlist" aria-label="Stations" ref={stMenuRef}>
-                  {STATIONS.map((s) => {
+                  {SWITCHER.map((s) => {
                     const cur = baseStation(stationOfUi(ui)) === s;
                     return <li key={s}><button type="button" aria-current={cur ? 'location' : undefined} className={cur ? 'is-on' : ''} onClick={() => goStation(s)}>{STATION_LABEL[s]}</button></li>;
                   })}
@@ -445,7 +517,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
               </button>
             </div>
             <nav className="ws3d__stations" aria-label="Stations">
-              {STATIONS.map((s) => {
+              {SWITCHER.map((s) => {
                 const cur = baseStation(stationOfUi(ui)) === s;
                 return (
                   <button key={s} type="button" aria-current={cur ? 'location' : undefined} className={cur ? 'is-on' : ''} onClick={() => goStation(s)}>{STATION_LABEL[s]}</button>

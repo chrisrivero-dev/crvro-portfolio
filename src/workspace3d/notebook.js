@@ -179,6 +179,8 @@ export function buildNotebook({ THREE, scene, places }) {
   const api = {
     group: g,
     portrait, carry,
+    /** Read as a two-page spread (overview on the left, the page on the right), or the right page alone on narrow or short screens. */
+    spread: ({ aspect, vh }) => aspect > 1.05 && vh >= 560,
     /** Cover swing 0..1 and the leaves already turned (an array of 0..1 each). */
     pose(open, turned) {
       cover.rotation.z = open * OPEN;
@@ -190,9 +192,15 @@ export function buildNotebook({ THREE, scene, places }) {
       g.updateMatrixWorld(true);
       return [[x0, -lh / 2], [x0 + lw, -lh / 2], [x0 + lw, lh / 2], [x0, lh / 2]].map(([px, pz]) => g.localToWorld(new THREE.Vector3(px, y0, pz)));
     },
+    /** World corners of the left-hand page (the open cover's endpaper, where a turned leaf also lies), inset a little. */
+    leftCorners() {
+      const hw = (w - 8) / 2 - 6, hh = (h - 8) / 2 - 6;
+      g.updateMatrixWorld(true);
+      return [[-hw, hh], [hw, hh], [hw, -hh], [-hw, -hh]].map(([px, py]) => inner.localToWorld(new THREE.Vector3(px, py, 1.4)));
+    },
     /** The camera pose that reads the open book: straight over it, upright, framed in the space the dock and the mode switch leave free. */
     readingView({ aspect, fov, vw, vh, top, bottom }) {
-      const spread = aspect > 1.05;
+      const spread = api.spread({ aspect, vh });
       const cx = spread ? (-w * Math.cos(DELTA)) / 2 : -1;      // centre of the spread (open cover to the back cover's edge), or of the right page
       const fitW = (spread ? w * (1 + Math.cos(DELTA)) : lw) + 36;
       const fitH = h + 30;

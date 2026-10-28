@@ -67,19 +67,39 @@ export const views = {
   plans:        { yaw: 0.1, pitch: 0.95, dist: 1650, fitW: 860, target: new THREE.Vector3(870, -390, 60) },
   // 05B.3: the mug close-up, square-on to its lettering (the lettering faces yaw 0.2); fitW keeps the whole mug and its handle on a phone
   mug:          { yaw: 0.2,  pitch: 0.18, dist: 520, fitW: 190, target: new THREE.Vector3(525, -325, 575) },
+  // 07: the reading corner from the room side (fitW keeps chair and table in a portrait frame); seated in the chair, looking at the desk;
+  // the record player from above its front edge
+  corner:       { yaw: 0.95, pitch: 0.36, dist: 5600, target: new THREE.Vector3(-1450, -1250, 2100) },
+  cornerPortrait: { yaw: 0.5, pitch: 0.32, dist: 6200, target: new THREE.Vector3(-1450, -1150, 2050) },
+  seat:         { yaw: -0.25, pitch: 0.16, dist: 3200, target: new THREE.Vector3(-400, -350, 100) },
+  record:       { yaw: 1.9,  pitch: 0.9,  dist: 1400, target: new THREE.Vector3(-1730, -800, 1400) },
+  recordPortrait: { yaw: 1.9, pitch: 0.9, dist: 2100, target: new THREE.Vector3(-1730, -820, 1400) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
 };
 
 /** 06: where the career notebook is. On the desk it lies at the left end, clear of the disks (landscape screens frame that corner). On a
  *  portrait phone that corner is outside the frame, so it stands cover-out on the free right half of the wall shelf (which the phone does
  *  frame) and is carried down to the desk spot to be read. Free space: no object within 200 units of either spot. */
+/** 07: the reading corner in front of the window wall, beside the desk's left end and outside the desk's rest frame (so it hides no
+ *  drawer): the lounge chair angled toward the desk, the side table with the record player between it and the window. */
+export const loungePlaces = {
+  floorY: FLOOR_Y,
+  chair: { x: -1050, z: 2950, rot: 2.55 },
+  table: { x: -1720, z: 1400, rot: 0.12 },
+  lamp: { x: -2030, z: 860 },
+};
+
 export const bookPlaces = {
   desk: { x: -1110, y: TOP, z: 90, rot: -0.16 },
   shelf: { x: -700, y: TOP + 830 + 18 + 162, z: WALL_Z + 180, rot: 0.2, lean: 0.14 },
 };
 
 /** The rest pose differs on a portrait phone; every 'threeQuarter' request (reset, return, eject) resolves through here. */
-export const resolveView = (name) => (name === 'threeQuarter' && matchMedia('(max-aspect-ratio: 4/5)').matches ? 'restPortrait' : name);
+export const resolveView = (name) => {
+  if (!matchMedia('(max-aspect-ratio: 4/5)').matches) return name;
+  if (name === 'threeQuarter') return 'restPortrait';
+  return views[`${name}Portrait`] ? `${name}Portrait` : name;     // 07: the reading corner has its own portrait framings
+};
 
 export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   const wood = (base, seed, repeat = 1) => new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base, seed }), { repeat }), roughness: 0.5 });
@@ -105,7 +125,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     scene.add(m);
   };
   lw(WALL_Z, win.z0, FLOOR_Y, FLOOR_Y + 5200);
-  lw(win.z1, 3000, FLOOR_Y, FLOOR_Y + 5200);
+  lw(win.z1, 5200, FLOOR_Y, FLOOR_Y + 5200);   // 07: runs on past the reading corner, so its views never reach the wall's end
   lw(win.z0, win.z1, FLOOR_Y, win.y0);
   lw(win.z0, win.z1, win.y1, FLOOR_Y + 5200);
   // window frame + mullions (cast the daylight pattern)
@@ -119,9 +139,10 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   scene.add(box(9000, wH, 18, panel, [LEFT_X + 4500, FLOOR_Y + wH / 2, WALL_Z + 9]));
   scene.add(box(9000, 40, 40, wood('#4a321f', 42), [LEFT_X + 4500, FLOOR_Y + wH + 20, WALL_Z + 20]));
   // floor boards
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 6000), new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base: '#4a3424', seed: 51 }), { repeat: 4 }), roughness: 0.6 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(9000, 8000),   // 07: deep enough that the reading-corner views never see its edge
+    new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base: '#4a3424', seed: 51 }), { repeat: 4 }), roughness: 0.6 }));
   floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, FLOOR_Y, 1000);
+  floor.position.set(0, FLOOR_Y, 2000);
   floor.receiveShadow = true;
   scene.add(floor);
 
