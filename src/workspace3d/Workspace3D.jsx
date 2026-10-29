@@ -213,6 +213,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       else if (k === 'n') { e.preventDefault(); goStation('career'); }
       else if (k === 'l') { e.preventDefault(); goStation('corner'); }
       else if (k === ' ' && ctl.state.view === 'record' && !e.target.closest?.('button, a')) { e.preventDefault(); ctl.togglePlay(); }
+      else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && ctl.state.view === 'camera') { e.preventDefault(); ctl.turnCamera(e.key === 'ArrowLeft' ? -0.35 : 0.35); }   // 12: turn the inspected camera
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && ctl.state.view === 'book' && !e.shiftKey && flipPage(e.key === 'ArrowRight' ? 1 : -1)) { e.preventDefault(); }   // pages first; past the first or last page the arrows go on to the neighbouring station
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.shiftKey && ctl.state.view === 'rest') { e.preventDefault(); ctl.nudgeLook(e.key === 'ArrowLeft' ? 0.12 : -0.12, 0); }
       else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -410,7 +411,9 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       const ph = PHOTOS.find((x) => x.id === photo);
       return (
         <div className="ws3d__row ws3d__row--ctx">
-          <span className="ws3d__label ws3d__label--hold" aria-live="polite">{ph ? ph.caption : PHOTOS.length ? 'Instant camera · choose a print' : 'Instant camera · the photograph collection is not published yet'}</span>
+          <span className="ws3d__label ws3d__label--hold" aria-live="polite">{ph ? ph.caption : PHOTOS.length ? 'Instax Mini 90 · choose a print' : `Instax Mini 90 · ${coarse ? 'drag' : 'drag or use ←/→'} to turn it · the photograph collection is not published yet`}</span>
+          <button type="button" aria-label="Turn the camera left" onClick={() => ctl()?.turnCamera(-0.45)}>↺ Turn</button>
+          <button type="button" aria-label="Turn the camera right" onClick={() => ctl()?.turnCamera(0.45)}>Turn ↻</button>
           {PHOTOS.map((x, i) => <button key={x.id} type="button" aria-pressed={photo === x.id} onClick={() => setPhoto(photo === x.id ? null : x.id)}>Print {i + 1}</button>)}
           <button type="button" className="ws3d__use" onClick={() => { setPhoto(null); ctl()?.back(); }}>Back to the desk</button>
         </div>
@@ -480,7 +483,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
 
       {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record', 'lab', 'camera'].includes(ui.view) && !(ui.view === 'camera' && hover.camera) && !(ui.view === 'lab' && hover.lab && !hover.labNode) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.camera ? 'Instant camera · click to look closer'
+          {hover.camera ? 'Instax Mini 90 · click to look closer'
             : hover.labNode ? `${LAB.nodes.find((m) => m.id === hover.labNode)?.name} · click to read about it`
             : hover.lab ? 'Daventry One · local model lab drawing · click to look closer'
             : hover.chair ? (ui.view === 'seat' ? 'Click to stand up' : 'Lounge chair · click to sit')

@@ -35,6 +35,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   let epoch = 0;
   const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false, labNode: null };
+  let instant = null, camYaw0 = 0;               // 12: the instant camera and its resting turn on the shelf (set once the room is read below)
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
   // 08: the reading corner is framed from further off than the desk; the dusk haze thins while there so the corner keeps its colour
   let hazeOn = false, hazeTok = 0;
@@ -44,7 +45,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     const a = engine.haze, b = on ? (matchMedia('(max-aspect-ratio: 4/5)').matches ? 2 : 1) : 0, tok = ++hazeTok;
     run(900, (e) => engine.setHaze(a + (b - a) * e), () => hazeTok === tok);
   };
-  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record', 'lab', 'camera'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  const emit = () => { if (instant && st.view !== 'camera' && instant.rotation.y !== camYaw0) { instant.rotation.y = camYaw0; markDirty(); } if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record', 'lab', 'camera'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
@@ -361,7 +362,12 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     await flyTo('lab', 1000, alive);
   }
   /** 11: the instant camera on the cubby bookcase, close up (the photograph collection is listed in the bar). */
-  const instant = engine.room?.camera;
+  instant = engine.room?.camera || null; camYaw0 = instant ? instant.rotation.y : 0;
+  /** Turn the camera in place while it is being inspected (drag, arrow keys or the bar's buttons). It is put back as it was on leaving. */
+  function turnCamera(d) {
+    if (!instant || st.view !== 'camera') return;
+    instant.rotation.y += d; markDirty();
+  }
   async function inspectCamera() {
     if (!instant) return back();
     const alive = mine();
@@ -369,7 +375,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     if (!(await dropHeld(alive))) return;
     st.view = 'camera'; st.note = null; st.page = null; st.busy = false; emit();
     const c = new THREE.Box3().setFromObject(instant).getCenter(new THREE.Vector3());
-    await flyTo({ yaw: -Math.PI / 2 + 0.2, pitch: 0.16, dist: 1100, fitW: 700, target: c }, 900, alive);
+    await flyTo({ yaw: -Math.PI / 2 + 0.2, pitch: 0.16, dist: 760, fitW: 520, target: c }, 900, alive);
   }
   function selectLabNode(id) {
     if (!lab) return;
@@ -421,7 +427,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const canLook = () => st.view === 'rest' && !st.busy;
   const onDown = (e) => {
     const ui = !!e.target.closest('a, button, input, textarea, select, label');   // real controls; the screen's background is part of the room
-    down = { x: e.clientX, y: e.clientY, t: performance.now(), ui, onScreen: !!e.target.closest('#screen'), lookY: engine.look.yaw, lookP: engine.look.pitch, dragging: false, id: e.pointerId };
+    down = { x: e.clientX, y: e.clientY, t: performance.now(), ui, onScreen: !!e.target.closest('#screen'), lookY: engine.look.yaw, lookP: engine.look.pitch, camY: instant ? instant.rotation.y : 0, dragging: false, id: e.pointerId };
   };
   const onUp = (e) => {
     const d = down; down = null;
@@ -458,6 +464,11 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     else if (hit?.tray) focusTray();
   };
   const onMove = (e) => {
+    if (down && !down.ui && st.view === 'camera' && !st.busy && instant) {   // 12: inspecting the camera, a drag turns it
+      const dx = e.clientX - down.x;
+      if (!down.dragging && Math.abs(dx) > 8) { down.dragging = true; engine.stage.classList.add('is-looking'); onHover?.(null); }
+      if (down.dragging) { instant.rotation.y = down.camY + dx * (4 / Math.max(engine.stage.getBoundingClientRect().width, 1)); markDirty(); return; }
+    }
     if (down && !down.ui && canLook()) {
       const dx = e.clientX - down.x, dy = e.clientY - down.y;
       if (!down.dragging && Math.hypot(dx, dy) > 8) { down.dragging = true; engine.stage.classList.add('is-looking'); onHover?.(null); }
@@ -488,7 +499,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera, turnCamera,
     pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */

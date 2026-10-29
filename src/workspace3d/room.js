@@ -6,6 +6,7 @@
  * Scale: 1 unit ≈ 0.47 mm; 1 cm ≈ 21 units. */
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { LAND } from './worldLand.js';
+import { buildInstax } from './instax.js';
 import { LAB } from '../data/daventryLab.js';
 
 export const ROOM = { RIGHT_X: 6200, FRONT_Z: 7400, HEIGHT: 5200 };
@@ -259,18 +260,9 @@ export function buildRoom({ THREE, scene, props, wood, plaster, FLOOR_Y, LEFT_X,
   sticks.forEach((k, i) => { stickIM.setMatrixAt(i, _m.compose(new THREE.Vector3(k.x, rowY(2) + k.h / 2, k.z), _q.setFromEuler(_e.set(k.lean * 0.5, 0, k.lean)), new THREE.Vector3(k.r, k.h, k.r))); stickIM.setColorAt(i, _c.set(k.c)); });
   shelf.add(stickIM);
   // top-right cubby: the instant camera (the room's camera Easter egg), a mushroom figure and a Polaroid camera
-  const cam = new THREE.Group();
-  const body = new THREE.Mesh(new RoundedBoxGeometry(260, 200, 140, 4, 26), new THREE.MeshStandardMaterial({ color: '#8c4b3e', roughness: 0.55 }));
-  body.position.y = 100; cam.add(body);
-  const capM = new THREE.MeshStandardMaterial({ color: '#c9c6c0', metalness: 0.7, roughness: 0.3 });
-  sb(262, 44, 142, capM, 0, 178, 0, cam);
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(70, 76, 70, 32), capM); barrel.rotation.x = Math.PI / 2; barrel.position.set(-10, 90, 100); cam.add(barrel);
-  const lens = new THREE.Mesh(new THREE.CylinderGeometry(46, 46, 12, 32), new THREE.MeshStandardMaterial({ color: '#0d0f12', metalness: 0.4, roughness: 0.12 })); lens.rotation.x = Math.PI / 2; lens.position.set(-10, 90, 138); cam.add(lens);
-  sb(56, 34, 8, new THREE.MeshStandardMaterial({ color: '#f2efe6', emissive: '#3a3a36', roughness: 0.3 }), 88, 168, 72, cam);       // flash window
-  sb(30, 26, 8, new THREE.MeshStandardMaterial({ color: '#1a1c20', roughness: 0.2 }), -92, 170, 72, cam);                            // viewfinder
+  // 12: his Instax Mini 90 Neo Classic, the room's camera Easter egg (src/workspace3d/instax.js)
+  const cam = buildInstax({ THREE, tex: props.tex });
   cam.position.set(260, rowY(2), 60); cam.rotation.y = -0.18; cam.name = 'instant-camera'; shelf.add(cam);
-  // a hit box a little larger than the camera, so it is easy to tap on a phone
-  const camHit = new THREE.Mesh(new THREE.BoxGeometry(340, 280, 220), new THREE.MeshBasicMaterial({ visible: false })); camHit.position.y = 110; camHit.userData.proxy = true; cam.add(camHit);
   const mush = new THREE.Group();
   const white = new THREE.MeshStandardMaterial({ color: '#efece4', roughness: 0.6 });
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(42, 52, 130, 16), white); stem.position.y = 65; mush.add(stem);
