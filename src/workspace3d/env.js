@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { box, DESK_FRONT, DESK_BACK, FLOOR_Y } from './env-common.js';
 import { surveyTexture } from './drafting.js';
+import { buildExterior } from './exterior.js';
 import { buildRoom } from './room.js';
 import { DISK_PROJECTS } from '../data/caseIds.js';
 
@@ -74,6 +75,9 @@ export const views = {
   cornerPortrait: { yaw: 1.3, pitch: 0.5, dist: 6000, fitW: 3900, target: new THREE.Vector3(-1000, -1500, 4000) },
   cornerShort:  { yaw: 1.25, pitch: 0.33, dist: 7800, target: new THREE.Vector3(-1150, -1950, 3430) },
   seat:         { yaw: -0.385, pitch: 0.066, dist: 3960, target: new THREE.Vector3(-100, -250, 200) },
+  // 11: the Daventry One lab drawing above the bookcase, square-on (fitW keeps all five models on a portrait phone)
+  lab:          { yaw: -Math.PI / 2, pitch: 0.04, dist: 3300, target: new THREE.Vector3(6148, 1560, 3300) },
+  labPortrait:  { yaw: -Math.PI / 2, pitch: 0.04, dist: 3300, fitW: 2000, target: new THREE.Vector3(6148, 1660, 3300) },
   record:       { yaw: 1.9,  pitch: 0.85, dist: 1500, target: new THREE.Vector3(-1820, -870, 2120) },
   recordPortrait: { yaw: 1.9, pitch: 0.85, dist: 2900, target: new THREE.Vector3(-1870, -950, 2030) },
   closeup:      { yaw: 0.42, pitch: 0.34, dist: 1250, target: new THREE.Vector3(-380, -280, 360) },
@@ -111,6 +115,7 @@ export const resolveView = (name) => {
 };
 
 export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
+  build.props = props;   // 11: the dusk grade builds the window's exterior with the same texture helper
   const wood = (base, seed, repeat = 1) => new THREE.MeshStandardMaterial({ map: props.tex(props.woodTexture({ base, seed }), { repeat }), roughness: 0.5 });
   const plaster = new THREE.MeshStandardMaterial({ map: props.tex(props.plasterTexture({ base: '#b9ad97' }), { repeat: 3 }), roughness: 0.95 });
   const steel = new THREE.MeshStandardMaterial({ color: '#5d6459', metalness: 0.6, roughness: 0.42 });
@@ -486,11 +491,8 @@ export function makeLighting(mood) {
       cone.position.copy(L).addScaledVector(dir.normalize(), 550);
       cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir);
       scene.add(cone);
-      // window glass reads as cool dusk
-      const sky = new THREE.Mesh(new THREE.PlaneGeometry(W.z1 - W.z0, W.y1 - W.y0), new THREE.MeshBasicMaterial({ color: '#2b3a52' }));
-      sky.rotation.y = Math.PI / 2;
-      sky.position.set(LEFT_X - 30, (W.y0 + W.y1) / 2, (W.z0 + W.z1) / 2);
-      scene.add(sky);
+      // 11: the window looks out on a blue-hour street (it replaces the flat dusk glass colour)
+      build.exterior = buildExterior({ THREE, scene, tex: build.props.tex, LEFT_X, win: W });
       return;
     }
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(W.z1 - W.z0, W.y1 - W.y0), new THREE.MeshBasicMaterial({ color: '#e9eef2' }));

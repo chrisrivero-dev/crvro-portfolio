@@ -12,6 +12,8 @@
 //   /#corner           (07) the reading corner by the window: the lounge chair, the side table and the record player
 //   /#corner/seat      (07) seated in the lounge chair, looking at the desk
 //   /#corner/record    (07) the record player, close up (it plays silently; it stops when you leave)
+//   /#corner/lab       (11) the Daventry One local model lab drawing above the bookcase (an Easter egg; not in the switcher)
+//   /#corner/camera    (11) the instant camera on the cubby bookcase, close up, with the photograph collection (an Easter egg)
 // In LO-FI (no 3D engine) the same hashes open the plain career page instead; see App.jsx.
 import { PLAN_NOTE_SLUGS } from '../data/planNotes.js';
 import { CAREER_PAGE_IDS } from '../data/career.js';
@@ -20,7 +22,7 @@ export const STATIONS = ['desk', 'computer', 'disks', 'plans', 'career'];   // t
 /** The station switcher: the cycle plus the reading corner, a side spot like the mug (reached from the switcher or L, not by ←/→). */
 export const SWITCHER = [...STATIONS, 'corner'];
 export const STATION_LABEL = { desk: 'Desk', computer: 'Computer', disks: 'Disk tray', plans: 'Drafting plans', career: 'Career notebook', corner: 'Reading corner' };
-export const CORNER_SPOTS = ['seat', 'record'];
+export const CORNER_SPOTS = ['seat', 'record', 'lab', 'camera'];
 export const isCareerHash = (hash) => /^#career(\/|$)/.test(hash || '');
 /** The notebook page a hash names (null when it is not a career hash). */
 export function careerPageFromHash(hash) {
@@ -61,6 +63,8 @@ export function stationOfUi(ui) {
   if (ui.view === 'corner') return 'corner';
   if (ui.view === 'seat') return 'corner/seat';
   if (ui.view === 'record') return 'corner/record';
+  if (ui.view === 'lab') return 'corner/lab';
+  if (ui.view === 'camera') return 'corner/camera';
   if (ui.view === 'book') return !ui.page || ui.page === 'work' ? 'career' : `career/${ui.page}`;
   return null;
 }

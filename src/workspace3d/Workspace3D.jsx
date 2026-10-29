@@ -16,6 +16,8 @@ import { CAREER_PAGES } from '../data/career.js';
 import { PAGE_VIEW, CareerIndex } from '../components/CareerContent.jsx';
 import { EXPERIENCES, hrefFor } from '../lib/experiences.js';
 import { navigate } from '../lib/location.js';
+import { PHOTOS } from '../data/photos.js';
+import { LAB } from '../data/daventryLab.js';
 import { STATIONS, SWITCHER, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
 import '../styles/workspace3d.css';
 
@@ -90,6 +92,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
   stationRef.current = station;
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   const [hover, setHover] = useState(null);
+  const [photo, setPhoto] = useState(null);   // 11: the print open in the camera view
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [announce, setAnnounce] = useState('');
@@ -198,7 +201,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         const v = ctl.state.view;
         if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
         if (v === 'note') { e.preventDefault(); ctl.goPlans(); setAnnounce('Back over the drafting plans.'); return; }
-        if (v === 'plans' || v === 'mug' || v === 'book' || v === 'corner' || v === 'seat' || v === 'record') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
+        if (v === 'plans' || v === 'mug' || v === 'book' || v === 'corner' || v === 'seat' || v === 'record' || v === 'lab' || v === 'camera') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
         if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
         return;
       }
@@ -237,6 +240,8 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     else if (s === 'corner') ctl.goCorner();
     else if (s === 'corner/seat') ctl.sit();
     else if (s === 'corner/record') ctl.inspectRecord();
+    else if (s === 'corner/lab') ctl.inspectLab();
+    else if (s === 'corner/camera') ctl.inspectCamera();
     else if (s.startsWith('plans/')) ctl.inspectNote(s.slice(6));
     else if (s === 'computer') { setMenuOpen(true); ctl.approach(); }
     else if (s === 'disks') { if (ctl.state.held) ctl.putBack(); else ctl.focusTray(); }
@@ -401,6 +406,27 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
       </div>
     );
+    if (ui.view === 'camera') {
+      const ph = PHOTOS.find((x) => x.id === photo);
+      return (
+        <div className="ws3d__row ws3d__row--ctx">
+          <span className="ws3d__label ws3d__label--hold" aria-live="polite">{ph ? ph.caption : PHOTOS.length ? 'Instant camera · choose a print' : 'Instant camera · the photograph collection is not published yet'}</span>
+          {PHOTOS.map((x, i) => <button key={x.id} type="button" aria-pressed={photo === x.id} onClick={() => setPhoto(photo === x.id ? null : x.id)}>Print {i + 1}</button>)}
+          <button type="button" className="ws3d__use" onClick={() => { setPhoto(null); ctl()?.back(); }}>Back to the desk</button>
+        </div>
+      );
+    }
+    if (ui.view === 'lab') {
+      const n = LAB.nodes.find((m) => m.id === ui.labNode);
+      return (
+        <div className="ws3d__row ws3d__row--ctx">
+          <span className="ws3d__label ws3d__label--hold" aria-live="polite">{n ? `${n.name} · ${n.model} · ${n.role}. ${n.desc}` : `${LAB.title} · ${LAB.subtitle} · ${coarse ? 'tap' : 'click'} a model to read about it`}</span>
+          <span className="ws3d__sr">A reference drawing of the local models installed on Daventry One, Christopher's Mac Studio. It is not a live status display.</span>
+          {LAB.nodes.map((m) => <button key={m.id} type="button" aria-pressed={ui.labNode === m.id} onClick={() => ctl()?.selectLabNode(m.id)}>{m.name}</button>)}
+          <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
+        </div>
+      );
+    }
     if (ui.view === 'drive') return (
       <div className="ws3d__row ws3d__row--ctx">
         <span className="ws3d__label">{coarse ? 'Tap a disk to lift it' : 'Click a disk to lift it'}</span>
@@ -452,9 +478,12 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record'].includes(ui.view) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
+      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record', 'lab', 'camera'].includes(ui.view) && !(ui.view === 'camera' && hover.camera) && !(ui.view === 'lab' && hover.lab && !hover.labNode) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.chair ? (ui.view === 'seat' ? 'Click to stand up' : 'Lounge chair · click to sit')
+          {hover.camera ? 'Instant camera · click to look closer'
+            : hover.labNode ? `${LAB.nodes.find((m) => m.id === hover.labNode)?.name} · click to read about it`
+            : hover.lab ? 'Daventry One · local model lab drawing · click to look closer'
+            : hover.chair ? (ui.view === 'seat' ? 'Click to stand up' : 'Lounge chair · click to sit')
             : hover.player || hover.table ? (ui.view === 'record' ? (ui.playing ? 'Record player · click to stop' : 'Record player · click to play (silent)') : 'Record player · click to look closer')
             : hover.book ? 'Career notebook · work history, highlights, contact · click to open'
             : hover.mug ? 'Coffee mug · click to look closer'
@@ -468,6 +497,12 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         </div>
       )}
 
+      {ui.view === 'camera' && !ui.busy && PHOTOS.find((x) => x.id === photo) && (
+        <figure className="ws3d__print" style={{ position: 'absolute', left: '50%', top: '42%', transform: 'translate(-50%, -50%) rotate(-1.5deg)', margin: 0, padding: '14px 14px 44px', background: '#f4f1ea', boxShadow: '0 12px 40px rgba(0,0,0,0.45)', width: 'min(72vw, 360px)' }}>
+          <img src={PHOTOS.find((x) => x.id === photo).src} alt={PHOTOS.find((x) => x.id === photo).caption} style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', objectFit: 'cover' }} />
+          <figcaption style={{ marginTop: 10, color: '#3a332b', font: '500 13px "JetBrains Mono", monospace' }}>{PHOTOS.find((x) => x.id === photo).caption}</figcaption>
+        </figure>
+      )}
       {engine && active && ui.view === 'book' && leftRect && (
         <NotebookIndex rect={leftRect} page={ui.page} onPick={(sel) => {
           const el = paperRef.current?.querySelector(sel);

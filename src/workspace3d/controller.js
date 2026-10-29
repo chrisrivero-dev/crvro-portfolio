@@ -34,7 +34,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   for (const [slug, d] of Object.entries(disks)) home[slug] = { parent: d.parent, pos: d.position.clone(), quat: d.quaternion.clone(), loc: 'home' };
 
   let epoch = 0;
-  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false };
+  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false, labNode: null };
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
   // 08: the reading corner is framed from further off than the desk; the dusk haze thins while there so the corner keeps its colour
   let hazeOn = false, hazeTok = 0;
@@ -44,7 +44,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     const a = engine.haze, b = on ? (matchMedia('(max-aspect-ratio: 4/5)').matches ? 2 : 1) : 0, tok = ++hazeTok;
     run(900, (e) => engine.setHaze(a + (b - a) * e), () => hazeTok === tok);
   };
-  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  const emit = () => { if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record', 'lab', 'camera'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
@@ -350,6 +350,33 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     setPlaying(!st.playing); emit();
   }
 
+  /* ── 11: the Daventry One lab drawing above the bookcase, close up. A node (on the drawing or in the bar) is outlined and described. ── */
+  const lab = engine.room?.lab;
+  async function inspectLab() {
+    if (!lab) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'lab'; st.note = null; st.page = null; st.busy = false; emit();
+    await flyTo('lab', 1000, alive);
+  }
+  /** 11: the instant camera on the cubby bookcase, close up (the photograph collection is listed in the bar). */
+  const instant = engine.room?.camera;
+  async function inspectCamera() {
+    if (!instant) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'camera'; st.note = null; st.page = null; st.busy = false; emit();
+    const c = new THREE.Box3().setFromObject(instant).getCenter(new THREE.Vector3());
+    await flyTo({ yaw: -Math.PI / 2 + 0.2, pitch: 0.16, dist: 1100, fitW: 700, target: c }, 900, alive);
+  }
+  function selectLabNode(id) {
+    if (!lab) return;
+    st.labNode = st.labNode === id ? null : id;
+    lab.select(st.labNode); markDirty(); emit();
+  }
+
   /** Menu entry chosen: the screen fills the viewport, then the page takes over (the owner swaps the layers). */
   async function launch(entry) {
     const alive = mine();
@@ -369,11 +396,16 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : [])], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : []), ...(lab ? [lab.sheet] : []), ...(instant ? [instant] : [])], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
       return { note: n.slug, title: n.title, caseId: n.caseId, stamp: r?.kind || null };
+    }
+    if (hit && instant) { let o = hit.object; while (o && o !== instant) o = o.parent; if (o) return { camera: true }; }
+    if (hit && lab && hit.object === lab.sheet) {
+      const n = hit.object.userData.lab.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
+      return { lab: true, labNode: n?.id || null };
     }
     if (hit && hit.object === engine.sheet) return { sheet: true };
     if (hit && engine.mug && hit.object.parent === engine.mug) return { mug: true, proxy: !!hit.object.userData.proxy };
@@ -410,10 +442,14 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     if (st.view === 'book') { if (!hit?.book) back(); return; }               // the open notebook: a tap off the book steps back to the desk
     if (st.view === 'record') { if (hit?.player || hit?.table) togglePlay(); else if (hit?.chair) sit(); else back(); return; }   // the record player: a tap on it plays or stops it
     if (st.view === 'seat') { if (hit?.player) inspectRecord(); else back(); return; }         // seated: a tap anywhere stands up, back at the desk
+    if (st.view === 'camera') { if (!hit?.camera) back(); return; }   // the camera close-up: a tap off the camera steps back
+    if (st.view === 'lab') { if (hit?.labNode) selectLabNode(hit.labNode); else if (!hit?.lab) back(); return; }   // the lab drawing: a tap on a model outlines it; off the drawing steps back
     if (st.view === 'corner') { if (hit?.chair) sit(); else if (hit?.player || hit?.table) inspectRecord(); else back(); return; }
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
+    else if (hit?.lab) inspectLab();
+    else if (hit?.camera) inspectCamera();
     else if (hit?.mug) goMug();
     else if (hit?.book) openBook('work');
     else if (hit?.chair) sit();
@@ -452,7 +488,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera,
     pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */
