@@ -49,7 +49,7 @@ export default function ProjectWorld() {
         if (!announce) return;
         setAnnounced(
           target === OVERVIEW
-            ? "World overview: the full traveled route with all seven destinations."
+            ? "World overview: the full traveled route with all eight destinations."
             : `Arrived at ${STOPS[target].name}, stop ${target + 1} of ${STOPS.length}.`
         );
       });

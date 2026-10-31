@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/test-case-ids.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "corpus:build": "node scripts/build-corpus.mjs",

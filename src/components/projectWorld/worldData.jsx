@@ -28,6 +28,8 @@ import {
   ScrollDoc,
   Signpost,
   Tower,
+  AFrame,
+  WorkBoard,
 } from "./landmarks.jsx";
 
 const bySlug = (slug) =>
@@ -47,6 +49,8 @@ const DESCRIPTIONS = {
     "Turns an address into an early property screen showing findings and what still needs verification.",
   "proof-first":
     "Repairs a broken behavior, reruns the same test, and shows the before and after evidence before payment.",
+  heyhab:
+    "Organizes the work around customer questions, brings decisions to the owner, and keeps track of whether it got done. Early prototype.",
 };
 
 const PROCESSES = {
@@ -56,6 +60,7 @@ const PROCESSES = {
   "help-nearby": ["ZIP", "Need", "Resource", "Confirm"],
   groundrules: ["Address", "Records", "Findings", "Verify"],
   "proof-first": ["Fail", "Repair", "Same test", "Pass", "Proof"],
+  heyhab: ["Connect", "Review", "Authorize", "See results"],
 };
 
 /** Builds a destination card from approved project data. */
@@ -395,7 +400,7 @@ export const STOPS = [
   },
 
   // ── 06 · Proof First ──
-  // Last port on the route, in the open water between GroundRules and the
+  // In the open water between GroundRules and the
   // Parcel Engine side island. Harbor sits off the island's northwest coast,
   // where the leg arrives from above GroundRules' parcel boundary. The label
   // drops a little (labelDY) so it reads as its own line, not as a
@@ -432,6 +437,38 @@ export const STOPS = [
       </>,
     ],
   },
+
+  // ── 07 · HeyHab.ai ──
+  // Last port on the route, in the open water east of the Sea of Small,
+  // Useful Systems. Harbor sits on the southeast coast; the leg from Proof
+  // First runs north and crosses the Help Nearby leg once, over open water.
+  {
+    id: "heyhab",
+    name: "HEYHAB.AI",
+    sub: "PORT 07 · OPERATIONS",
+    cx: 650,
+    cy: 400,
+    rx: 72,
+    ry: 52,
+    seed: 97,
+    accent: "var(--pw-heyhab)",
+    harbor: [712, 446],
+    card: cardFor("heyhab", "№ 07", "var(--pw-heyhab)"),
+    landmarks: () => [
+      <>
+        <AFrame x={652} y={412} />
+        <Label x={652} y={426}>a-frame workspace</Label>
+      </>,
+      <>
+        <WorkBoard x={604} y={382} />
+        <Label x={604} y={400}>the work</Label>
+      </>,
+      <>
+        <Gate x={698} y={392} />
+        <Label x={698} y={404}>owner</Label>
+      </>,
+    ],
+  },
 ];
 
 /** Index of the pull-back overview band, one past the last island. */
@@ -449,6 +486,7 @@ export const LEGS = [
   "M 612 186 C 712 196, 786 268, 795 362",
   "M 795 362 C 788 486, 724 588, 640 616",
   "M 640 616 C 674 588, 716 584, 754 606",
+  "M 754 606 C 782 566, 762 488, 712 446",
 ];
 
 /** Parcel Engine — optional side island, off the main route. */

@@ -58,8 +58,9 @@ function Decorations({ ids }) {
         ))}
       </g>
 
-      <text className="pw-sealabel" x="455" y="428" transform="rotate(-7 455 428)" textAnchor="middle">
-        SEA OF SMALL, USEFUL SYSTEMS
+      <text className="pw-sealabel" x="440" y="428" transform="rotate(-7 440 428)" textAnchor="middle">
+        <tspan x="440" dy="-9">SEA OF SMALL,</tspan>
+        <tspan x="440" dy="20">USEFUL SYSTEMS</tspan>
       </text>
       <text
         className="pw-sealabel"
@@ -217,7 +218,7 @@ export default function WorldMap({
       role="group"
       aria-label={
         title ||
-        "Illustrated map of Project World. Seven destinations: Daventry One, OpenClaw / Hermes, Zarvin One, Sidecar, Help Nearby, GroundRules, Proof First."
+        "Illustrated map of Project World. Eight destinations: Daventry One, OpenClaw / Hermes, Zarvin One, Sidecar, Help Nearby, GroundRules, Proof First, HeyHab.ai."
       }
     >
       <defs>

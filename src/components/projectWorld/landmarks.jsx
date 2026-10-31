@@ -172,3 +172,33 @@ export function Lighthouse({ x, y }) {
     </>
   );
 }
+
+/** A-frame workspace: the HeyHab cabin, its doorway lit, a shelf of work kept in order inside. */
+export function AFrame({ x, y }) {
+  return (
+    <>
+      <path className="lm-fill" d={`M ${x} ${y - 36} L ${x + 25} ${y} L ${x - 25} ${y} Z`} />
+      <line className="lm-line" x1={x - 15} y1={y - 15} x2={x + 15} y2={y - 15} />
+      <line className="lm-line" x1={x - 8} y1={y - 25} x2={x + 8} y2={y - 25} />
+      <rect className="lm-fill" x={x - 5} y={y - 12} width="10" height="12" style={{ fill: "var(--pw-heyhab-door)" }} />
+      <line className="lm-line" x1={x - 31} y1={y} x2={x + 31} y2={y} />
+    </>
+  );
+}
+
+/** Work board: open business tasks sorted into rows, the finished ones ticked. */
+export function WorkBoard({ x, y }) {
+  return (
+    <>
+      <rect className="lm-fill" x={x - 15} y={y - 22} width="30" height="22" />
+      {[0, 1, 2].map((r) => (
+        <React.Fragment key={r}>
+          <path className="lm-line" d={r < 2 ? `M ${x - 12} ${y - 17 + r * 7} l 2 2 l 3 -4` : `M ${x - 12} ${y - 18 + r * 7} h 4 v 4 h -4 Z`} />
+          <line className="lm-line" x1={x - 4} y1={y - 16 + r * 7} x2={x + 12} y2={y - 16 + r * 7} />
+        </React.Fragment>
+      ))}
+      <line className="lm-line" x1={x - 9} y1={y} x2={x - 9} y2={y + 6} />
+      <line className="lm-line" x1={x + 9} y1={y} x2={x + 9} y2={y + 6} />
+    </>
+  );
+}
