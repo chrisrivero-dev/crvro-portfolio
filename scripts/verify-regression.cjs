@@ -37,7 +37,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   let page = await open(browser, '/');
   await shot(page, '01-home');
   check('home is the 3D room (no old CSS computer in the DOM)', await page.evaluate(() => !document.querySelector('.retro-crt') && !!document.querySelector('canvas#gl')));
-  check('exactly one computer, and the 3D tray holds seven registry disks', await page.evaluate(() => window.__WS__.engine.diskList.length) === 7);
+  check('exactly one computer, and the 3D tray holds eight registry disks', await page.evaluate(() => window.__WS__.engine.diskList.length) === 8);
   // 05A: the dock is a station switcher plus actions for the current station
   const chips = await page.evaluate(() => [...document.querySelectorAll('.ws3d__stations button')].map((b) => b.textContent.trim() + (b.getAttribute('aria-current') ? '*' : '')));
   check('station switcher lists Desk, Computer, Disk tray, Drafting plans, Career notebook, Reading corner with the current one marked', JSON.stringify(chips) === JSON.stringify(['Desk*', 'Computer', 'Disk tray', 'Drafting plans', 'Career notebook', 'Reading corner']), JSON.stringify(chips));
@@ -316,7 +316,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   await waitFor(page, () => !!document.querySelector('.flat-home'), null, 6000); await sleep(400);
   await shot(page, '19-flat-home');
   check('"2D view" shows the plain page (one h1, no canvas, no retro computer)', await page.evaluate(() => document.querySelectorAll('h1').length === 1 && !document.querySelector('canvas') && !document.querySelector('.retro-crt')));
-  check('plain page lists every experience, the career page and the registry case studies', await page.evaluate(() => document.querySelectorAll('.flat-list li').length === 6 + 1 + 7));
+  check('plain page lists every experience, the career page and the registry case studies', await page.evaluate(() => document.querySelectorAll('.flat-list li').length === 6 + 1 + 8));
   await page.click('.flat-list a[href="/#work"]'); await waitFor(page, () => !!document.querySelector('.project-world'), null, 8000);
   check('plain-page links open the same real experiences', true);
   await page.goto(BASE + '/', { waitUntil: 'networkidle0' }); await sleep(600);
@@ -402,7 +402,7 @@ const pwStop = (page) => page.$eval('.pw-progress span', (e) => e.textContent.tr
   await page.tap('.ws3d__stbtn'); await sleep(250); await page.tap('#ws-stmenu li:nth-child(3) button'); await waitFor(page, () => window.__WS__.ctl.state.view === 'drive', null, 8000); await sleep(400);
   await page.tap('.ws3d__dock [aria-controls="ws-disklist"]'); await sleep(300);
   await shot(page, '24-mobile-disk-list');
-  check('mobile: the disk list opens on demand with all seven case IDs', await page.evaluate(() => document.querySelectorAll('#ws-disklist li').length === 7 && /C-06/.test(document.getElementById('ws-disklist').innerText)));
+  check('mobile: the disk list opens on demand with all eight case IDs', await page.evaluate(() => document.querySelectorAll('#ws-disklist li').length === 8 && /C-06/.test(document.getElementById('ws-disklist').innerText)));
   await page.tap('#ws-disklist li:nth-child(2) button');
   await waitFor(page, () => window.__WS__.ctl.state.held === 'proof-first', null, 15000); await sleep(300);
   await page.tap('.ws3d__row--ctx .ws3d__use');

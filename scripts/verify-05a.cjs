@@ -74,6 +74,8 @@ function recorder(page, mode) {
   const ret1 = (await S(page)).look;
   check('mouse 4: back in the room at the same viewpoint the visitor left', Math.abs(ret1.yaw - deskLook.yaw) < 0.01 && Math.abs(ret1.pitch - deskLook.pitch) < 0.01, JSON.stringify({ deskLook, ret1 }));
   const tr = await proj(page, 'tray'); await page.mouse.move(tr.x, tr.y); await sleep(350);
+  // with eight disks the tray's centre can land on a disk: walk down to its wooden front
+  for (let i = 0; i < 16 && !/Floppy organizer/.test(await page.$eval('.ws3d__tag', (e) => e.textContent).catch(() => '')); i++) { tr.y += 8; await page.mouse.move(tr.x, tr.y); await sleep(120); }
   check('mouse 5a: hovering the organizer names it', /Floppy organizer/.test(await page.$eval('.ws3d__tag', (e) => e.textContent).catch(() => '')));
   await page.mouse.click(tr.x, tr.y); await sleep(400); await rec('camera-moving-to-organizer');
   await settle(page, () => window.__WS__.ctl.state.view === 'drive' && location.hash === '#disks'); await sleep(700);

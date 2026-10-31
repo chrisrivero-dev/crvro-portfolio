@@ -3,7 +3,7 @@
 //
 // Source of truth is the project registry (src/data/projects.js), never a
 // hand-typed list. A case ID is `<collection letter>-<registry n>`:
-//   PROJECTS      -> "C-<n>"   (C-01 Sidecar ... C-07 Proof First)
+//   PROJECTS      -> "C-<n>"   (C-01 Sidecar ... C-08 HeyHab.ai)
 //   GIS_PROJECTS  -> "G-<n>"   (G-01 Parcel Engine)
 // The registry `n` repeats across the two collections (Sidecar and Parcel
 // Engine are both "01"), so the collection letter is part of the ID.
@@ -34,7 +34,7 @@ export const caseIdFor = (slug) => CASE_IDS[slug] || null;
 // registry project with a real /projects/<slug> route. Predmkt Bot is deliberately
 // absent: the navigator and Project World already treat it as unlisted (reachable by
 // direct link only), and a disk would surface it.
-export const DISK_ORDER = ['zarvin-one', 'proof-first', 'parcel-engine', 'openclaw', 'sidecar', 'groundrules', 'help-nearby'];
+export const DISK_ORDER = ['zarvin-one', 'proof-first', 'parcel-engine', 'openclaw', 'sidecar', 'groundrules', 'help-nearby', 'heyhab'];
 
 const bySlug = Object.fromEntries(entries().map(({ p }) => [p.slug, p]));
 

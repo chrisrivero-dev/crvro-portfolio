@@ -102,6 +102,7 @@ const DESTINATIONS = {
   sidecar: { label: 'Sidecar', href: '/projects/sidecar' },
   'help-nearby': { label: 'Help Nearby', href: '/projects/help-nearby' },
   groundrules: { label: 'GroundRules', href: '/projects/groundrules' },
+  heyhab: { label: 'HeyHab.ai', href: '/projects/heyhab' },
   'parcel-engine': { label: 'Parcel Engine', href: '/projects/parcel-engine' },
 };
 

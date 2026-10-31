@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-06T20:13:17.150Z",
+  "generatedAt": "2026-10-31T22:37:11.953Z",
   "destinations": {
     "work": {
       "label": "Project World",
@@ -44,6 +44,10 @@
     "groundrules": {
       "label": "GroundRules",
       "href": "/projects/groundrules"
+    },
+    "heyhab": {
+      "label": "HeyHab.ai",
+      "href": "/projects/heyhab"
     },
     "parcel-engine": {
       "label": "Parcel Engine",
@@ -175,7 +179,7 @@
       "id": "zarvin-one-summary-13",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "Zarvin One: One place to get things done. A personal AI operator. Ask for an outcome, and Zarvin coordinates specialists, models, tools, permissions, execution, verification, and follow-up underneath.",
+      "text": "Zarvin One: A personal AI operating system. A personal AI operating system that takes responsibility for work. Each request becomes a durable responsibility that Zarvin owns, advances, stops for approval when it matters, and only closes with verified evidence.",
       "tags": [
         "AI Product / Personal Automation",
         "zarvin-one"
@@ -185,7 +189,7 @@
       "id": "zarvin-one-outcome-14",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "A personal AI operator that connects real calendar, email, and meeting-notes tools, executes approved actions, verifies the result against the provider, and keeps an evidence-backed record of what actually happened — not just what it says happened.",
+      "text": "A personal AI operating system where work is tracked as durable responsibilities: owned, resumed after restarts, gated by approval for consequential actions, and marked complete only with verified evidence.",
       "tags": [
         "zarvin-one",
         "outcome"
@@ -207,7 +211,7 @@
       "id": "zarvin-one-status-16",
       "section": "project",
       "slug": "zarvin-one",
-      "text": "Active live build — running daily on my own hardware, not a demo. Real connected accounts: Google Calendar, two Gmail accounts, Granola meeting notes. Consequential actions are approval-gated, executed, and independently verified against the provider. Some newer capabilities are still being hardened, or are intentionally off by default until they earn their way on.",
+      "text": "Active live build: running daily on my own hardware, not a demo. Work is tracked as durable responsibilities that survive restarts and only complete with verified evidence. Aven is the assistant I talk to; Ava decides internally which owned work needs attention. Consequential actions wait for my approval. The newest engineering loop is still validating in development.",
       "tags": [
         "zarvin-one",
         "status",
@@ -396,18 +400,7 @@
       ]
     },
     {
-      "id": "groundrules-demo-35",
-      "section": "project",
-      "slug": "groundrules",
-      "text": "Interactive demo: https://www.usegroundrules.com/",
-      "tags": [
-        "groundrules",
-        "demo",
-        "try"
-      ]
-    },
-    {
-      "id": "groundrules-learned-36",
+      "id": "groundrules-learned-35",
       "section": "project",
       "slug": "groundrules",
       "text": "Public records are messier than they look. Zoning codes, parcel data, and hazard layers often disagree with each other or contain stale information: the report has to acknowledge this rather than paper over it. Plain-English output is harder to get right than structured output. The goal is something someone can actually read and act on, not a JSON dump of zoning fields. Source citations matter a lot. Users need to know where a finding came from before they can trust it.",
@@ -417,7 +410,7 @@
       ]
     },
     {
-      "id": "groundrules-stack-37",
+      "id": "groundrules-stack-36",
       "section": "project",
       "slug": "groundrules",
       "text": "Frontend: Next.js, React, CSS · AI / data: LLM API for report generation, Public parcel and zoning data, GIS data sources · Infrastructure: Vercel",
@@ -427,7 +420,138 @@
       ]
     },
     {
-      "id": "parcel-engine-summary-38",
+      "id": "proof-first-summary-37",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "Proof First: Software repair, proven before payment. Proof First repairs a broken software behavior, reruns the same agreed test, and shows the before and after evidence before the customer pays. A code change is not proof that the problem is fixed.",
+      "tags": [
+        "Product / Software repair",
+        "proof-first"
+      ]
+    },
+    {
+      "id": "proof-first-problem-38",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "A tool, an AI, or a developer says something is fixed while the part that mattered is still broken. A code change is not proof that the problem is fixed. Proof First treats a repair as unfinished until the same test that failed before the repair passes after it.",
+      "tags": [
+        "proof-first",
+        "problem"
+      ]
+    },
+    {
+      "id": "proof-first-built-39",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "A controlled intake that validates, signs, and stores each submission as a private record. A worker that turns a verified submission into one resumable job. Reproduction and test runs inside a disposable sandbox with no network. A frozen test: criteria, commands, and scripts are hashed before the repair starts.",
+      "tags": [
+        "proof-first",
+        "built"
+      ]
+    },
+    {
+      "id": "proof-first-outcome-40",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "A working repair and proof workflow: reproduce the failure, freeze the test, repair, rerun the same test in a sandbox, and package the before and after evidence for review.",
+      "tags": [
+        "proof-first",
+        "outcome"
+      ]
+    },
+    {
+      "id": "proof-first-learned-41",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "A repair needs evidence. Saying it worked is a claim, and the rerun is the proof. The test has to be fixed before the repair starts, or the result cannot be trusted. Models can propose. Only the same test passing counts.",
+      "tags": [
+        "proof-first",
+        "learned"
+      ]
+    },
+    {
+      "id": "proof-first-stack-42",
+      "section": "project",
+      "slug": "proof-first",
+      "text": "Site and intake: JavaScript, Vercel, Private Blob storage · Worker: Python, Docker sandbox, Local models via Ollama",
+      "tags": [
+        "proof-first",
+        "stack"
+      ]
+    },
+    {
+      "id": "heyhab-summary-43",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "HeyHab.ai: Your business. Handled. HeyHab is an early AI support and business operations prototype for owners. It is more than an AI email assistant: a chatbot answers a question, while HeyHab is being built to organize the work around that question, prepare the next step, bring decisions to the owner, and keep track of whether the work actually got done.",
+      "tags": [
+        "Product / Support operations",
+        "heyhab"
+      ]
+    },
+    {
+      "id": "heyhab-problem-44",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "Customer support is more than answering. Someone still has to find accurate information, keep answers consistent, notice what needs attention, prepare the next action, make the decisions that matter, and confirm the work was finished. Tools like Shopify Inbox can handle many routine questions, and help desks like Freshdesk are built for support teams. HeyHab does not replace them and does not claim to. It targets a specific gap: the unfinished work left after an AI answers, for an owner who does not want to run a help desk.",
+      "tags": [
+        "heyhab",
+        "problem"
+      ]
+    },
+    {
+      "id": "heyhab-built-45",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "Connect and review: a bounded website crawl turns pages into source-linked proposed knowledge. Conflicts are surfaced, and only owner-approved knowledge can be used. Prepared replies: deterministic rules classify each request, approved evidence is checked first, and replies are drafted by a local Ollama model on the same machine or by a deterministic extractive fallback. Every claim is verified against an approved source, and unsupported questions escalate to the owner instead of being guessed. Human approval: the owner approves every reply and sends it themselves. HeyHab does not send customer messages today, and connecting a live inbox is still in development. Follow-through: an obligation ledger keeps drafted, authorized, sent, and worked as four separate facts, and labels completion as owner-reported, never as independently verified.",
+      "tags": [
+        "heyhab",
+        "built"
+      ]
+    },
+    {
+      "id": "heyhab-outcome-46",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "A working prototype with a public synthetic demonstration, 381 passing automated tests on the latest engine branch, and zero incorrect ready answers in a frozen 83-question evaluation. It has not been measured as faster, cheaper, or more accurate than any other tool.",
+      "tags": [
+        "heyhab",
+        "outcome"
+      ]
+    },
+    {
+      "id": "heyhab-status-47",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "Works today in tests on synthetic data: website review, approved knowledge, conflict detection, classification, prepared replies with evidence checks, owner approval, usual replies, Living FAQ, and decision history. Built but not available to customers: tracking responsibility and authorized deadlines, and returning overdue commitments to the owner. Proposed or in development: a live email inbox, a Shopify integration, urgency ranking, and independent confirmation of outcomes. The public Atlas Ridge Electronics demonstration is a fictional business with static, scripted data. HeyHab is not available to customers and has no pricing yet.",
+      "tags": [
+        "heyhab",
+        "status",
+        "prototype"
+      ]
+    },
+    {
+      "id": "heyhab-learned-48",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "A reply can be fully sourced and still not answer the question. Grounding and answering are separate checks. Escalating honestly is a feature, but unnecessary escalations are still a cost to measure. Models can propose. Deterministic checks and the owner decide.",
+      "tags": [
+        "heyhab",
+        "learned"
+      ]
+    },
+    {
+      "id": "heyhab-stack-49",
+      "section": "project",
+      "slug": "heyhab",
+      "text": "Application: Node.js, node:sqlite, node:http, node:test · AI: Local models via Ollama, Deterministic extractive fallback, JEV structured decisions · Public site: Static HTML, CSS, and JavaScript, Vercel",
+      "tags": [
+        "heyhab",
+        "stack"
+      ]
+    },
+    {
+      "id": "parcel-engine-summary-50",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Parcel Engine: Local metes-and-bounds parser and parcel geometry validator. A local Python tool that parses metes-and-bounds legal descriptions into structured COGO calls, builds preview geometry, checks closure/misclosure, and exports DXF or GeoJSON for mapping workflow testing. No official County data, real APNs, private legal descriptions, Q-drive files, or production records are included.",
@@ -437,7 +561,7 @@
       ]
     },
     {
-      "id": "parcel-engine-problem-39",
+      "id": "parcel-engine-problem-51",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Legal descriptions are dense, inconsistent, and easy to misread. Mapping workflows often require interpreting bearings, distances, curve calls, and closure behavior manually. This project explores whether a local tool can assist with that process without relying on official production data.",
@@ -447,7 +571,7 @@
       ]
     },
     {
-      "id": "parcel-engine-built-40",
+      "id": "parcel-engine-built-52",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Structured parser for line calls and selected curve calls Bearing and distance parsing for quadrant, compact, and cardinal formats Coordinate geometry builder Closure / misclosure validation",
@@ -457,7 +581,7 @@
       ]
     },
     {
-      "id": "parcel-engine-outcome-41",
+      "id": "parcel-engine-outcome-53",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Local research tool for parsing, validating, and exporting metes-and-bounds legal descriptions for mapping workflow testing.",
@@ -467,7 +591,7 @@
       ]
     },
     {
-      "id": "parcel-engine-learned-42",
+      "id": "parcel-engine-learned-54",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Legal descriptions are more varied than they appear. Handling the full range of bearing formats and notation styles is the bulk of the parsing problem. Closure validation is the most reliable feedback signal for whether a description was interpreted correctly.",
@@ -477,7 +601,7 @@
       ]
     },
     {
-      "id": "parcel-engine-stack-43",
+      "id": "parcel-engine-stack-55",
       "section": "project",
       "slug": "parcel-engine",
       "text": "Core: Python, COGO parsing, Geometry validation · Export: DXF, GeoJSON · Workflow: Desktop preview, OCR / Tesseract, Source-span review",
@@ -487,7 +611,7 @@
       ]
     },
     {
-      "id": "about-bio-44",
+      "id": "about-bio-56",
       "section": "about",
       "slug": "about",
       "text": "I'm Christopher. I build practical AI systems and internal tools for support, automation, and GIS/CAD. Most of them start with problems I've dealt with myself. I started in GIS/CAD support and gradually moved deeper into automation and human-supervised AI. I built my own local AI workstation and use Hermes every day to organize projects, investigate problems, and troubleshoot bugs. I still make the final calls. I usually have more ideas than time. I keep improving the systems I already use and start new projects when I see a problem worth solving.",
@@ -498,7 +622,7 @@
       ]
     },
     {
-      "id": "about-facts-45",
+      "id": "about-facts-57",
       "section": "about",
       "slug": "about",
       "text": "Based in Lakewood, CA (Pacific time). Currently building automation and AI tooling. Open to automation, AI support, and GIS/CAD ops work. Background in CAD/GIS, Python, and on-device AI.",
@@ -509,7 +633,7 @@
       ]
     },
     {
-      "id": "skills-languages-46",
+      "id": "skills-languages-58",
       "section": "skills",
       "slug": "skills",
       "text": "languages: Python, JavaScript, SQL, Bash, HTML / CSS",
@@ -519,7 +643,7 @@
       ]
     },
     {
-      "id": "skills-data-infra-47",
+      "id": "skills-data-infra-59",
       "section": "skills",
       "slug": "skills",
       "text": "data & infra: SQLite, Postgres, JSON / JSONL, Git / GitHub, Railway, REST APIs",
@@ -529,7 +653,7 @@
       ]
     },
     {
-      "id": "skills-AI-support-systems-48",
+      "id": "skills-AI-support-systems-60",
       "section": "skills",
       "slug": "skills",
       "text": "AI & support systems: OpenAI API, OpenClaw, KB-grounded drafting, RAG-style retrieval, Prompt guardrails, Canned response workflows",
@@ -539,7 +663,7 @@
       ]
     },
     {
-      "id": "skills-GIS-CAD-49",
+      "id": "skills-GIS-CAD-61",
       "section": "skills",
       "slug": "skills",
       "text": "GIS & CAD: ArcGIS Pro, QGIS, PostGIS, AutoCAD, MicroStation, Civil 3D, Shapefile / GeoPackage",
@@ -549,7 +673,7 @@
       ]
     },
     {
-      "id": "skills-automation-50",
+      "id": "skills-automation-62",
       "section": "skills",
       "slug": "skills",
       "text": "automation: Telegram Bot API, GitHub Actions, cron / scheduled jobs, Python scripts, Excel automation, pandas / openpyxl",
@@ -559,7 +683,7 @@
       ]
     },
     {
-      "id": "skills-ops-testing-51",
+      "id": "skills-ops-testing-63",
       "section": "skills",
       "slug": "skills",
       "text": "ops & testing: Structured logging, CLI tools, curl / API testing, Railway deploy logs, Local test scripts, Lightweight dashboards",
@@ -569,7 +693,7 @@
       ]
     },
     {
-      "id": "contact-email-52",
+      "id": "contact-email-64",
       "section": "contact",
       "slug": "contact",
       "text": "Email is the fastest way to reach Christopher: contact@crvro.com. He usually replies within a day.",
@@ -579,7 +703,7 @@
       ]
     },
     {
-      "id": "contact-github-53",
+      "id": "contact-github-65",
       "section": "contact",
       "slug": "contact",
       "text": "GitHub: github.com/chrisrivero-dev",
@@ -589,7 +713,7 @@
       ]
     },
     {
-      "id": "contact-linkedin-54",
+      "id": "contact-linkedin-66",
       "section": "contact",
       "slug": "contact",
       "text": "LinkedIn: https://www.linkedin.com/in/christopherarivero",

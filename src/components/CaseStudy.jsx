@@ -4,6 +4,7 @@ import ParcelPreview from './ParcelPreview.jsx';
 import EvidencePanel from './EvidencePanel.jsx';
 import HermesIncidentReplay from './HermesIncidentReplay.jsx';
 import ZarvinCaseStudy from './ZarvinCaseStudy.jsx';
+import HeyHabCaseStudy from './HeyHabCaseStudy.jsx';
 import ProofFirstCaseStudy from './ProofFirstCaseStudy.jsx';
 import { PROJECTS, GIS_PROJECTS } from '../data/projects.js';
 
@@ -369,6 +370,8 @@ export default function CaseStudy({ project: p }) {
         <ZarvinCaseStudy />
       ) : p.slug === 'proof-first' ? (
         <ProofFirstCaseStudy />
+      ) : p.slug === 'heyhab' ? (
+        <HeyHabCaseStudy />
       ) : (
         <>
 

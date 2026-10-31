@@ -272,7 +272,7 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   plate.position.set(0, 32, L / 2 + 10);
   org.add(plate);
   const disks = [];
-  const colors = ['#24262a', '#2f3e52', '#7a2e24', '#24262a', '#3d4a36', '#d8d2c4', '#2f3e52'];
+  const colors = ['#24262a', '#2f3e52', '#7a2e24', '#24262a', '#3d4a36', '#d8d2c4', '#2f3e52', '#66745a'];
   DISK_PROJECTS.forEach((p, i) => {
     const z = L / 2 - 50 - i * 84;
     const lift = 10 + i * 20; // stepped risers, like a file-folder sorter

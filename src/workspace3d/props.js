@@ -219,7 +219,15 @@ export function floppy({ project, color = '#25272b', ink }) {
   win.position.set(-DISK.w * 0.02, DISK.h * 0.32, DISK.t / 2 + 0.55);
   g.add(win);
   // paper label wrapping the lower front
-  const lt = tex(labelCanvas({ title: project.label, sub: project.line, n: project.caseId, ink }));
+  const heyhab = project.slug === 'heyhab';   // sage stripe and the A-frame mark; every other label is unchanged
+  const lc = labelCanvas({ title: project.label, sub: project.line, n: project.caseId, ink, ...(heyhab ? { stripe: '#8b9a7b' } : {}) });
+  if (heyhab) {
+    const x = lc.getContext('2d');
+    x.strokeStyle = '#5f6f55'; x.lineWidth = 7; x.lineJoin = 'round';
+    x.beginPath(); x.moveTo(400, 372); x.lineTo(450, 270); x.lineTo(500, 372); x.closePath(); x.stroke();
+    x.fillStyle = '#c99a4a'; x.fillRect(440, 342, 20, 30);
+  }
+  const lt = tex(lc);
   const label = new THREE.Mesh(new THREE.PlaneGeometry(DISK.w * 0.8, DISK.h * 0.52),
     new THREE.MeshStandardMaterial({ map: lt, roughness: 0.85 }));
   label.position.set(0, -DISK.h * 0.18, DISK.t / 2 + 0.15);

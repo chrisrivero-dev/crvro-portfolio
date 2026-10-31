@@ -63,6 +63,11 @@ export const DESTINATIONS = {
     label: findProject('proof-first')?.title || 'Proof First',
     href: '/projects/proof-first',
   },
+  heyhab: {
+    key: 'heyhab',
+    label: findProject('heyhab')?.title || 'HeyHab.ai',
+    href: '/projects/heyhab',
+  },
   'parcel-engine': {
     key: 'parcel-engine',
     label: findProject('parcel-engine')?.title || 'Parcel Engine',
@@ -200,6 +205,18 @@ const RULES = [
         kind: 'single',
         lines: ['hiring intent detected', 'closest system: SIDECAR'],
         results: [{ ...DESTINATIONS.sidecar, cta: 'OPEN SIDECAR →' }],
+      };
+    }
+    return null;
+  },
+
+  // ── HeyHab.ai: asking for the project itself opens it; a real question goes to ASK.EXE (see matchQuery) ──
+  (q) => {
+    if (/^(open |show( me)? |go to |see )?(the )?hey ?hab(\.ai)?( case study| project)?$/.test(q)) {
+      return {
+        kind: 'single',
+        lines: ['HeyHab.ai is an early prototype for the work around customer support: organizing it, preparing it, and following it through.', 'Status: tested on synthetic data. Not available to customers.'],
+        results: [{ ...DESTINATIONS.heyhab, cta: 'OPEN HEYHAB →' }],
       };
     }
     return null;
@@ -389,9 +406,13 @@ const UNKNOWN_RESULT = {
   suggestions: ['AI', 'GIS', 'support', 'background', 'skills', 'contact'],
 };
 
+const RULE_HEYHAB_DIRECT = /^(open |show( me)? |go to |see )?(the )?hey ?hab(\.ai)?( case study| project)?$/;
+
 export function matchQuery(raw) {
   const q = norm(raw);
   if (!q) return UNKNOWN_RESULT;
+  // Open questions about HeyHab need a real answer from ASK.EXE, not a keyword match on words like "support".
+  if (/hey ?hab|atlas ridge/.test(q) && !RULE_HEYHAB_DIRECT.test(q)) return UNKNOWN_RESULT;
   for (const rule of RULES) {
     const result = rule(q);
     if (result) return result;

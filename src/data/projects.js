@@ -783,6 +783,55 @@ export const PROJECTS = [
       { group: 'Worker', items: ['Python', 'Docker sandbox', 'Local models via Ollama'] },
     ],
   },
+  // HeyHab.ai: bespoke case study body in components/HeyHabCaseStudy.jsx. Claims are limited to what the heyhab repository implements
+  // and documents as of 2026-10-31. Atlas Ridge Electronics is a fictional business. No customer, revenue, or adoption claims.
+  {
+    id: 'heyhab',
+    slug: 'heyhab',
+    n: '08',
+    title: 'HeyHab.ai',
+    titleEm: 'Your business. Handled.',
+    kind: 'Product / Support operations',
+    year: '2026 to present',
+    desc: 'HeyHab is an early AI support and business operations prototype for owners. It is more than an AI email assistant: a chatbot answers a question, while HeyHab is being built to organize the work around that question, prepare the next step, bring decisions to the owner, and keep track of whether the work actually got done.',
+    tags: ['node · sqlite · local ollama models · jev decisions'],
+    accent: '#5F6F55',
+    shape: 'triangle',
+    role: 'Solo build: product, workflow engine, evidence checks, evaluation, design, and site',
+    status: 'Early prototype · tested on synthetic data · not available to customers',
+    statusBadge: 'Early prototype',
+    outcome: 'A working prototype with a public synthetic demonstration, 381 passing automated tests on the latest engine branch, and zero incorrect ready answers in a frozen 83-question evaluation. It has not been measured as faster, cheaper, or more accurate than any other tool.',
+    repo: null,
+    demo: null,
+    site: 'https://heyhab.app/',
+    problem: [
+      'Customer support is more than answering. Someone still has to find accurate information, keep answers consistent, notice what needs attention, prepare the next action, make the decisions that matter, and confirm the work was finished.',
+      'Tools like Shopify Inbox can handle many routine questions, and help desks like Freshdesk are built for support teams. HeyHab does not replace them and does not claim to. It targets a specific gap: the unfinished work left after an AI answers, for an owner who does not want to run a help desk.',
+    ],
+    built: [
+      'Connect and review: a bounded website crawl turns pages into source-linked proposed knowledge. Conflicts are surfaced, and only owner-approved knowledge can be used.',
+      'Prepared replies: deterministic rules classify each request, approved evidence is checked first, and replies are drafted by a local Ollama model on the same machine or by a deterministic extractive fallback. Every claim is verified against an approved source, and unsupported questions escalate to the owner instead of being guessed.',
+      'Human approval: the owner approves every reply and sends it themselves. HeyHab does not send customer messages today, and connecting a live inbox is still in development.',
+      'Follow-through: an obligation ledger keeps drafted, authorized, sent, and worked as four separate facts, and labels completion as owner-reported, never as independently verified.',
+      'JEV, a hosted structured decision service, may influence only allowlisted internal routing such as category and priority. It writes no customer text and falls back to deterministic rules.',
+    ],
+    learned: [
+      'A reply can be fully sourced and still not answer the question. Grounding and answering are separate checks.',
+      'Escalating honestly is a feature, but unnecessary escalations are still a cost to measure.',
+      'Models can propose. Deterministic checks and the owner decide.',
+    ],
+    publicStatus: [
+      'Works today in tests on synthetic data: website review, approved knowledge, conflict detection, classification, prepared replies with evidence checks, owner approval, usual replies, Living FAQ, and decision history.',
+      'Built but not available to customers: tracking responsibility and authorized deadlines, and returning overdue commitments to the owner.',
+      'Proposed or in development: a live email inbox, a Shopify integration, urgency ranking, and independent confirmation of outcomes.',
+      'The public Atlas Ridge Electronics demonstration is a fictional business with static, scripted data. HeyHab is not available to customers and has no pricing yet.',
+    ],
+    stack: [
+      { group: 'Application', items: ['Node.js', 'node:sqlite', 'node:http', 'node:test'] },
+      { group: 'AI', items: ['Local models via Ollama', 'Deterministic extractive fallback', 'JEV structured decisions'] },
+      { group: 'Public site', items: ['Static HTML, CSS, and JavaScript', 'Vercel'] },
+    ],
+  },
 ];
 
 export function getProjectBySlug(slug) {
