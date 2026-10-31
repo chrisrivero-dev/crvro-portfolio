@@ -154,13 +154,12 @@ export default function HeyHabCaseStudy() {
         <p>The proof ladder runs identified, drafted, authorized, executed, attested. Each rung needs its own evidence. "Executed" can only mean the owner reported sending it, and that rule is enforced by the database schema. A simulated delivery never counts.</p>
       </Section>
 
-      <Section index="07" label="Design and experience" title="A welcoming place, not a help desk.">
-        <p>Support software usually looks like a queue. I wanted HeyHab to feel like somewhere you go to find your business in order. The identity is called Night Porch: a warm A-frame cabin at night, with a lit doorway. The A-frame is the logo, and the miniature workspace inside it is the idea in one picture: everything in its place, with someone looking after it.</p>
-        <div className="hh-grid">
-          <Shot src="intro" alt="The cinematic intro: a cutaway A-frame with a miniature workspace of shelves and a lamp.">The optional cinematic intro on the live site. It runs about ten seconds, and visitors can skip or pause it.</Shot>
-          <Shot src="home" alt="The home page after the intro, with the A-frame beside the headline.">The intro resolves into the home page. It is part of the marketing site, not the owner app.</Shot>
-        </div>
-        <p>The owner app takes the warmth into calmer, readable screens, with plain language such as "8 things need you" in place of ticket counts. Earlier opening concepts remain in the repository as explorations and are not released features.</p>
+      <Section index="07" label="Design and experience" title="Making business operations feel approachable.">
+        <p>I wanted HeyHab to feel less like a traditional support dashboard and more like a workspace where business owners can see what needs attention.</p>
+        <Shot src="brief" alt="The owner Brief in the Atlas Ridge demo: 8 things need you, 4 replies are ready, with a critical safety case escalated to the owner.">The owner view in the public Atlas Ridge demo, a static snapshot of fictional data. It leads with what needs the owner, in plain words, not ticket counts.</Shot>
+        <p>The A-frame identity brings warmth to the experience, while the owner application focuses on clarity, organization, and making the next action obvious.</p>
+        <p>The design supports the same principle as the technology: simplify complex work without hiding what is happening.</p>
+        <Shot src="intro" alt="The optional cinematic intro: a cutaway A-frame with a miniature workspace of shelves and a lamp.">The A-frame from the optional intro on the marketing site. The intro is part of the public site, not the owner application.</Shot>
       </Section>
 
       <Section index="08" label="Challenges, results, lessons" title="What was hard, and what is still unfinished.">
