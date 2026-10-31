@@ -39,7 +39,7 @@ function Table({ head, rows }) {
     <div className="hh-table-wrap">
       <table className="hh-table">
         <thead><tr>{head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
-        <tbody>{rows.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i}>{c}</td>)}</tr>)}</tbody>
+        <tbody>{rows.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i} data-label={head[i]}>{c}</td>)}</tr>)}</tbody>
       </table>
     </div>
   );
@@ -156,10 +156,9 @@ export default function HeyHabCaseStudy() {
 
       <Section index="07" label="Design and experience" title="Making business operations feel approachable.">
         <p>I wanted HeyHab to feel less like a traditional support dashboard and more like a workspace where business owners can see what needs attention.</p>
-        <Shot src="brief" alt="The owner Brief in the Atlas Ridge demo: 8 things need you, 4 replies are ready, with a critical safety case escalated to the owner.">The owner view in the public Atlas Ridge demo, a static snapshot of fictional data. It leads with what needs the owner, in plain words, not ticket counts.</Shot>
         <p>The A-frame identity brings warmth to the experience, while the owner application focuses on clarity, organization, and making the next action obvious.</p>
         <p>The design supports the same principle as the technology: simplify complex work without hiding what is happening.</p>
-        <Shot src="intro" alt="The optional cinematic intro: a cutaway A-frame with a miniature workspace of shelves and a lamp.">The A-frame from the optional intro on the marketing site. The intro is part of the public site, not the owner application.</Shot>
+        <Shot src="intro" alt="The HeyHab A-frame with a miniature workspace of shelves and a lamp inside.">The A-frame identity on heyhab.app.</Shot>
       </Section>
 
       <Section index="08" label="Challenges, results, lessons" title="What was hard, and what is still unfinished.">
