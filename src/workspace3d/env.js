@@ -327,12 +327,15 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
   const bulb = new THREE.Mesh(new THREE.SphereGeometry(44, 20, 12), new THREE.MeshStandardMaterial({ color: '#fff3d6', emissive: '#ffcf8a', emissiveIntensity: 3 }));
   bulb.position.set(600, 630, 0);
   lamp.add(bulb);
+  const lampHit = new THREE.Mesh(new THREE.BoxGeometry(330, 300, 300), new THREE.MeshBasicMaterial({ visible: false }));   // an easy target around the shade
+  lampHit.position.set(520, 680, 0); lampHit.userData.proxy = true; lamp.add(lampHit);
   lamp.traverse((o) => { if (o.isMesh && o !== bulb) o.castShadow = o.receiveShadow = true; });
-  lamp.position.set(780, TOP, -540);
+  lamp.position.set(1010, TOP, -540);   // 12: moved 230 units right so its shade clears the CRT silhouette
   lamp.rotation.y = -2.2;
   scene.add(lamp);
   lamp.updateMatrixWorld(true);
   const bulbWorld = bulb.getWorldPosition(new THREE.Vector3());
+  build.lampGroup = lamp; build.lampBulb = bulb;   // 12: the desk lamp can be switched on and off by clicking it
 
   /* ── wall: shelf of binders, framed plat, plan rack ───────────── */
   const shelfY = TOP + 830;
@@ -435,6 +438,18 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
 
 const SIERRA_SPINES = { 1: FOLDERS[1], 3: FOLDERS[0], 5: FOLDERS[2], 6: FOLDERS[3] };   // binder index on the shelf
 
+/** Remember the lamp's lit intensities so it can be switched off and back on. */
+function rigBase(rig) { rig.base = { desk: rig.deskLamp.intensity, glow: rig.bulbGlow.intensity, bulb: build.lampBulb.material.emissiveIntensity }; }
+/** Lamp on or off: the spot, the glow, the dust cone and the bulb together. Shadows from the lamp go with the spot. */
+export function setLamp(on) {
+  const r = build.lampRig; if (!r) return;
+  r.on = on;
+  r.deskLamp.intensity = on ? r.base.desk : 0; r.bulbGlow.intensity = on ? r.base.glow : 0;
+  if (r.cone) r.cone.visible = on;
+  build.lampBulb.material.emissiveIntensity = on ? r.base.bulb : 0.04;
+  build.lampBulb.material.color.set(on ? '#fff3d6' : '#6a6258');
+}
+
 /** An aged paper spine label, lettered sideways as on an archive folder. */
 function spineCanvas(f) {
   const hero = f.id === 'hero', c = document.createElement('canvas'); c.width = 128; c.height = hero ? 490 : 362;
@@ -461,6 +476,7 @@ export function makeLighting(mood) {
     const bulbGlow = new THREE.PointLight('#ffc27a', 0, 0, 2);
     bulbGlow.position.copy(L).add(new THREE.Vector3(0, 60, 0));
     scene.add(bulbGlow);
+    const rig = build.lampRig = { deskLamp, bulbGlow, cone: null, on: true, base: {} };
     // daylight through the left window
     key.position.set(-5200, 2600, 900);
     key.target.position.set(-300, TOP, 0);
@@ -511,14 +527,17 @@ export function makeLighting(mood) {
       cone.position.copy(L).addScaledVector(dir.normalize(), 550);
       cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir);
       scene.add(cone);
+      rig.cone = cone;
       // 11: the window looks out on a blue-hour street (it replaces the flat dusk glass colour)
       build.exterior = buildExterior({ THREE, scene, tex: build.props.tex, LEFT_X, win: W });
+      rigBase(rig);
       return;
     }
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(W.z1 - W.z0, W.y1 - W.y0), new THREE.MeshBasicMaterial({ color: '#e9eef2' }));
     sky.rotation.y = Math.PI / 2;
     sky.position.set(LEFT_X - 30, (W.y0 + W.y1) / 2, (W.z0 + W.z1) / 2);
     scene.add(sky);
+    rigBase(rig);
   };
 }
 

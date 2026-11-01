@@ -385,6 +385,8 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   /* ── 14: the Sierra folders on the wall shelf. Close up first; a folder opens its panel over the room (SierraOverlay). ── */
   const sierra = engine.sierra || [];
+  const lampObj = engine.lamp;
+  const toggleLamp = () => { if (lampObj) { lampObj.set(!lampObj.on); emit(); } };
   async function goShelf() {
     if (!sierra.length) return back();
     const alive = mine();
@@ -415,12 +417,13 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : []), ...(lab ? [lab.sheet] : []), ...(instant ? [instant] : []), ...sierra], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : []), ...(lab ? [lab.sheet] : []), ...(instant ? [instant] : []), ...sierra, ...(lampObj ? [lampObj.group] : [])], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
       return { note: n.slug, title: n.title, caseId: n.caseId, stamp: r?.kind || null };
     }
+    if (hit && lampObj) { let o = hit.object; while (o && o !== lampObj.group) o = o.parent; if (o) return { lamp: true }; }
     if (hit?.object.userData.sierra) return { sierra: hit.object.userData.sierra };
     if (hit && instant) { let o = hit.object; while (o && o !== instant) o = o.parent; if (o) return { camera: true }; }
     if (hit && lab && hit.object === lab.sheet) {
@@ -469,6 +472,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
+    else if (hit?.lamp) toggleLamp();
     else if (hit?.sierra) goShelf();
     else if (hit?.lab) inspectLab();
     else if (hit?.camera) inspectCamera();
@@ -515,7 +519,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera, turnCamera, goShelf, openFolder,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera, turnCamera, goShelf, openFolder, toggleLamp,
     pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */
@@ -523,6 +527,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
       if (!canLook()) return;
       engine.setLook(engine.look.yaw + dy, THREE.MathUtils.clamp(engine.look.pitch + dp, -LOOK.pitchDown, LOOK.pitchUp));
     },
+    get lampOn() { return lampObj ? lampObj.on : true; },
     get state() { return { ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }; },
     get deskLook() { return { ...deskLook }; },
   };

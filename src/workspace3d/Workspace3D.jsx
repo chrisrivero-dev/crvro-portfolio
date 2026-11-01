@@ -461,6 +461,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       <div className="ws3d__row ws3d__row--ctx ws3d__row--rest">
         <span className="ws3d__label">{coarse ? 'Drag to look · tap the computer, disks, plans, mug or notebook' : 'Look around · click the computer, disks, plans, mug or career notebook · L reading corner'}</span>
         <button type="button" className="ws3d__mugbtn" onClick={() => ctl()?.goMug()}>Look at the coffee mug</button>
+        <button type="button" className="ws3d__mugbtn" aria-pressed={ctl()?.lampOn !== false} onClick={() => ctl()?.toggleLamp()}>Desk lamp: {ctl()?.lampOn === false ? 'off' : 'on'}</button>
         {ui.session && <button type="button" onClick={() => ctl()?.eject()}>Eject {TITLES[ui.session]}</button>}
       </div>
     );
@@ -505,7 +506,8 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
 
       {hover && !ui.busy && !ui.folder && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record', 'lab', 'camera', 'shelf'].includes(ui.view) && !(ui.view === 'camera' && hover.camera) && !(ui.view === 'lab' && hover.lab && !hover.labNode) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.sierra ? `${FOLDERS.find((f) => f.id === hover.sierra).label} · old game folder · click to look closer`
+          {hover.lamp ? `Desk lamp · click to turn ${ctl()?.lampOn === false ? 'on' : 'off'}`
+            : hover.sierra ? `${FOLDERS.find((f) => f.id === hover.sierra).label} · old game folder · click to look closer`
             : hover.camera ? 'Instax Mini 90 · click to look closer'
             : hover.labNode ? `${LAB.nodes.find((m) => m.id === hover.labNode)?.name} · click to read about it`
             : hover.lab ? 'Daventry One · local model lab drawing · click to look closer'

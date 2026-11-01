@@ -73,6 +73,9 @@ export function buildExterior({ THREE, scene, tex, LEFT_X, win }) {
   };
   // distances behind the glass: tree ≈ 2.4 m, the neighbour's wall ≈ 4 m, the sky and the far side of the street ≈ 4.7 m (inside the far plane)
   const sky = plane(skyCanvas(), 26000, 40000, 9800, 14000, zc, false);
+  // below the sky card's lower edge: ground, so a steep look down through the window never sees past the world
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(26000, 30000), new THREE.MeshBasicMaterial({ color: '#463d3c', fog: false }));
+  ground.position.set(LEFT_X - 9800, -6000 - 15000, zc); ground.rotation.y = Math.PI / 2; scene.add(ground);
   const house = plane(houseCanvas(), 7000, 7000, 8400, -340, -2590, true);
   const tree = plane(treeCanvas(), 2600, 5200, 4200, yc + 700, zc + 2000, true);
   house.renderOrder = 1; tree.renderOrder = 2;
