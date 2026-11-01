@@ -7,6 +7,7 @@
 //   /#plans            (05B.1) the drafting plans: the survey sheet with project notes pinned to it
 //   /#plans/<slug>     (05B.1) one note, read up close
 //   /#mug              (05B.3) the coffee mug, close up (reached by tapping the mug; not one of the listed stations)
+//   /#shelf            (14) the old game folders on the wall shelf (reached from a tap, a bar button or the link; not in the switcher)
 //   /#career           (06) the career notebook, open at its first page (work history)
 //   /#career/<page>    (06) one notebook page: work, highlights or resume. An unknown page falls back to /#career.
 //   /#corner           (07) the reading corner by the window: the lounge chair, the side table and the record player
@@ -37,6 +38,7 @@ export function stationFromHash(hash) {
   if (hash === '#disks') return 'disks';
   if (hash === '#plans') return 'plans';
   if (hash === '#mug') return 'mug';
+  if (hash === '#shelf') return 'shelf';
   if (hash === '#corner') return 'corner';
   const c = /^#corner\/([a-z]+)$/.exec(hash);
   if (c) return CORNER_SPOTS.includes(c[1]) ? `corner/${c[1]}` : 'corner';
@@ -48,7 +50,7 @@ export function stationFromHash(hash) {
   return m ? `disk/${m[1]}` : null;
 }
 export const hrefForStation = (s) => (s === 'desk' ? '/' : `/#${s}`);
-export const baseStation = (s) => (s === 'mug' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s && s.startsWith('career/') ? 'career' : s && s.startsWith('corner/') ? 'corner' : s);
+export const baseStation = (s) => (s === 'mug' || s === 'shelf' ? 'desk' : s && s.startsWith('disk/') ? 'disks' : s && s.startsWith('plans/') ? 'plans' : s && s.startsWith('career/') ? 'career' : s && s.startsWith('corner/') ? 'corner' : s);
 
 /** The station a controller state stands for, or null while it is moving between states (nothing is written to the URL then). */
 export function stationOfUi(ui) {
@@ -59,6 +61,7 @@ export function stationOfUi(ui) {
   if (ui.view === 'drive' && !ui.session) return 'disks';
   if (ui.view === 'plans') return 'plans';
   if (ui.view === 'mug') return 'mug';
+  if (ui.view === 'shelf') return 'shelf';
   if (ui.view === 'note' && ui.note) return `plans/${ui.note}`;
   if (ui.view === 'corner') return 'corner';
   if (ui.view === 'seat') return 'corner/seat';

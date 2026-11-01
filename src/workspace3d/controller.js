@@ -34,7 +34,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   for (const [slug, d] of Object.entries(disks)) home[slug] = { parent: d.parent, pos: d.position.clone(), quat: d.quaternion.clone(), loc: 'home' };
 
   let epoch = 0;
-  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false, labNode: null };
+  const st = { view: 'rest', session: null, pending: null, held: null, busy: false, lastEntry: null, note: null, page: null, fit: 0, playing: false, labNode: null, folder: null };
   let instant = null, camYaw0 = 0;               // 12: the instant camera and its resting turn on the shelf (set once the room is read below)
   let deskLook = { yaw: 0, pitch: 0 };          // where the visitor was looking at the desk; restored on return
   // 08: the reading corner is framed from further off than the desk; the dusk haze thins while there so the corner keeps its colour
@@ -45,7 +45,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     const a = engine.haze, b = on ? (matchMedia('(max-aspect-ratio: 4/5)').matches ? 2 : 1) : 0, tok = ++hazeTok;
     run(900, (e) => engine.setHaze(a + (b - a) * e), () => hazeTok === tok);
   };
-  const emit = () => { if (instant && st.view !== 'camera' && instant.rotation.y !== camYaw0) { instant.rotation.y = camYaw0; markDirty(); } if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record', 'lab', 'camera'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
+  const emit = () => { if (st.view !== 'shelf') st.folder = null; if (instant && st.view !== 'camera' && instant.rotation.y !== camYaw0) { instant.rotation.y = camYaw0; markDirty(); } if (st.playing && st.view !== 'record') setPlaying(false); cornerHaze(['corner', 'seat', 'record', 'lab', 'camera', 'shelf'].includes(st.view)); syncBook(); engine.lockParallax(st.view !== 'rest'); onChange?.({ ...st, locs: Object.fromEntries(Object.entries(home).map(([k, v]) => [k, v.loc])) }); };
   const mine = () => { const my = ++epoch; return () => epoch === my; };
   // only a settled desk view is remembered (never a half-finished return flight)
   const leaveDesk = () => { if (st.view === 'rest' && !st.busy) deskLook = { yaw: engine.look.yaw, pitch: engine.look.pitch }; };
@@ -383,6 +383,19 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     lab.select(st.labNode); markDirty(); emit();
   }
 
+  /* ── 14: the Sierra folders on the wall shelf. Close up first; a folder opens its panel over the room (SierraOverlay). ── */
+  const sierra = engine.sierra || [];
+  async function goShelf() {
+    if (!sierra.length) return back();
+    const alive = mine();
+    leaveDesk();
+    if (!(await dropHeld(alive))) return;
+    st.view = 'shelf'; st.folder = null; st.note = null; st.page = null; st.busy = false; emit();
+    const box = new THREE.Box3(); sierra.forEach((m) => box.expandByObject(m));
+    await flyTo({ yaw: 0.05, pitch: 0.04, dist: 1250, fitW: 720, target: box.getCenter(new THREE.Vector3()) }, 1000, alive);
+  }
+  function openFolder(id) { if (st.view === 'shelf') { st.folder = id; emit(); } }   // null closes the panel
+
   /** Menu entry chosen: the screen fills the viewport, then the page takes over (the owner swaps the layers). */
   async function launch(entry) {
     const alive = mine();
@@ -402,12 +415,13 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
   const pick = (e) => {
     const r = engine.stage.getBoundingClientRect();
     ray.setFromCamera({ x: ((e.clientX - r.left) / r.width) * 2 - 1, y: -((e.clientY - r.top) / r.height) * 2 + 1 }, camera);
-    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : []), ...(lab ? [lab.sheet] : []), ...(instant ? [instant] : [])], true)[0];
+    const hit = ray.intersectObjects([...diskList, engine.machine, engine.tray, ...Object.values(notes), ...(engine.sheet ? [engine.sheet] : []), ...(engine.mug ? [engine.mug] : []), ...(book ? [book.group] : []), ...(lounge ? [lounge.chair, lounge.table] : []), ...(lab ? [lab.sheet] : []), ...(instant ? [instant] : []), ...sierra], true)[0];
     if (hit?.object.userData.note) {
       const n = hit.object.userData.note;
       const r = n.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
       return { note: n.slug, title: n.title, caseId: n.caseId, stamp: r?.kind || null };
     }
+    if (hit?.object.userData.sierra) return { sierra: hit.object.userData.sierra };
     if (hit && instant) { let o = hit.object; while (o && o !== instant) o = o.parent; if (o) return { camera: true }; }
     if (hit && lab && hit.object === lab.sheet) {
       const n = hit.object.userData.lab.rects.find((q) => hit.uv.x >= q.u0 && hit.uv.x <= q.u1 && hit.uv.y >= q.v0 && hit.uv.y <= q.v1);
@@ -448,12 +462,14 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
     if (st.view === 'book') { if (!hit?.book) back(); return; }               // the open notebook: a tap off the book steps back to the desk
     if (st.view === 'record') { if (hit?.player || hit?.table) togglePlay(); else if (hit?.chair) sit(); else back(); return; }   // the record player: a tap on it plays or stops it
     if (st.view === 'seat') { if (hit?.player) inspectRecord(); else back(); return; }         // seated: a tap anywhere stands up, back at the desk
+    if (st.view === 'shelf') { if (st.folder) return; if (hit?.sierra) openFolder(hit.sierra); else back(); return; }
     if (st.view === 'camera') { if (!hit?.camera) back(); return; }   // the camera close-up: a tap off the camera steps back
     if (st.view === 'lab') { if (hit?.labNode) selectLabNode(hit.labNode); else if (!hit?.lab) back(); return; }   // the lab drawing: a tap on a model outlines it; off the drawing steps back
     if (st.view === 'corner') { if (hit?.chair) sit(); else if (hit?.player || hit?.table) inspectRecord(); else back(); return; }
     if (hit?.note) { inspectNote(hit.note); return; }
     if (hit?.sheet) { if (st.view !== 'plans') goPlans(); return; }
     if (hit?.slug) { if (st.session === hit.slug) approach(); else pickUp(hit.slug); }
+    else if (hit?.sierra) goShelf();
     else if (hit?.lab) inspectLab();
     else if (hit?.camera) inspectCamera();
     else if (hit?.mug) goMug();
@@ -499,7 +515,7 @@ export function createController(engine, { onChange, onHover, onLaunch, onNoteLi
 
   emit();
   return {
-    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera, turnCamera,
+    load, eject, approach, focusTray, pickUp, putBack, back, launch, returnFromScreen, dispose, goPlans, inspectNote, goMug, openBook, turnPage, refit, goCorner, sit, inspectRecord, togglePlay, inspectLab, selectLabNode, inspectCamera, turnCamera, goShelf, openFolder,
     pages: CAREER_PAGE_IDS,
     noteSlugs: Object.keys(notes),
     /** Keyboard look-around at the desk (secondary to dragging). */

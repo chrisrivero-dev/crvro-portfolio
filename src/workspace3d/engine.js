@@ -645,7 +645,7 @@ scene.add(screenObj);
     THREE, scene, camera, machine, renderer, screenEl, stage, D, EASE,
     diskList: built.diskList || [],
     tray: built.tray,
-    sheet: built.sheet, mug: built.mug, notes, book, lounge, room: built.room, knee: built.knee,
+    sheet: built.sheet, mug: built.mug, notes, book, lounge, room: built.room, knee: built.knee, sierra: env.build.sierra || [],
     /** The right-hand page of the open notebook as a rectangle in the stage's CSS pixels (null if the book is not built or not in view). */
     /** Screen rect of an open-book page ('right' or 'left'), and its outline inside that rect as a clip-path polygon. */
     bookPageRect(side = 'right') {

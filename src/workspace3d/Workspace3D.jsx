@@ -17,6 +17,8 @@ import { PAGE_VIEW, CareerIndex } from '../components/CareerContent.jsx';
 import { EXPERIENCES, hrefFor } from '../lib/experiences.js';
 import { navigate } from '../lib/location.js';
 import { PHOTOS } from '../data/photos.js';
+import { FOLDERS } from '../data/sierraShelf.js';
+import SierraOverlay from './SierraOverlay.jsx';
 import { LAB } from '../data/daventryLab.js';
 import { STATIONS, SWITCHER, STATION_LABEL, stationOfUi, hrefForStation, baseStation, rememberOrigin } from '../lib/stations.js';
 import '../styles/workspace3d.css';
@@ -188,6 +190,11 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     }
   }, [active, engine]);
 
+  function closeFolder() {
+    const id = ctlRef.current?.state.folder;
+    ctlRef.current?.openFolder(null);
+    setTimeout(() => document.querySelector(`[data-folder="${id}"]`)?.focus({ preventScroll: true }), 0);
+  }
   /* ── keyboard: Escape steps back; C / D / arrows are secondary aids to the physical objects ── */
   useEffect(() => {
     const onKey = (e) => {
@@ -195,13 +202,17 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       const ctl = ctlRef.current;
       if (!ctl) return;
       const typing = e.target.closest?.('input, textarea, [contenteditable="true"]');
+      if (ctl.state.folder) {                                       // the Sierra panel owns the keyboard while open
+        if (e.key === 'Escape') { e.preventDefault(); closeFolder(); }
+        return;
+      }
       if (e.key === 'Escape') {
         if (stationsOpenRef.current) { e.preventDefault(); setStationsOpen(false); document.querySelector('.ws3d__stbtn')?.focus({ preventScroll: true }); return; }
         if (disksOpenRef.current) { e.preventDefault(); setDisksOpen(false); document.querySelector('.ws3d__disks')?.focus({ preventScroll: true }); return; }
         const v = ctl.state.view;
         if (v === 'hold') { e.preventDefault(); ctl.putBack(); setAnnounce('Disk put back in the organizer.'); return; }
         if (v === 'note') { e.preventDefault(); ctl.goPlans(); setAnnounce('Back over the drafting plans.'); return; }
-        if (v === 'plans' || v === 'mug' || v === 'book' || v === 'corner' || v === 'seat' || v === 'record' || v === 'lab' || v === 'camera') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
+        if (v === 'plans' || v === 'mug' || v === 'book' || v === 'corner' || v === 'seat' || v === 'record' || v === 'lab' || v === 'camera' || v === 'shelf') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); return; }
         if (v === 'crt' || v === 'drive') { e.preventDefault(); ctl.back(); setAnnounce('Back at the desk.'); }
         return;
       }
@@ -212,6 +223,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
       else if (k === 'p') { e.preventDefault(); goStation('plans'); }
       else if (k === 'n') { e.preventDefault(); goStation('career'); }
       else if (k === 'l') { e.preventDefault(); goStation('corner'); }
+      else if (k === 'g') { e.preventDefault(); goStation('shelf'); }
       else if (k === ' ' && ctl.state.view === 'record' && !e.target.closest?.('button, a')) { e.preventDefault(); ctl.togglePlay(); }
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && ctl.state.view === 'camera') { e.preventDefault(); ctl.turnCamera(e.key === 'ArrowLeft' ? -0.35 : 0.35); }   // 12: turn the inspected camera
       else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && ctl.state.view === 'book' && !e.shiftKey && flipPage(e.key === 'ArrowRight' ? 1 : -1)) { e.preventDefault(); }   // pages first; past the first or last page the arrows go on to the neighbouring station
@@ -241,6 +253,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
     else if (s === 'corner') ctl.goCorner();
     else if (s === 'corner/seat') ctl.sit();
     else if (s === 'corner/record') ctl.inspectRecord();
+    else if (s === 'shelf') ctl.goShelf();
     else if (s === 'corner/lab') ctl.inspectLab();
     else if (s === 'corner/camera') ctl.inspectCamera();
     else if (s.startsWith('plans/')) ctl.inspectNote(s.slice(6));
@@ -407,6 +420,13 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         <button type="button" className="ws3d__use" onClick={() => ctl()?.back()}>Back to the desk</button>
       </div>
     );
+    if (ui.view === 'shelf') return (
+      <div className="ws3d__row ws3d__row--ctx ws3d__row--folders" style={{ flexWrap: 'wrap' }}>
+        <span className="ws3d__label">Old game folders · pick one</span>
+        {FOLDERS.map((f) => <button key={f.id} type="button" data-folder={f.id} className={f.id === 'hero' ? 'ws3d__use' : undefined} onClick={() => ctl()?.openFolder(f.id)}>{f.label}</button>)}
+        <button type="button" onClick={() => ctl()?.back()}>Back to the desk</button>
+      </div>
+    );
     if (ui.view === 'camera') {
       const ph = PHOTOS.find((x) => x.id === photo);
       return (
@@ -478,12 +498,15 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
         engine.screenEl,
       )}
 
+      {ui.view === 'shelf' && ui.folder && <SierraOverlay folder={ui.folder} onClose={closeFolder} />}
+
       {!engine && active && <p className="ws3d__loading" role="status">Loading the workspace…</p>}
       {paused && <p className="ws3d__loading" role="status">Graphics reset. Restoring the workspace…</p>}
 
-      {hover && !ui.busy && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record', 'lab', 'camera'].includes(ui.view) && !(ui.view === 'camera' && hover.camera) && !(ui.view === 'lab' && hover.lab && !hover.labNode) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
+      {hover && !ui.busy && !ui.folder && ['rest', 'drive', 'plans', 'note', 'mug', 'corner', 'seat', 'record', 'lab', 'camera', 'shelf'].includes(ui.view) && !(ui.view === 'camera' && hover.camera) && !(ui.view === 'lab' && hover.lab && !hover.labNode) && !(hover.sheet && ui.view !== 'rest') && !(ui.view === 'note' && hover.note === ui.note && !hover.stamp) && !(ui.view === 'mug' && hover.mug) && (
         <div className="ws3d__tag" style={{ transform: `translate(${hover.x + 14}px, ${hover.y + 14}px)` }} aria-hidden="true">
-          {hover.camera ? 'Instax Mini 90 · click to look closer'
+          {hover.sierra ? `${FOLDERS.find((f) => f.id === hover.sierra).label} · old game folder · click to look closer`
+            : hover.camera ? 'Instax Mini 90 · click to look closer'
             : hover.labNode ? `${LAB.nodes.find((m) => m.id === hover.labNode)?.name} · click to read about it`
             : hover.lab ? 'Daventry One · local model lab drawing · click to look closer'
             : hover.chair ? (ui.view === 'seat' ? 'Click to stand up' : 'Lounge chair · click to sit')
@@ -527,7 +550,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
 
       {engine && active && (
         <>
-          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · N notebook · L corner · ←/→ · Esc back</p>}
+          {!coarse && <p className="ws3d__hint" aria-hidden="true">{ui.view === 'rest' ? 'Drag to look · ' : ''}C computer · D disks · P plans · N notebook · L corner · G old games · ←/→ · Esc back</p>}
           <div className="ws3d__dock" role="group" aria-label="Studio controls">
             {ContextRow()}
             {disksOpen && !sessionSlug && !ui.held && (
@@ -548,6 +571,7 @@ export default function Workspace3D({ active, station = 'desk', onLaunch, onUnav
                     const cur = baseStation(stationOfUi(ui)) === s;
                     return <li key={s}><button type="button" aria-current={cur ? 'location' : undefined} className={cur ? 'is-on' : ''} onClick={() => goStation(s)}>{STATION_LABEL[s]}</button></li>;
                   })}
+                <li><button type="button" onClick={() => goStation('shelf')}>Old game folders</button></li>
                 </ul>
               )}
               <button type="button" className="ws3d__stbtn" aria-expanded={stationsOpen} aria-controls="ws-stmenu" onClick={() => setStationsOpen((v) => !v)}>

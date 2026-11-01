@@ -14,6 +14,7 @@ import * as THREE from 'three';
 import { box, DESK_FRONT, DESK_BACK, FLOOR_Y } from './env-common.js';
 import { surveyTexture } from './drafting.js';
 import { buildExterior } from './exterior.js';
+import { FOLDERS } from '../data/sierraShelf.js';
 import { buildRoom } from './room.js';
 import { DISK_PROJECTS } from '../data/caseIds.js';
 
@@ -348,9 +349,11 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     if (i === 8) { b.rotation.z = -0.28; b.position.x += 40; b.position.y -= 18; }
     scene.add(b);
     if (i < 8) {
-      const lab = new THREE.Mesh(new THREE.PlaneGeometry(52, 120), paper);
-      lab.position.set(-1950 + i * 84, shelfY + 250, WALL_Z + 296);
+      const f = SIERRA_SPINES[i];   // 14: four old game folders, Hero's Quest the largest label; the rest stay blank
+      const lab = new THREE.Mesh(new THREE.PlaneGeometry(f ? 60 : 52, f?.id === 'hero' ? 230 : f ? 170 : 120), f ? new THREE.MeshStandardMaterial({ map: props.tex(spineCanvas(f)), roughness: 0.9 }) : paper);
+      lab.position.set(-1950 + i * 84, shelfY + (f ? 215 : 250), WALL_Z + 296);
       scene.add(lab);
+      if (f) { b.userData.sierra = lab.userData.sierra = f.id; (build.sierra ||= []).push(b, lab); }
     }
   });
   const plat = framed(THREE, props, 1250, 900, wood('#3a281b', 71));
@@ -428,6 +431,23 @@ export function build({ props, scene, plasticDark, plasticDeep, rubber }) {
     mug: mugG,
     room: build.room, knee: build.knee,
   };
+}
+
+const SIERRA_SPINES = { 1: FOLDERS[1], 3: FOLDERS[0], 5: FOLDERS[2], 6: FOLDERS[3] };   // binder index on the shelf
+
+/** An aged paper spine label, lettered sideways as on an archive folder. */
+function spineCanvas(f) {
+  const hero = f.id === 'hero', c = document.createElement('canvas'); c.width = 128; c.height = hero ? 490 : 362;
+  const x = c.getContext('2d');
+  x.fillStyle = '#d8ccb0'; x.fillRect(0, 0, c.width, c.height);
+  for (let i = 0; i < 500; i++) { x.fillStyle = `rgba(110,80,40,${0.03 + (i % 5) * 0.012})`; x.fillRect((i * 37) % c.width, (i * 91) % c.height, 2 + (i % 3), 2 + (i % 4)); }
+  x.strokeStyle = 'rgba(70,45,25,0.6)'; x.lineWidth = 3; x.strokeRect(7, 7, c.width - 14, c.height - 14);
+  x.translate(c.width / 2, c.height / 2); x.rotate(-Math.PI / 2);
+  x.fillStyle = '#3a2416'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  const [a, b] = f.spine, size = (t, m) => { let z = m; do { x.font = `700 ${z}px "JetBrains Mono", monospace`; z -= 2; } while (x.measureText(t).width > c.height - 44); };
+  size(a, 46); x.fillText(a, 0, b ? -18 : 0);
+  if (b) { x.font = '600 28px "JetBrains Mono", monospace'; x.fillText(b, 0, 28); }
+  return c;
 }
 
 /* Two light grades over the same geometry. */

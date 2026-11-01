@@ -253,3 +253,36 @@
 
 /* 06 career notebook: dock states */
 .ws3d__dock button:disabled { opacity: 0.4; cursor: default; border-color: #4a4238; color: var(--ws-dim); }
+
+/* 14: the Sierra shelf panel: a small adventure-game window in the room's palette */
+.sq { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(8, 7, 6, 0.55); }
+.sq__panel { width: min(600px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; background: #1b1f3a; color: #ece3cf; border: 3px solid #d9a75a; outline: 3px solid #1b1f3a; font: 500 14px/1.6 "JetBrains Mono", monospace; }
+.sq__bar { position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 12px; background: #d9a75a; color: #1b1f3a; font-weight: 700; letter-spacing: 0.06em; }
+.sq__x { min-height: 36px; padding: 4px 12px; background: #1b1f3a; color: #ece3cf; border: 0; font: inherit; cursor: pointer; }
+.sq__body { padding: 16px 18px; }
+.sq h2 { margin: 0 0 8px; font: 700 20px/1.3 "JetBrains Mono", monospace; color: #f0d9a8; display: flex; align-items: center; gap: 10px; }
+.sq p { margin: 0 0 12px; }
+.sq__crest { width: 28px; height: 28px; flex: none; color: #9fd0b0; }
+.sq__choices { display: grid; gap: 8px; }
+.sq__choices button { display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; text-align: left; padding: 10px 12px; background: #262b4e; color: inherit; border: 2px solid #5a6092; font: inherit; cursor: pointer; }
+.sq__choices .sq__crest { grid-row: span 2; align-self: center; }
+.sq__choices span { font-size: 12.5px; opacity: 0.85; }
+.sq__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sq__actions button { min-height: 44px; padding: 8px 14px; background: #262b4e; color: inherit; border: 2px solid #5a6092; font: inherit; cursor: pointer; }
+.sq__actions .sq__go { background: #d9a75a; color: #1b1f3a; border-color: #d9a75a; font-weight: 700; }
+.sq button:hover, .sq button:focus-visible { outline: 2px solid #f0d9a8; outline-offset: 1px; }
+.sq__class { color: #9fd0b0; }
+.sq__stats { list-style: none; margin: 0 0 6px; padding: 0; }
+.sq__stats li { display: grid; grid-template-columns: 138px 1fr 28px; gap: 8px; align-items: center; font-size: 13px; }
+.sq__stats i { height: 10px; background: #262b4e; border: 1px solid #5a6092; }
+.sq__stats em { display: block; height: 100%; background: #9fd0b0; }
+.sq__small, .sq__legal { font-size: 12px; opacity: 0.75; }
+.sq__legal { margin: 12px 0 0; }
+.sq blockquote { margin: 0 0 12px; padding-left: 12px; border-left: 3px solid #d9a75a; }
+.sq__dir { list-style: none; margin: 0 0 8px; padding: 0; }
+.sq__dir b { display: inline-block; min-width: 11ch; color: #9fd0b0; }
+.sq p, .sq blockquote, .sq li, .sq span { color: #ece3cf; }
+.sq__class { color: #9fd0b0 !important; }
+.sq .sq__bar span { color: #1b1f3a; }
+.sq .sq__choices span { color: #ece3cf; }
+@media (max-width: 760px) { .ws3d__row--folders > button { font-size: 10px; letter-spacing: 0; padding: 6px 2px; } .ws3d__row--folders > .ws3d__label { flex: 1 0 100%; } }
